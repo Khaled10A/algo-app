@@ -1,4 +1,4 @@
-# Algo App
+\# Algo App
 
 A React web application for visualizing and benchmarking sorting and string-searching algorithms interactively.
 
@@ -39,6 +39,7 @@ Open http://localhost:3000 in your browser.
 
 ## Project Structure
 
+```
 src/
 ├── algorithms/
 │   ├── sorting/        # Sorting algorithms
@@ -49,7 +50,7 @@ src/
 │   └── visualizer/     # Array visualizer
 ├── tabs/               # App tabs (Benchmark, Visualizer...)
 └── utils/              # Constants, generators, export tools
-
+```
 ## Built With
 - React
 - JavaScript (ES6+)
