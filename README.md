@@ -1,6 +1,4 @@
-cd /home/khaled/Documents/algo-app
-python3 -c "
-content = '''# Algo App
+# Algo App
 
 A React web application for visualizing and benchmarking sorting and string-searching algorithms.
 
@@ -27,37 +25,25 @@ String Searching: Brute Force, Horspool, KMP
 
 ### Installation
 
-\`\`\`bash
-git clone https://github.com/Khaled10A/algo-app.git
-cd algo-app
-make setup
-\`\`\`
+    git clone https://github.com/Khaled10A/algo-app.git
+    cd algo-app
+    make setup
 
 Open http://localhost:3000 in your browser.
 
 ## Project Structure
 
-\`\`\`
-src/
-├── algorithms/
-│   ├── sorting/        # Sorting algorithms
-│   └── searching/      # String searching algorithms
-├── components/
-│   ├── ui/             # Sidebar, Header, shared components
-│   ├── charts/         # Line and Bar charts
-│   └── visualizer/     # Array visualizer
-├── tabs/               # App tabs (Benchmark, Visualizer...)
-└── utils/              # Constants, generators, export tools
-\`\`\`
+    src/
+    ├── algorithms/
+    │   ├── sorting/        # Sorting algorithms
+    │   └── searching/      # String searching algorithms
+    ├── components/
+    │   ├── ui/             # Sidebar, Header, shared components
+    │   ├── charts/         # Line and Bar charts
+    │   └── visualizer/     # Array visualizer
+    ├── tabs/               # App tabs (Benchmark, Visualizer...)
+    └── utils/              # Constants, generators, export tools
 
 ## Built With
 - React
 - JavaScript (ES6+)
-'''
-with open('README.md', 'w') as f:
-    f.write(content)
-"
-
-git add README.md
-git commit -m "update README with make setup"
-git push
