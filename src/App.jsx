@@ -14,6 +14,8 @@ import { ComplexityTab } from './tabs/ComplexityTab';
 import { PseudocodeTab } from './tabs/PseudocodeTab';
 import { HistoryTab } from './tabs/HistoryTab';
 import { ReportTab } from './tabs/ReportTab';
+import { DebuggerTab } from './tabs/DebuggerTab';
+import { AIAssistantTab } from './tabs/AIAssistantTab';
 
 // Utils
 import { generateArray } from './utils/generators';
@@ -83,7 +85,7 @@ export default function App() {
   const srchLineRef = useRef(); const srchBarRef = useRef();
 
   const allPseudoAlgos = [...Object.keys(SORT_ALGOS), ...Object.keys(SEARCH_ALGOS)];
-  const SUB_TABS = ["benchmark", "visualizer", "complexity", "pseudocode", "history", "report", "debugger"];
+  const SUB_TABS = ["benchmark", "visualizer", "complexity", "pseudocode", "history", "report", "debugger", "ai"];
 
   const isDark = theme === "dark";
   const bg = isDark ? "#020817" : "#f8fafc";
@@ -443,6 +445,13 @@ export default function App() {
             )}
             {subTab === "debugger" && (
               <DebuggerTab isDark={isDark} />
+            )}
+            {subTab === "ai" && (
+              <AIAssistantTab
+                isDark={isDark}
+                sortResults={sortResults}
+                searchResults={searchResults}
+              />
             )}
           </div>
         </div>
