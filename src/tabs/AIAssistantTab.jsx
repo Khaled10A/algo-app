@@ -23,24 +23,21 @@ Never write long walls of text — be a tutor, not a textbook.`;
 
 // ── CALL CLAUDE API ────────────────────────────────────────────────────────────
 async function callClaude(messages) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": import.meta.env.VITE_ANTHROPIC_KEY,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
+      "Authorization": `Bearer ${import.meta.env.VITE_DEEPSEEK_KEY}`,
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "deepseek-chat",
       max_tokens: 1000,
-      system: SYSTEM_PROMPT,
-      messages,
+      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
     }),
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
-  return data.content.map(b => b.text || "").join("");
+  return data.choices[0].message.content;
 }
 
 // ── QUICK ACTION BUTTONS ───────────────────────────────────────────────────────
