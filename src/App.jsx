@@ -83,7 +83,7 @@ export default function App() {
   const srchLineRef = useRef(); const srchBarRef = useRef();
 
   const allPseudoAlgos = [...Object.keys(SORT_ALGOS), ...Object.keys(SEARCH_ALGOS)];
-  const SUB_TABS = ["benchmark", "visualizer", "complexity", "pseudocode", "history", "report"];
+  const SUB_TABS = ["benchmark", "visualizer", "complexity", "pseudocode", "history", "report", "debugger"];
 
   const isDark = theme === "dark";
   const bg = isDark ? "#020817" : "#f8fafc";
@@ -440,6 +440,9 @@ export default function App() {
                 searchMetric={searchMetric}
                 pattern={pattern}
               />
+            )}
+            {subTab === "debugger" && (
+              <DebuggerTab isDark={isDark} />
             )}
           </div>
         </div>
