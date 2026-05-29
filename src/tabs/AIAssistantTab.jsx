@@ -23,21 +23,26 @@ Never write long walls of text — be a tutor, not a textbook.`;
 
 // ── CALL CLAUDE API ────────────────────────────────────────────────────────────
 async function callClaude(messages) {
-  const res = await fetch("https://api.deepseek.com/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${import.meta.env.VITE_DEEPSEEK_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "deepseek-chat",
-      max_tokens: 1000,
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-    }),
-  });
+  const lastMsg = messages[messages.length - 1].content;
+  const history = messages.slice(0, -1).map(m => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [...history, { role: "user", parts: [{ text: lastMsg }] }],
+        generationConfig: { maxOutputTokens: 1000 },
+      }),
+    }
+  );
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
-  return data.choices[0].message.content;
+  return data.candidates[0].content.parts[0].text;
 }
 
 // ── QUICK ACTION BUTTONS ───────────────────────────────────────────────────────
