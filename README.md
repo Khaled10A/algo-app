@@ -47,48 +47,49 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 
 \`\`\`
 src/
-├── algorithms/
-│   ├── sorting/
-│   │   ├── bubbleSort.js
-│   │   ├── insertionSort.js
-│   │   ├── selectionSort.js
-│   │   ├── mergeSort.js
-│   │   ├── quickSort.js
-│   │   └── index.js
-│   └── searching/
-│       ├── bruteForce.js
-│       ├── horspool.js
-│       ├── kmp.js
-│       ├── bruteForceDebug.js
-│       ├── horspoolDebug.js
-│       ├── kmpDebug.js
-│       └── index.js
-├── components/
-│   ├── ui/
-│   │   ├── SharedComponents.jsx
-│   │   └── Sidebar.jsx
-│   ├── charts/
-│   │   ├── LineChart.jsx
-│   │   └── BarChart.jsx
-│   └── visualizer/
-│       └── ArrayVisualizer.jsx
-├── tabs/
-│   ├── BenchmarkTab.jsx
-│   ├── VisualizerTab.jsx
-│   ├── DebuggerTab.jsx
-│   ├── ComplexityTab.jsx
-│   ├── PseudocodeTab.jsx
-│   ├── HistoryTab.jsx
-│   ├── ReportTab.jsx
-│   └── AIAssistantTab.jsx
-├── utils/
-│   ├── constants.js
-│   ├── generators.js
-│   └── exportUtils.js
-├── styles/
-│   └── index.css
-├── App.jsx
-└── main.jsx
+|-- algorithms/
+|   |-- sorting/
+|   |   |-- bubbleSort.js
+|   |   |-- insertionSort.js
+|   |   |-- selectionSort.js
+|   |   |-- mergeSort.js
+|   |   |-- quickSort.js
+|   |   +-- index.js
+|   +-- searching/
+|       |-- bruteForce.js
+|       |-- horspool.js
+|       |-- kmp.js
+|       |-- bruteForceDebug.js
+|       |-- horspoolDebug.js
+|       |-- kmpDebug.js
+|       +-- index.js
+|-- components/
+|   |-- ui/
+|   |   |-- SharedComponents.jsx
+|   |   +-- Sidebar.jsx
+|   |-- charts/
+|   |   |-- LineChart.jsx
+|   |   +-- BarChart.jsx
+|   +-- visualizer/
+|       +-- ArrayVisualizer.jsx
+|-- tabs/
+|   |-- BenchmarkTab.jsx
+|   |-- VisualizerTab.jsx
+|   |-- DebuggerTab.jsx
+|   |-- ComplexityTab.jsx
+|   |-- PseudocodeTab.jsx
+|   |-- HistoryTab.jsx
+|   |-- ReportTab.jsx
+|   +-- AIAssistantTab.jsx
+|-- utils/
+|   |-- constants.js
+|   |-- generators.js
+|   +-- exportUtils.js
+|-- styles/
+|   +-- index.css
+|-- App.jsx
++-- main.jsx
+
 \`\`\`
 
 ---
