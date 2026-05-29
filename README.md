@@ -47,51 +47,49 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 
 \`\`\`
 src/
-├── algorithms
-│   ├── searching
-│   │   ├── bruteForceDebug.js
-│   │   ├── bruteForce.js
-│   │   ├── horspoolDebug.js
-│   │   ├── horspool.js
-│   │   ├── index.js
-│   │   ├── kmpDebug.js
-│   │   └── kmp.js
-│   └── sorting
-│       ├── bubbleSort.js
-│       ├── index.js
-│       ├── insertionSort.js
-│       ├── mergeSort.js
-│       ├── quickSort.js
-│       └── selectionSort.js
-├── App.jsx
-├── components
-│   ├── charts
-│   │   ├── BarChart.jsx
-│   │   └── LineChart.jsx
-│   ├── ui
-│   │   ├── Header.jsx
-│   │   ├── SharedComponents.jsx
-│   │   └── Sidebar.jsx
-│   └── visualizer
-│       └── ArrayVisualizer.jsx
-├── index.css
-├── index.js
-├── main.jsx
-├── styles
-│   └── index.css
-├── tabs
-│   ├── AIAssistantTab.jsx
-│   ├── BenchmarkTab.jsx
-│   ├── ComplexityTab.jsx
-│   ├── DebuggerTab.jsx
-│   ├── HistoryTab.jsx
-│   ├── PseudocodeTab.jsx
-│   ├── ReportTab.jsx
-│   └── VisualizerTab.jsx
-└── utils
-    ├── constants.js
-    ├── exportUtils.js
-    └── generators.js
+|-- algorithms/
+|   |-- searching/
+|   |   |-- bruteForce.js
+|   |   |-- bruteForceDebug.js
+|   |   |-- horspool.js
+|   |   |-- horspoolDebug.js
+|   |   |-- index.js
+|   |   |-- kmp.js
+|   |   +-- kmpDebug.js
+|   +-- sorting/
+|       |-- bubbleSort.js
+|       |-- index.js
+|       |-- insertionSort.js
+|       |-- mergeSort.js
+|       |-- quickSort.js
+|       +-- selectionSort.js
+|-- components/
+|   |-- charts/
+|   |   |-- BarChart.jsx
+|   |   +-- LineChart.jsx
+|   |-- ui/
+|   |   |-- Header.jsx
+|   |   |-- SharedComponents.jsx
+|   |   +-- Sidebar.jsx
+|   +-- visualizer/
+|       +-- ArrayVisualizer.jsx
+|-- tabs/
+|   |-- AIAssistantTab.jsx
+|   |-- BenchmarkTab.jsx
+|   |-- ComplexityTab.jsx
+|   |-- DebuggerTab.jsx
+|   |-- HistoryTab.jsx
+|   |-- PseudocodeTab.jsx
+|   |-- ReportTab.jsx
+|   +-- VisualizerTab.jsx
+|-- utils/
+|   |-- constants.js
+|   |-- exportUtils.js
+|   +-- generators.js
+|-- styles/
+|   +-- index.css
+|-- App.jsx
++-- main.jsx
 \`\`\`
 
 ---
