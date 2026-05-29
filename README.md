@@ -45,7 +45,7 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 
 ## Project Structure
 
-\`\`\`
+```
 src/
 |-- algorithms/
 |   |-- searching/
@@ -90,7 +90,7 @@ src/
 |   +-- index.css
 |-- App.jsx
 +-- main.jsx
-\`\`\`
+```
 
 ---
 
@@ -103,21 +103,21 @@ src/
 
 ### Installation
 
-\`\`\`bash
+```bash
 git clone https://github.com/Khaled10A/algo-app.git
 cd algo-app
 npm install
 npm run dev
-\`\`\`
+```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### Build for production
 
-\`\`\`bash
+```bash
 npm run build
 npm run preview
-\`\`\`
+```
 
 ---
 
