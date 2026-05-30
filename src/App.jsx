@@ -457,5 +457,19 @@ export default function App() {
         </div>
       </div>
     </ThemeCtx.Provider>
+  
+    href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      position: "fixed", bottom: 14, right: 18,
+      fontSize: 12, color: "transparent",
+      textDecoration: "none", fontFamily: "monospace",
+      letterSpacing: 1, transition: "color 0.2s",
+      cursor: "pointer",
+    }}
+    onMouseEnter={e => e.target.style.color = "#a78bfa"}
+    onMouseLeave={e => e.target.style.color = "transparent"}
+  >Khaled Alnajjar</a>
   );
 }
