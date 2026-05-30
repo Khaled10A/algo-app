@@ -469,36 +469,6 @@ export default function App() {
           </div>
         </div>
       </div>
-      
-        href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
-        target="_blank" rel="noopener noreferrer"
-        style={{
-          position: "fixed", bottom: 14, left: 16,
-          fontSize: 10, color: "#334155", textDecoration: "none",
-          fontFamily: "monospace", letterSpacing: 1,
-          transition: "color 0.2s", zIndex: 9999
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = "#a78bfa"}
-        onMouseLeave={e => e.currentTarget.style.color = "#334155"}
-      >© Khaled Alnajjar</a>
-    <div style={{
-        position: "fixed", bottom: 14, left: 16,
-        width: 248
-      }}>
-        <div style={{ borderTop: "1px solid #1e293b", paddingTop: 10 }}>
-          
-            href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
-            target="_blank" rel="noopener noreferrer"
-            style={{
-              fontSize: 10, color: "#334155", textDecoration: "none",
-              fontFamily: "monospace", letterSpacing: 1,
-              transition: "color 0.2s", display: "block"
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = "#a78bfa"}
-            onMouseLeave={e => e.currentTarget.style.color = "#334155"}
-          >© Khaled Alnajjar</a>
-        </div>
-      </div>
   </ThemeCtx.Provider>
 
   );
