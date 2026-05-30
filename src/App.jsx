@@ -454,7 +454,7 @@ export default function App() {
               />
             )}
 
-          <div style={{ marginTop: "auto" }}>
+          <div style={{ marginTop: "auto", textAlign: "center" }}>
             <div style={{ borderTop: `1px solid ${border}`, paddingTop: 10, marginTop: 16 }}>
               <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
                 target="_blank" rel="noopener noreferrer"
