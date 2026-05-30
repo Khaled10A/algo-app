@@ -453,23 +453,19 @@ export default function App() {
                 searchResults={searchResults}
               />
             )}
+          <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
+            target="_blank" rel="noopener noreferrer"
+            style={{ marginTop: "auto", paddingTop: 16, fontSize: 11,
+              color: "#475569", textDecoration: "none", fontFamily: "monospace",
+              letterSpacing: 1, textAlign: "center", display: "block",
+              transition: "color 0.2s", borderTop: "1px solid #1e293b", paddingTop: 12 }}
+            onMouseEnter={e => e.currentTarget.style.color = "#a78bfa"}
+            onMouseLeave={e => e.currentTarget.style.color = "#475569"}
+          >© Khaled Alnajjar</a>
           </div>
         </div>
       </div>
     </ThemeCtx.Provider>
-  
-    href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{
-      position: "fixed", bottom: 14, right: 18,
-      fontSize: 12, color: "transparent",
-      textDecoration: "none", fontFamily: "monospace",
-      letterSpacing: 1, transition: "color 0.2s",
-      cursor: "pointer",
-    }}
-    onMouseEnter={e => e.target.style.color = "#a78bfa"}
-    onMouseLeave={e => e.target.style.color = "transparent"}
-  >Khaled Alnajjar</a>
+
   );
 }
