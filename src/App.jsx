@@ -469,15 +469,6 @@ export default function App() {
           </div>
         </div>
       </div>
-    <div style={{
-        position: "fixed", bottom: 14, left: 0, width: 230,
-        textAlign: "center"
-      }}>
-        <span style={{
-          fontSize: 10, color: "#334155",
-          fontFamily: "monospace", letterSpacing: 1
-        }}>&#169; Khaled Alnajjar</span>
-      </div>
   </ThemeCtx.Provider>
 
   );
