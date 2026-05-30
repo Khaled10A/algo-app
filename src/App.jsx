@@ -306,19 +306,6 @@ export default function App() {
                     {["time", "comparisons"].map(m => <Chk key={m} radio label={m === "time" ? "Execution Time (ms)" : "Comparisons"} checked={sortMetric === m} onChange={() => setSortMetric(m)} />)}
                   </Sec>
                   <RunBtn onClick={runSort} running={sortRunning} />
-                  <a
-                    href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
-                    target="_blank" rel="noopener noreferrer"
-                    style={{
-                      display: "block", marginTop: 16,
-                      paddingTop: 10, borderTop: "1px solid #1e293b",
-                      fontSize: 10, color: "#334155", textDecoration: "none",
-                      fontFamily: "monospace", letterSpacing: 1,
-                      transition: "color 0.2s"
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.color = "#a78bfa"}
-                    onMouseLeave={e => e.currentTarget.style.color = "#334155"}
-                  >© Khaled Alnajjar</a>
                   {sortResults && <GhostBtn onClick={exportSortCSV} label="⬇ Export CSV" />}
                   {sortResults && <GhostBtn color="#38bdf8" onClick={() => exportXLSX([{
                     name: "Sorting Results", title: "Sorting Benchmark Results",
