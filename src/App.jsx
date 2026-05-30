@@ -271,7 +271,7 @@ export default function App() {
         <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden" }}>
 
           {/* SIDEBAR */}
-          <div style={{ width: 280, borderRight: `1px solid ${border}`, padding: "18px 16px", overflowY: "auto", background: sidebar, flexShrink: 0 }}>
+          <div style={{ width: 280, borderRight: `1px solid ${border}`, padding: "18px 16px", overflowY: "auto", background: sidebar, flexShrink: 0, display: "flex", flexDirection: "column" }}>
             {tab === "sorting" ? (
               <>
                 {subTab === "benchmark" && <>
@@ -453,15 +453,19 @@ export default function App() {
                 searchResults={searchResults}
               />
             )}
-          <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
-            target="_blank" rel="noopener noreferrer"
-            style={{ marginTop: "auto", paddingTop: 16, fontSize: 11,
-              color: "#475569", textDecoration: "none", fontFamily: "monospace",
-              letterSpacing: 1, textAlign: "center", display: "block",
-              transition: "color 0.2s", borderTop: "1px solid #1e293b", paddingTop: 12 }}
-            onMouseEnter={e => e.currentTarget.style.color = "#a78bfa"}
-            onMouseLeave={e => e.currentTarget.style.color = "#475569"}
-          >© Khaled Alnajjar</a>
+
+          <div style={{ marginTop: "auto" }}>
+            <div style={{ borderTop: `1px solid ${border}`, paddingTop: 10, marginTop: 16 }}>
+              <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
+                target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 10, color: "#334155", textDecoration: "none",
+                  fontFamily: "monospace", letterSpacing: 1, display: "block",
+                  transition: "color 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.color = "#a78bfa"}
+                onMouseLeave={e => e.currentTarget.style.color = "#334155"}
+              >© Khaled Alnajjar</a>
+            </div>
+          </div>
           </div>
         </div>
       </div>
