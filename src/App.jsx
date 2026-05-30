@@ -274,10 +274,10 @@ export default function App() {
           <div style={{ width: 280, borderRight: `1px solid ${border}`, padding: "18px 16px", overflowY: "auto", background: sidebar, flexShrink: 0 }}>
             {tab === "sorting" ? (
               <>
-                <Sec title="ALGORITHMS">
-                  {Object.keys(SORT_ALGOS).map(a => <Chk key={a} label={a} checked={selSort.includes(a)} onChange={() => toggle(selSort, setSelSort, a)} />)}
-                </Sec>
                 {subTab === "benchmark" && <>
+                  <Sec title="ALGORITHMS">
+                    {Object.keys(SORT_ALGOS).map(a => <Chk key={a} label={a} checked={selSort.includes(a)} onChange={() => toggle(selSort, setSelSort, a)} />)}
+                  </Sec>
                   <Sec title="INPUT MODE">
                     {[["random", "Random / Generated"], ["custom", "Custom Array"]].map(([v, l]) => (
                       <Chk key={v} radio label={l} checked={sortInputMode === v} onChange={() => setSortInputMode(v)} />
