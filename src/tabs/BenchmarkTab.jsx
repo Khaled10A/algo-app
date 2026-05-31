@@ -79,6 +79,7 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
             <thead><tr style={{ background: rowOdd }}>
               <th style={TH}>Algorithm</th>
               {sizes.map(n => <th key={n} style={TH}>n = {n}</th>)}
+              <th style={{ ...TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
             </tr></thead>
             <tbody>{algos.map((algo, ai) => {
               const isWorst = algo === worstAlgo;
@@ -97,6 +98,9 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
                       {mk === "time" ? row.time.toFixed(4) + " ms" : row.comparisons.toLocaleString()}
                     </td>
                   ))}
+                  <td style={{ ...TD, color: "#a78bfa", fontFamily: "monospace", fontSize: 10 }}>
+                    {data[algo][type][data[algo][type].length - 1].comparisons.toLocaleString()}
+                  </td>
                 </tr>
               );
             })}</tbody>
@@ -263,6 +267,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
             <thead><tr style={{ background: rowOdd }}>
               <th style={TH}>Algorithm</th>
               {sizes.map(n => <th key={n} style={TH}>n = {n}</th>)}
+              <th style={{ ...TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
             </tr></thead>
             <tbody>{algos.map((algo, ai) => {
               const isWorst = algo === worstAlgo;
