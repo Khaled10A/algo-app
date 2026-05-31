@@ -3,7 +3,7 @@ import { LineChart, BarChart } from '../components/charts/LineChart';
 import { Label, Empty, ChartBox, FullscreenChart } from '../components/ui/SharedComponents';
 import { useTheme } from '../components/ui/Sidebar';
 import { exportSVGasPNG } from '../utils/exportUtils';
-import { COLORS, INPUT_LABELS, SCENARIO_LABELS, TH, TD } from '../utils/constants';
+import { COLORS, COMPLEXITY, INPUT_LABELS, SCENARIO_LABELS, TH, TD } from '../utils/constants';
 
 export function SortResults({ results, metric, lineRef: externalLineRef, barRef: externalBarRef }) {
   const { results: data, sizes, algos, types } = results;
@@ -79,7 +79,9 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
             <thead><tr style={{ background: rowOdd }}>
               <th style={TH}>Algorithm</th>
               {sizes.map(n => <th key={n} style={TH}>n = {n}</th>)}
-              <th style={{ ...TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
+              <th style={{ ...TH, color: "#4ade80" }}>Ω Best</th>
+              <th style={{ ...TH, color: "#fb923c" }}>Θ Average</th>
+              <th style={{ ...TH, color: "#f87171" }}>O Worst</th>
             </tr></thead>
             <tbody>{algos.map((algo, ai) => {
               const isWorst = algo === worstAlgo;
@@ -98,8 +100,14 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
                       {mk === "time" ? row.time.toFixed(4) + " ms" : row.comparisons.toLocaleString()}
                     </td>
                   ))}
-                  <td style={{ ...TD, color: "#a78bfa", fontFamily: "monospace", fontSize: 10 }}>
-                    {data[algo][type][data[algo][type].length - 1].comparisons.toLocaleString()}
+                  <td style={{ ...TD, color: "#4ade80", fontFamily: "monospace", fontSize: 10 }}>
+                    {COMPLEXITY[algo]?.best || "-"}
+                  </td>
+                  <td style={{ ...TD, color: "#fb923c", fontFamily: "monospace", fontSize: 10 }}>
+                    {COMPLEXITY[algo]?.average || "-"}
+                  </td>
+                  <td style={{ ...TD, color: "#f87171", fontFamily: "monospace", fontSize: 10 }}>
+                    {COMPLEXITY[algo]?.worst || "-"}
                   </td>
                 </tr>
               );
@@ -267,7 +275,9 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
             <thead><tr style={{ background: rowOdd }}>
               <th style={TH}>Algorithm</th>
               {sizes.map(n => <th key={n} style={TH}>n = {n}</th>)}
-              <th style={{ ...TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
+              <th style={{ ...TH, color: "#4ade80" }}>Ω Best</th>
+              <th style={{ ...TH, color: "#fb923c" }}>Θ Average</th>
+              <th style={{ ...TH, color: "#f87171" }}>O Worst</th>
             </tr></thead>
             <tbody>{algos.map((algo, ai) => {
               const isWorst = algo === worstAlgo;
