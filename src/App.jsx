@@ -138,51 +138,92 @@ export default function App() {
   }
 
   function runSearch() {
-    if (!selSearch.length || !searchScs.length || !pattern) return;
+    if (!selSearch.length || !pattern) return;
+    if (searchInputMode === "file" && !uploadedText) return;
     setSearchRunning(true);
     setTimeout(() => {
-      const sizes = searchSizes.split(",").map(s => parseInt(s.trim())).filter(n => n > 0);
       const results = {};
-      selSearch.forEach(algo => {
-        results[algo] = {};
-        searchScs.forEach(sc => {
-          results[algo][sc] = sizes.map(n => {
-            const pat = sc === "nomatch" ? "ZZZZZ" : pattern;
-            const chars = "abcdefghijklmnopqrstuvwxyz ";
-            let textStr = Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-            if (sc === "start") textStr = pat + textStr.slice(pat.length);
-            else if (sc === "end") textStr = textStr.slice(0, n - pat.length) + pat;
-            else if (sc === "multiple") {
-              const interval = Math.floor(n / 4);
-              let arr2 = textStr.split("");
-              for (let k = 0; k < 3; k++) {
-                const pos = interval * (k + 1);
-                for (let c = 0; c < pat.length && pos + c < n; c++) arr2[pos + c] = pat[c];
+
+      if (searchInputMode === "file") {
+        // ── FILE MODE: run all algos on the uploaded text ──
+        const textStr = uploadedText;
+        const n = textStr.length;
+        selSearch.forEach(algo => {
+          results[algo] = {};
+          results[algo]["file"] = [{
+            n,
+            time: (() => {
+              const t0 = performance.now();
+              SEARCH_ALGOS[algo](textStr, pattern);
+              return parseFloat((performance.now() - t0).toFixed(4));
+            })(),
+            comparisons: SEARCH_ALGOS[algo](textStr, pattern).comparisons,
+            matches: SEARCH_ALGOS[algo](textStr, pattern).matches,
+          }];
+        });
+        const newResult = {
+          id: Date.now(),
+          kind: "search",
+          mode: "file",
+          label: `File Run — ${uploadedFileName}`,
+          ts: new Date().toLocaleTimeString(),
+          metric: searchMetric,
+          pattern,
+          fileName: uploadedFileName,
+          fileLength: n,
+          results,
+          sizes: [n],
+          algos: [...selSearch],
+          scenarios: ["file"],
+        };
+        setSearchResults(newResult);
+        setRunHistory(h => [newResult, ...h].slice(0, 20));
+        setSearchRunning(false);
+      } else {
+        // ── GENERATE MODE: original behavior ──
+        const sizes = searchSizes.split(",").map(s => parseInt(s.trim())).filter(n => n > 0);
+        selSearch.forEach(algo => {
+          results[algo] = {};
+          searchScs.forEach(sc => {
+            results[algo][sc] = sizes.map(n => {
+              const pat = sc === "nomatch" ? "ZZZZZ" : pattern;
+              const chars = "abcdefghijklmnopqrstuvwxyz ";
+              let textStr = Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+              if (sc === "start") textStr = pat + textStr.slice(pat.length);
+              else if (sc === "end") textStr = textStr.slice(0, n - pat.length) + pat;
+              else if (sc === "multiple") {
+                const interval = Math.floor(n / 4);
+                let arr2 = textStr.split("");
+                for (let k = 0; k < 3; k++) {
+                  const pos = interval * (k + 1);
+                  for (let c = 0; c < pat.length && pos + c < n; c++) arr2[pos + c] = pat[c];
+                }
+                textStr = arr2.join("");
               }
-              textStr = arr2.join("");
-            }
-            const t0 = performance.now();
-            const { comparisons } = SEARCH_ALGOS[algo](textStr, pat);
-            const t1 = performance.now();
-            return { n, time: parseFloat((t1 - t0).toFixed(4)), comparisons };
+              const t0 = performance.now();
+              const { comparisons } = SEARCH_ALGOS[algo](textStr, pat);
+              const t1 = performance.now();
+              return { n, time: parseFloat((t1 - t0).toFixed(4)), comparisons };
+            });
           });
         });
-      });
-      const newResult = {
-        id: Date.now(),
-        kind: "search",
-        label: `Search Run #${runHistory.filter(h => h.kind === "search").length + 1}`,
-        ts: new Date().toLocaleTimeString(),
-        metric: searchMetric,
-        pattern,
-        results,
-        sizes,
-        algos: [...selSearch],
-        scenarios: [...searchScs],
-      };
-      setSearchResults(newResult);
-      setRunHistory(h => [newResult, ...h].slice(0, 20));
-      setSearchRunning(false);
+        const newResult = {
+          id: Date.now(),
+          kind: "search",
+          mode: "generate",
+          label: `Search Run #${runHistory.filter(h => h.kind === "search").length + 1}`,
+          ts: new Date().toLocaleTimeString(),
+          metric: searchMetric,
+          pattern,
+          results,
+          sizes,
+          algos: [...selSearch],
+          scenarios: [...searchScs],
+        };
+        setSearchResults(newResult);
+        setRunHistory(h => [newResult, ...h].slice(0, 20));
+        setSearchRunning(false);
+      }
     }, 50);
   }
 
@@ -361,12 +402,50 @@ export default function App() {
                   {Object.keys(SEARCH_ALGOS).map(a => <Chk key={a} label={a} checked={selSearch.includes(a)} onChange={() => toggle(selSearch, setSelSearch, a)} />)}
                 </Sec>
                 {subTab === "benchmark" && <>
-                  <Sec title="SCENARIO">
-                    {TEXT_SCENARIOS.map(sc => <Chk key={sc} label={SCENARIO_LABELS[sc]} checked={searchScs.includes(sc)} onChange={() => toggle(searchScs, setSearchScs, sc)} />)}
+                  <Sec title="INPUT MODE">
+                    {[["generate","Auto Generate"],["file","Upload File (.txt)"]].map(([v,l]) => (
+                      <Chk key={v} radio label={l} checked={searchInputMode===v} onChange={() => { setSearchInputMode(v); setUploadedText(""); setUploadedFileName(""); }} />
+                    ))}
                   </Sec>
-                  <Sec title="TEXT SIZES">
-                    <SInput value={searchSizes} onChange={e => setSearchSizes(e.target.value)} placeholder="300,500" hint="comma-separated" />
-                  </Sec>
+                  {searchInputMode === "file" ? (
+                    <Sec title="TEXT FILE">
+                      <label style={{ display:"block", cursor:"pointer" }}>
+                        <div style={{
+                          border: `2px dashed ${uploadedText ? "#4ade80" : isDark ? "#1e293b" : "#e2e8f0"}`,
+                          borderRadius: 8, padding: "12px 8px", textAlign: "center",
+                          background: uploadedText ? "rgba(74,222,128,0.05)" : "transparent",
+                          transition: "all 0.2s", cursor: "pointer"
+                        }}>
+                          <div style={{ fontSize: 18, marginBottom: 4 }}>{uploadedText ? "✅" : "📄"}</div>
+                          <div style={{ fontSize: 10, color: uploadedText ? "#4ade80" : isDark ? "#475569" : "#94a3b8", fontFamily: "monospace" }}>
+                            {uploadedText ? uploadedFileName : "Click to upload .txt file"}
+                          </div>
+                          {uploadedText && <div style={{ fontSize: 9, color: "#475569", marginTop: 2 }}>{uploadedText.length} characters</div>}
+                        </div>
+                        <input type="file" accept=".txt" style={{ display:"none" }} onChange={e => {
+                          const file = e.target.files[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = ev => { setUploadedText(ev.target.result); setUploadedFileName(file.name); };
+                          reader.readAsText(file);
+                        }} />
+                      </label>
+                      {uploadedText && <button onClick={() => { setUploadedText(""); setUploadedFileName(""); }} style={{
+                        width:"100%", marginTop:5, padding:"5px", borderRadius:5,
+                        border:"1px solid rgba(239,68,68,0.3)", background:"rgba(239,68,68,0.06)",
+                        color:"#f87171", fontSize:9, cursor:"pointer", fontFamily:"monospace"
+                      }}>✕ Remove file</button>}
+                    </Sec>
+                  ) : (
+                    <>
+                      <Sec title="SCENARIO">
+                        {TEXT_SCENARIOS.map(sc => <Chk key={sc} label={SCENARIO_LABELS[sc]} checked={searchScs.includes(sc)} onChange={() => toggle(searchScs, setSearchScs, sc)} />)}
+                      </Sec>
+                      <Sec title="TEXT SIZES">
+                        <SInput value={searchSizes} onChange={e => setSearchSizes(e.target.value)} placeholder="300,500" hint="comma-separated" />
+                      </Sec>
+                    </>
+                  )}
                   <Sec title="PATTERN">
                     <SInput value={pattern} onChange={e => setPattern(e.target.value)} placeholder="search pattern..." />
                   </Sec>

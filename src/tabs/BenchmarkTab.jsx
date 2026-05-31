@@ -108,6 +108,87 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
 }
 
 export function SearchResults({ results, metric, lineRef: externalLineRef, barRef: externalBarRef }) {
+  // ── FILE MODE ──────────────────────────────────────────
+  if (results.mode === "file") {
+    const { results: data, algos, pattern, fileName, fileLength } = results;
+    const mk = metric === "time" ? "time" : "comparisons";
+    const th = useTheme();
+    const isDark = th !== "light";
+    const border = isDark ? "#1e293b" : "#e2e8f0";
+    const cardBg = isDark ? "#0f172a" : "#ffffff";
+    const textMute = isDark ? "#64748b" : "#94a3b8";
+    const searchColors = ["#f472b6", "#4ade80", "#fb923c"];
+
+    const rows = algos.map((algo, i) => {
+      const r = data[algo]["file"][0];
+      return { algo, time: r.time, comparisons: r.comparisons, matches: r.matches?.length || 0, color: searchColors[i % 3] };
+    }).sort((a, b) => a[mk] - b[mk]);
+
+    return (
+      <div>
+        <Label color="#f472b6">STRING MATCHING — FILE RESULTS</Label>
+
+        {/* File info card */}
+        <div style={{ background: "rgba(244,114,182,0.06)", border: "1px solid rgba(244,114,182,0.25)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 16, flexWrap: "wrap" }}>
+          <div><div style={{ fontSize: 8, color: "#f472b6", letterSpacing: 2, marginBottom: 3 }}>FILE</div><div style={{ fontSize: 12, color: "#e2e8f0", fontFamily: "monospace" }}>📄 {fileName}</div></div>
+          <div><div style={{ fontSize: 8, color: "#f472b6", letterSpacing: 2, marginBottom: 3 }}>TEXT LENGTH</div><div style={{ fontSize: 12, color: "#e2e8f0", fontFamily: "monospace" }}>{fileLength.toLocaleString()} chars</div></div>
+          <div><div style={{ fontSize: 8, color: "#f472b6", letterSpacing: 2, marginBottom: 3 }}>PATTERN</div><div style={{ fontSize: 12, color: "#fbbf24", fontFamily: "monospace" }}>"{pattern}"</div></div>
+        </div>
+
+        {/* Results table */}
+        <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 10, overflow: "hidden", marginBottom: 16 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+            <thead>
+              <tr style={{ background: isDark ? "#0f172a" : "#f1f5f9" }}>
+                {["Algorithm", "Time (ms)", "Comparisons", "Matches Found", "Rank"].map(h => (
+                  <th key={h} style={{ padding: "9px 14px", textAlign: "left", fontSize: 9, letterSpacing: 1, color: textMute, borderBottom: `1px solid ${border}`, fontWeight: "bold" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={r.algo} style={{ background: i % 2 === 0 ? (isDark ? "#0a0f1e" : "#f8fafc") : (isDark ? "#0f172a" : "#ffffff") }}>
+                  <td style={{ padding: "9px 14px", color: r.color, fontWeight: "bold", fontFamily: "monospace" }}>{r.algo}</td>
+                  <td style={{ padding: "9px 14px", color: isDark ? "#94a3b8" : "#475569" }}>{r.time.toFixed(4)} ms</td>
+                  <td style={{ padding: "9px 14px", color: isDark ? "#94a3b8" : "#475569" }}>{r.comparisons.toLocaleString()}</td>
+                  <td style={{ padding: "9px 14px" }}>
+                    <span style={{ background: r.matches > 0 ? "rgba(74,222,128,0.15)" : "rgba(248,113,113,0.1)", color: r.matches > 0 ? "#4ade80" : "#f87171", padding: "2px 8px", borderRadius: 4, fontSize: 10 }}>
+                      {r.matches > 0 ? `✓ ${r.matches} match${r.matches > 1 ? "es" : ""}` : "✗ No match"}
+                    </span>
+                  </td>
+                  <td style={{ padding: "9px 14px" }}>
+                    {i === 0 && <span style={{ background: "rgba(74,222,128,0.15)", color: "#4ade80", padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: "bold" }}>🥇 FASTEST</span>}
+                    {i === rows.length - 1 && rows.length > 1 && <span style={{ background: "rgba(248,113,113,0.1)", color: "#f87171", padding: "2px 8px", borderRadius: 4, fontSize: 9 }}>SLOWEST</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Bar comparison */}
+        <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 10, padding: "14px 16px" }}>
+          <div style={{ fontSize: 9, color: textMute, letterSpacing: 2, marginBottom: 12 }}>COMPARISON — {metric === "time" ? "EXECUTION TIME" : "COMPARISONS"}</div>
+          {rows.map((r, i) => {
+            const maxVal = Math.max(...rows.map(x => x[mk]));
+            return (
+              <div key={r.algo} style={{ marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
+                  <span style={{ color: r.color, fontFamily: "monospace" }}>{r.algo}</span>
+                  <span style={{ color: textMute, fontSize: 10 }}>{mk === "time" ? r.time.toFixed(4) + " ms" : r.comparisons.toLocaleString()}</span>
+                </div>
+                <div style={{ background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 4, height: 8 }}>
+                  <div style={{ width: `${(r[mk] / maxVal) * 100}%`, height: "100%", background: r.color, borderRadius: 4, transition: "width 0.4s" }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ── GENERATE MODE (original) ───────────────────────────
   const { results: data, sizes, algos, scenarios } = results;
   const mk = metric === "time" ? "time" : "comparisons";
   const ml = metric === "time" ? "Time (ms)" : "Comparisons";
