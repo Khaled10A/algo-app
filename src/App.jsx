@@ -53,6 +53,9 @@ export default function App() {
   const [searchScs, setSearchScs] = useState(["start", "end", "multiple", "nomatch"]);
   const [searchSizes, setSearchSizes] = useState("300,500");
   const [pattern, setPattern] = useState("algo");
+  const [searchInputMode, setSearchInputMode] = useState("generate");
+  const [uploadedText, setUploadedText]       = useState("");
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const [searchMetric, setSearchMetric] = useState("time");
   const [searchResults, setSearchResults] = useState(null);
   const [searchRunning, setSearchRunning] = useState(false);
