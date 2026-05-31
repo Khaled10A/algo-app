@@ -127,8 +127,10 @@ export function DebuggerTab({ isDark }) {
 
   const [algo, setAlgo]         = useState("Insertion Sort");
   const [arrSize, setArrSize]   = useState(8);
-  const [textInput, setTextInput]   = useState(DEFAULT_TEXT);
-  const [patInput, setPatInput]     = useState(DEFAULT_PATTERN);
+  const [textInput, setTextInput]       = useState(DEFAULT_TEXT);
+  const [patInput, setPatInput]         = useState(DEFAULT_PATTERN);
+  const [debugTextMode, setDebugTextMode] = useState("manual"); // manual | file
+  const [debugFileName, setDebugFileName] = useState("");
   const [steps, setSteps]       = useState([]);
   const [step, setStep]         = useState(0);
   const [playing, setPlaying]   = useState(false);
@@ -145,7 +147,8 @@ export function DebuggerTab({ isDark }) {
     setPlaying(false);
     let s;
     if (isSearch) {
-      s = DEBUG_FNS[algo](null, textInput, patInput);
+      const txt = debugTextMode === "file" && debugFileName ? textInput : textInput;
+      s = DEBUG_FNS[algo](null, txt, patInput);
     } else {
       const arr = generateArray(arrSize, "random");
       s = DEBUG_FNS[algo](arr);
@@ -386,24 +389,51 @@ export function DebuggerTab({ isDark }) {
               style={{ accentColor, width:100 }} />
           </div>
         ) : (
-          <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+          <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"flex-end" }}>
+            {/* TEXT MODE TOGGLE */}
             <div>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>TEXT</div>
-              <input value={textInput} onChange={e => setTextInput(e.target.value)}
-                style={{
-                  background: codeBg, border:`1px solid ${border}`, borderRadius:5,
-                  color: textMain, padding:"5px 10px", fontSize:11,
-                  fontFamily:"monospace", width:180, outline:"none",
-                }} />
+              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>TEXT INPUT</div>
+              <div style={{ display:"flex", gap:4, marginBottom:6 }}>
+                {[["manual","✏️ Type"],["file","📄 File"]].map(([v,l]) => (
+                  <button key={v} onClick={() => { setDebugTextMode(v); if(v==="manual"){setTextInput(DEFAULT_TEXT);setDebugFileName("");} }}
+                    style={{ padding:"3px 10px", borderRadius:5, border:`1px solid ${debugTextMode===v ? accentColor : border}`,
+                      background: debugTextMode===v ? `${accentColor}20` : "transparent",
+                      color: debugTextMode===v ? accentColor : textMute,
+                      fontSize:9, cursor:"pointer", fontFamily:"monospace" }}>{l}</button>
+                ))}
+              </div>
+              {debugTextMode === "file" ? (
+                <label style={{ cursor:"pointer" }}>
+                  <div style={{ border:`2px dashed ${debugFileName ? "#4ade80" : border}`, borderRadius:7,
+                    padding:"8px 12px", textAlign:"center", background: debugFileName ? "rgba(74,222,128,0.05)" : "transparent",
+                    minWidth:180, transition:"all 0.2s" }}>
+                    <div style={{ fontSize:14 }}>{debugFileName ? "✅" : "📄"}</div>
+                    <div style={{ fontSize:9, color: debugFileName ? "#4ade80" : textMute, fontFamily:"monospace", marginTop:2 }}>
+                      {debugFileName ? debugFileName : "Click to upload .txt"}
+                    </div>
+                    {debugFileName && <div style={{ fontSize:8, color:"#475569", marginTop:1 }}>{textInput.length} chars</div>}
+                  </div>
+                  <input type="file" accept=".txt" style={{ display:"none" }} onChange={e => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = ev => { setTextInput(ev.target.result); setDebugFileName(file.name); };
+                    reader.readAsText(file);
+                  }} />
+                </label>
+              ) : (
+                <input value={textInput} onChange={e => setTextInput(e.target.value)}
+                  style={{ background: codeBg, border:`1px solid ${border}`, borderRadius:5,
+                    color: textMain, padding:"5px 10px", fontSize:11,
+                    fontFamily:"monospace", width:180, outline:"none" }} />
+              )}
             </div>
             <div>
               <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>PATTERN</div>
               <input value={patInput} onChange={e => setPatInput(e.target.value)}
-                style={{
-                  background: codeBg, border:`1px solid ${border}`, borderRadius:5,
+                style={{ background: codeBg, border:`1px solid ${border}`, borderRadius:5,
                   color: textMain, padding:"5px 10px", fontSize:11,
-                  fontFamily:"monospace", width:100, outline:"none",
-                }} />
+                  fontFamily:"monospace", width:100, outline:"none" }} />
             </div>
           </div>
         )}
