@@ -51,6 +51,17 @@ const CODE_LINES = {
     { n: 5, code: "  return merge(left, right);" },
     { n: 6, code: "}" },
   ],
+  "Binary Search": [
+    { n: 0, code: "function binarySearch(arr, target) {" },
+    { n: 1, code: "  lo = 0,  hi = arr.length - 1" },
+    { n: 2, code: "  mid = floor((lo + hi) / 2)" },
+    { n: 3, code: "  if arr[mid] == target: return mid ✓" },
+    { n: 4, code: "  elif arr[mid] < target: lo = mid + 1" },
+    { n: 5, code: "    lo = mid + 1  → search right" },
+    { n: 6, code: "  else: hi = mid - 1" },
+    { n: 7, code: "    hi = mid - 1  → search left" },
+    { n: 8, code: "  return -1  ✗ not found" },
+  ],
   "Brute Force": [
     { n: 0, code: "function bruteForceSearch(text, pattern) {" },
     { n: 1, code: "  let matches = [];" },
@@ -92,13 +103,14 @@ const CODE_LINES = {
 };
 
 const SORT_ALGOS = ["Insertion Sort", "Bubble Sort", "Selection Sort", "Merge Sort"];
-const SEARCH_ALGOS = ["Brute Force", "Horspool", "KMP"];
+const SEARCH_ALGOS = ["Binary Search", "Brute Force", "Horspool", "KMP"];
 
 const DEBUG_FNS = {
   "Insertion Sort": (arr)        => insertionSortDebug(arr),
   "Bubble Sort":    (arr)        => bubbleSortDebug(arr),
   "Selection Sort": (arr)        => selectionSortDebug(arr),
   "Merge Sort":     (arr)        => mergeSortDebug(arr),
+  "Binary Search":  (arr)         => binarySearchDebug(arr),
   "Brute Force":    (_, t, p)    => bruteForceDebug(t, p),
   "Horspool":       (_, t, p)    => horspoolDebug(t, p),
   "KMP":            (_, t, p)    => kmpDebug(t, p),
@@ -109,6 +121,7 @@ const COLORS = {
   "Bubble Sort":    "#f472b6",
   "Selection Sort": "#fb923c",
   "Merge Sort":     "#4ade80",
+  "Binary Search":  "#38bdf8",
   "Brute Force":    "#a78bfa",
   "Horspool":       "#fbbf24",
   "KMP":            "#34d399",
@@ -167,7 +180,8 @@ export function DebuggerTab({ isDark }) {
   const [speed, setSpeed]       = useState(600);
   const intervalRef             = useRef(null);
 
-  const isSearch    = SEARCH_ALGOS.includes(algo);
+  const isSearch    = SEARCH_ALGOS.includes(algo) && algo !== "Binary Search";
+  const isBinary    = algo === "Binary Search";
   const accentColor = COLORS[algo];
   const codeLines   = CODE_LINES[algo] || [];
   const current     = steps[step] || null;
@@ -176,7 +190,12 @@ export function DebuggerTab({ isDark }) {
     clearInterval(intervalRef.current);
     setPlaying(false);
     let s;
-    if (isSearch) {
+    if (isBinary) {
+      const arr = arrInputMode === "custom"
+        ? customArrStr.split(",").map(x => parseInt(x.trim())).filter(n => !isNaN(n))
+        : generateArray(arrSize, "random");
+      s = DEBUG_FNS[algo](arr);
+    } else if (isSearch) {
       const txt = debugTextMode === "file" && debugFileName ? textInput : textInput;
       s = DEBUG_FNS[algo](null, txt, patInput);
     } else {
