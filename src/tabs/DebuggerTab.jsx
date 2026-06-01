@@ -117,6 +117,34 @@ const COLORS = {
 const DEFAULT_TEXT    = "abcababcabcabc";
 const DEFAULT_PATTERN = "abc";
 
+// ── AUDIO ────────────────────────────────────────────────────
+const audioCtx = typeof window !== "undefined"
+  ? new (window.AudioContext || window.webkitAudioContext)()
+  : null;
+
+function playBeep(freq = 440, duration = 0.08, type = "sine", vol = 0.15) {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playVictory() {
+  if (!audioCtx) return;
+  [523, 659, 784, 1047].forEach((freq, i) => {
+    setTimeout(() => playBeep(freq, 0.18, "sine", 0.2), i * 120);
+  });
+}
+
 export function DebuggerTab({ isDark }) {
   const bg       = isDark ? "#020817" : "#f8fafc";
   const cardBg   = isDark ? "#0f172a" : "#ffffff";
