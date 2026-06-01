@@ -499,6 +499,8 @@ export default function App() {
                 vizStep={vizStep}
                 setVizStep={setVizStep}
                 pauseViz={pauseViz}
+                vizSpeed={vizSpeed}
+                setVizSpeed={setVizSpeed}
                 isDark={isDark}
               />
             )}
