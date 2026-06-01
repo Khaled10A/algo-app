@@ -165,7 +165,14 @@ export function DebuggerTab({ isDark }) {
         if (s >= steps.length - 1) {
           clearInterval(intervalRef.current);
           setPlaying(false);
+          playVictory();
           return s;
+        }
+        // Play step sound based on highlight
+        const nextStep = steps[s + 1];
+        if (nextStep?.highlight?.length > 0) {
+          const freq = 200 + (nextStep.highlight[0] || 0) * 40;
+          playBeep(Math.min(freq, 900), 0.06, "sine", 0.08);
         }
         return s + 1;
       });
