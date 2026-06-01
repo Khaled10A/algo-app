@@ -154,7 +154,9 @@ export function DebuggerTab({ isDark }) {
   const codeBg   = isDark ? "#0a0f1e" : "#f1f5f9";
 
   const [algo, setAlgo]         = useState("Insertion Sort");
-  const [arrSize, setArrSize]   = useState(8);
+  const [arrSize, setArrSize]       = useState(8);
+  const [arrInputMode, setArrInputMode] = useState("auto"); // auto | custom
+  const [customArrStr, setCustomArrStr] = useState("5,3,8,1,9,2,7,4");
   const [textInput, setTextInput]       = useState(DEFAULT_TEXT);
   const [patInput, setPatInput]         = useState(DEFAULT_PATTERN);
   const [debugTextMode, setDebugTextMode] = useState("manual"); // manual | file
@@ -178,7 +180,13 @@ export function DebuggerTab({ isDark }) {
       const txt = debugTextMode === "file" && debugFileName ? textInput : textInput;
       s = DEBUG_FNS[algo](null, txt, patInput);
     } else {
-      const arr = generateArray(arrSize, "random");
+      let arr;
+      if (arrInputMode === "custom") {
+        arr = customArrStr.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n > 0);
+        if (arr.length < 2) arr = generateArray(arrSize, "random");
+      } else {
+        arr = generateArray(arrSize, "random");
+      }
       s = DEBUG_FNS[algo](arr);
     }
     setSteps(s);
@@ -418,10 +426,37 @@ export function DebuggerTab({ isDark }) {
         {/* Array size OR text+pattern inputs */}
         {!isSearch ? (
           <div>
-            <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>ARRAY SIZE: {arrSize}</div>
-            <input type="range" min={4} max={16} value={arrSize}
-              onChange={e => setArrSize(+e.target.value)}
-              style={{ accentColor, width:100 }} />
+            {/* INPUT MODE TOGGLE */}
+            <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>ARRAY INPUT</div>
+            <div style={{ display:"flex", gap:4, marginBottom:8 }}>
+              {[["auto","🎲 Auto"],["custom","✏️ Custom"]].map(([v,l]) => (
+                <button key={v} onClick={() => setArrInputMode(v)}
+                  style={{ padding:"3px 10px", borderRadius:5, border:`1px solid ${arrInputMode===v ? accentColor : border}`,
+                    background: arrInputMode===v ? `${accentColor}20` : "transparent",
+                    color: arrInputMode===v ? accentColor : textMute,
+                    fontSize:9, cursor:"pointer", fontFamily:"monospace" }}>{l}</button>
+              ))}
+            </div>
+            {arrInputMode === "auto" ? (
+              <div>
+                <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:4 }}>SIZE: {arrSize}</div>
+                <input type="range" min={4} max={16} value={arrSize}
+                  onChange={e => setArrSize(+e.target.value)}
+                  style={{ accentColor, width:100 }} />
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:4 }}>YOUR ARRAY</div>
+                <input value={customArrStr} onChange={e => setCustomArrStr(e.target.value)}
+                  placeholder="e.g. 5,3,8,1,9,2,7"
+                  style={{ background:codeBg, border:`1px solid ${border}`, borderRadius:5,
+                    color:textMain, padding:"5px 8px", fontSize:11,
+                    fontFamily:"monospace", width:160, outline:"none" }} />
+                <div style={{ fontSize:9, color:textMute, marginTop:3 }}>
+                  {customArrStr.split(",").filter(s=>!isNaN(parseInt(s.trim()))&&s.trim()!=="").length} numbers
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"flex-end" }}>
