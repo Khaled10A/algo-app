@@ -102,8 +102,10 @@ const CODE_LINES = {
   ],
 };
 
-const SORT_ALGOS = ["Insertion Sort", "Bubble Sort", "Selection Sort", "Merge Sort"];
-const SEARCH_ALGOS = ["Binary Search", "Brute Force", "Horspool", "KMP"];
+const SORT_ALGOS   = ["Insertion Sort", "Bubble Sort", "Selection Sort", "Merge Sort"];
+const ARRAY_SEARCH = ["Binary Search"];
+const STR_MATCH    = ["Brute Force", "Horspool", "KMP"];
+const SEARCH_ALGOS = [...ARRAY_SEARCH, ...STR_MATCH];
 
 const DEBUG_FNS = {
   "Insertion Sort": (arr)        => insertionSortDebug(arr),
@@ -429,9 +431,23 @@ export function DebuggerTab({ isDark }) {
 
         {/* SEARCHING group */}
         <div>
+          <div style={{ fontSize:8, color: textMute, letterSpacing:2, marginBottom:6 }}>SEARCHING</div>
+          <div style={{ display:"flex", gap:5 }}>
+            {ARRAY_SEARCH.map(a => (
+              <button key={a} onClick={() => { setAlgo(a); setSteps([]); setStep(0); }} style={{
+                padding:"5px 10px", borderRadius:5, border:`1px solid ${algo===a ? COLORS[a] : border}`,
+                background: algo===a ? `${COLORS[a]}18` : "transparent",
+                color: algo===a ? COLORS[a] : textMute,
+                fontSize:10, cursor:"pointer", fontFamily:"monospace",
+              }}>{a}</button>
+            ))}
+          </div>
+        </div>
+        {/* STRING MATCHING group */}
+        <div>
           <div style={{ fontSize:8, color: textMute, letterSpacing:2, marginBottom:6 }}>STRING MATCHING</div>
           <div style={{ display:"flex", gap:5 }}>
-            {SEARCH_ALGOS.map(a => (
+            {STR_MATCH.map(a => (
               <button key={a} onClick={() => { setAlgo(a); setSteps([]); setStep(0); }} style={{
                 padding:"5px 10px", borderRadius:5, border:`1px solid ${algo===a ? COLORS[a] : border}`,
                 background: algo===a ? `${COLORS[a]}18` : "transparent",
