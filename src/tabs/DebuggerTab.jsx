@@ -226,11 +226,30 @@ export function DebuggerTab({ isDark }) {
           playVictory();
           return s;
         }
-        // Play step sound based on highlight
+        // Play step sound on every step
         const nextStep = steps[s + 1];
-        if (nextStep?.highlight?.length > 0) {
-          const freq = 200 + (nextStep.highlight[0] || 0) * 40;
-          playBeep(Math.min(freq, 900), 0.06, "sine", 0.08);
+        if (nextStep) {
+          if (nextStep.highlight?.length > 0) {
+            // Sorting — pitch based on element value
+            const arr = nextStep.arr;
+            const hi = nextStep.highlight;
+            if (arr && hi[0] !== undefined) {
+              const maxVal = arr ? Math.max(...arr) : 100;
+              const val = arr[hi[0]] || hi[0];
+              const freq = 180 + (val / maxVal) * 700;
+              playBeep(Math.min(freq, 900), 0.07, "sine", 0.1);
+            } else {
+              playBeep(300 + (hi[0] || 0) * 30, 0.07, "sine", 0.1);
+            }
+          } else if (nextStep.highlightText?.length > 0) {
+            // String matching — pitch based on text position
+            const pos = nextStep.highlightText[0] || 0;
+            const freq = 250 + (pos % 20) * 25;
+            playBeep(freq, 0.06, "triangle", 0.08);
+          } else if (nextStep.log) {
+            // Any other step with a log — soft tick
+            playBeep(220, 0.04, "sine", 0.05);
+          }
         }
         return s + 1;
       });
