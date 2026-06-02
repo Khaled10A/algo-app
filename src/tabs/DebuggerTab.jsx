@@ -3,6 +3,7 @@ import { insertionSortDebug } from "../algorithms/sorting/insertionSort";
 import { bubbleSortDebug }    from "../algorithms/sorting/bubbleSort";
 import { selectionSortDebug } from "../algorithms/sorting/selectionSort";
 import { mergeSortDebug }     from "../algorithms/sorting/mergeSort";
+import { binarySearchDebug }  from "../algorithms/searching/binarySearch";
 import { bruteForceDebug }    from "../algorithms/searching/bruteForceDebug";
 import { horspoolDebug }      from "../algorithms/searching/horspoolDebug";
 import { kmpDebug }           from "../algorithms/searching/kmpDebug";
