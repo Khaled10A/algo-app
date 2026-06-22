@@ -1,5 +1,3 @@
-import * as XLSX from "xlsx";
-
 export function exportCSV(headers, rows, filename) {
   const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
   const a = document.createElement("a");
@@ -59,8 +57,9 @@ export function exportAllChartsPNG(refs) {
   });
 }
 
-export function exportXLSX(sheets, filename) {
+export async function exportXLSX(sheets, filename) {
   try {
+    const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
     sheets.forEach(({ name, headers, rows, title }) => {
       const wsData = [];
