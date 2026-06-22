@@ -133,16 +133,22 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
 }
 
 export function SearchResults({ results, metric, lineRef: externalLineRef, barRef: externalBarRef }) {
+  const internalLineRef = useRef();
+  const internalBarRef = useRef();
+  const [fsChart, setFsChart] = useState(null);
+  const th = useTheme();
+  const searchColors = ["#f472b6", "#4ade80", "#fb923c"];
+  const lineRef = externalLineRef || internalLineRef;
+  const barRef = externalBarRef || internalBarRef;
+
   // ── FILE MODE ──────────────────────────────────────────
   if (results.mode === "file") {
     const { results: data, algos, pattern, fileName, fileLength } = results;
     const mk = metric === "time" ? "time" : "comparisons";
-    const th = useTheme();
     const isDark = th !== "light";
     const border = isDark ? "#1e293b" : "#e2e8f0";
     const cardBg = isDark ? "#0f172a" : "#ffffff";
     const textMute = isDark ? "#64748b" : "#94a3b8";
-    const searchColors = ["#f472b6", "#4ade80", "#fb923c"];
 
     const rows = algos.map((algo, i) => {
       const r = data[algo]["file"][0];
@@ -217,12 +223,6 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
   const { results: data, sizes, algos, scenarios } = results;
   const mk = metric === "time" ? "time" : "comparisons";
   const ml = metric === "time" ? "Time (ms)" : "Comparisons";
-  const internalLineRef = useRef(); const internalBarRef = useRef();
-  const lineRef = externalLineRef || internalLineRef;
-  const barRef = externalBarRef || internalBarRef;
-  const [fsChart, setFsChart] = useState(null);
-  const th = useTheme();
-  const searchColors = ["#f472b6", "#4ade80", "#fb923c"];
 
   const algoTotals = algos.map(algo => ({
     algo,

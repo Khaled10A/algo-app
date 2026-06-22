@@ -107,16 +107,33 @@ src/
 git clone https://github.com/Khaled10A/algo-app.git
 cd algo-app
 npm install
+cp .env.example .env
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+The AI Assistant tab uses Groq. To enable it, set `VITE_GROQ_KEY` in `.env`.
 
 ### Build for production
 
 ```bash
 npm run build
 npm run preview
+```
+
+### Run end-to-end tests
+
+Start the dev server in one terminal:
+
+```bash
+npm run dev
+```
+
+Then run Cypress in another terminal:
+
+```bash
+npm run test:e2e
 ```
 
 ---

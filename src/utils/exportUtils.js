@@ -1,3 +1,5 @@
+import * as XLSX from "xlsx";
+
 export function exportCSV(headers, rows, filename) {
   const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
   const a = document.createElement("a");
@@ -59,8 +61,6 @@ export function exportAllChartsPNG(refs) {
 
 export function exportXLSX(sheets, filename) {
   try {
-    const XLSX = window.XLSX || (typeof require !== "undefined" ? require("xlsx") : null);
-    if (!XLSX) { alert("SheetJS not available — use CSV export instead."); return; }
     const wb = XLSX.utils.book_new();
     sheets.forEach(({ name, headers, rows, title }) => {
       const wsData = [];

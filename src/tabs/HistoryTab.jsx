@@ -6,10 +6,13 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
   const cardBg = isDark ? "#0f172a" : "#f8fafc";
   const textMuted = isDark ? "#64748b" : "#94a3b8";
 
-  const toggleCompare = (id) => {
-    setCompare(prev => prev.includes(id)
-      ? prev.filter(x => x !== id)
-      : prev.length < 4 ? [...prev, id] : prev);
+  const toggleCompare = (run) => {
+    setCompare(prev => {
+      if (prev.includes(run.id)) return prev.filter(x => x !== run.id);
+      const selectedRuns = history.filter(h => prev.includes(h.id));
+      if (selectedRuns.length > 0 && selectedRuns[0].kind !== run.kind) return prev;
+      return prev.length < 4 ? [...prev, run.id] : prev;
+    });
   };
 
   const compareRuns = history.filter(h => compare.includes(h.id));
@@ -128,13 +131,13 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                   {worstName && <span style={{ fontSize: 9, background: "rgba(239,68,68,0.15)", color: "#f87171", borderRadius: 4, padding: "2px 6px" }}>⚠ {worstName}</span>}
-                  <button onClick={() => toggleCompare(run.id)} style={{
-                    fontSize: 9, padding: "4px 10px", borderRadius: 5, cursor: "pointer",
-                    fontFamily: "monospace", letterSpacing: 1,
-                    border: isSelected ? "1px solid #a78bfa" : `1px solid ${border}`,
-                    background: isSelected ? "rgba(167,139,250,0.15)" : "transparent",
-                    color: isSelected ? "#a78bfa" : textMuted,
-                  }}>{isSelected ? "✓ SELECTED" : "+ COMPARE"}</button>
+                <button onClick={() => toggleCompare(run)} style={{
+                  fontSize: 9, padding: "4px 10px", borderRadius: 5, cursor: "pointer",
+                  fontFamily: "monospace", letterSpacing: 1,
+                  border: isSelected ? "1px solid #a78bfa" : `1px solid ${border}`,
+                  background: isSelected ? "rgba(167,139,250,0.15)" : "transparent",
+                  color: isSelected ? "#a78bfa" : textMuted,
+                }}>{isSelected ? "✓ SELECTED" : "+ COMPARE"}</button>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
