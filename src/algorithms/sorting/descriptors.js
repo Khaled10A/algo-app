@@ -38,7 +38,7 @@ export const sortingDescriptors = [
     id: "insertion-sort",
     name: "Insertion Sort",
     category: "sorting",
-    color: "#38bdf8",
+    color: "#0a84ff",
     complexity: {
       best: "O(n)",
       average: "O(n²)",
@@ -63,7 +63,7 @@ export const sortingDescriptors = [
     id: "bubble-sort",
     name: "Bubble Sort",
     category: "sorting",
-    color: "#f472b6",
+    color: "#ff453a",
     complexity: {
       best: "O(n)",
       average: "O(n²)",
@@ -85,7 +85,7 @@ export const sortingDescriptors = [
     id: "selection-sort",
     name: "Selection Sort",
     category: "sorting",
-    color: "#fb923c",
+    color: "#c93400",
     complexity: {
       best: "O(n²)",
       average: "O(n²)",
@@ -109,7 +109,7 @@ export const sortingDescriptors = [
     id: "merge-sort",
     name: "Merge Sort",
     category: "sorting",
-    color: "#4ade80",
+    color: "#248a3d",
     complexity: {
       best: "O(n log n)",
       average: "O(n log n)",
@@ -141,7 +141,7 @@ Merge(A, lo, mid, hi):
     id: "quick-sort",
     name: "Quick Sort",
     category: "sorting",
-    color: "#a78bfa",
+    color: "#8944ab",
     complexity: {
       best: "O(n log n)",
       average: "O(n log n)",

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./styles/index.css";
 
 import { ThemeCtx } from './theme/ThemeContext';
@@ -20,7 +20,7 @@ import { generateArray } from './utils/generators';
 import { exportCSV, exportXLSX, exportAllChartsPNG } from './utils/exportUtils';
 import { getDomain, getAlgorithmForDisplay } from './algorithms/registry';
 import { INPUT_LABELS, SCENARIO_LABELS } from './utils/constants';
-import { getPalette } from './theme/tokens';
+import { getPalette, FONT_SANS } from './theme/tokens';
 
 import { usePersistentState } from './hooks/usePersistentState';
 import { usePlayback } from './hooks/usePlayback';
@@ -36,6 +36,10 @@ export default function App() {
   const [theme, setTheme] = usePersistentState("theme", "dark");
   const isDark = theme !== "light";
   const p = getPalette(isDark ? "dark" : "light");
+
+  useEffect(() => {
+    document.body.dataset.theme = isDark ? "dark" : "light";
+  }, [isDark]);
 
   const [tab, setTabRaw] = usePersistentState("domain", "sorting");
   const [subTabRaw, setSubTabRaw] = usePersistentState("subTab", "benchmark");
@@ -265,7 +269,7 @@ export default function App() {
 
   return (
     <ThemeCtx.Provider value={theme}>
-      <div style={{ height: "100vh", width: "100%", background: p.bg, color: p.textPrimary, fontFamily: "'Courier New', monospace", overflow: "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
+      <div style={{ height: "100vh", width: "100%", background: p.bg, color: p.textPrimary, fontFamily: FONT_SANS, overflow: "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
         <Header
           tab={domain.id}
           setTab={switchTab}
@@ -273,15 +277,17 @@ export default function App() {
           setSubTab={setSubTabRaw}
           isDark={isDark}
           border={p.border}
+          palette={p}
           onToggleTheme={() => setTheme(isDark ? "light" : "dark")}
         />
 
-        <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden" }}>
+        <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden", paddingTop: 52 }}>
           <ConfigSidebar
             domain={domain.id}
             subTab={subTab}
             isDark={isDark}
             border={p.border}
+            palette={p}
             sort={{
               ...sortControls,
               toggleAlgo: (id) => setSelSort((a) => toggleIn(a, id)),
@@ -327,7 +333,7 @@ export default function App() {
           />
 
           {/* MAIN CONTENT */}
-          <main style={{ flex: 1, overflowY: "auto", padding: "24px 32px", minWidth: 0, height: "100%" }}>
+          <main style={{ flex: 1, overflowY: "auto", padding: "26px 34px 40px", minWidth: 0, height: "100%" }}>
             {subTab === "benchmark" && domain.id === "sorting" && (
               sortResults
                 ? <SortResults results={sortResults} metric={sortMetric} lineRef={sortLineRef} barRef={sortBarRef} />
@@ -378,11 +384,10 @@ export default function App() {
               <div style={{ borderTop: `1px solid ${p.border}`, paddingTop: 10, marginTop: 16 }}>
                 <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
                   target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 10, color: "#334155", textDecoration: "none",
-                    fontFamily: "monospace", letterSpacing: 1, display: "block",
-                    transition: "color 0.2s", pointerEvents: "auto" }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = "#a78bfa"}
-                  onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}
+                  style={{ fontSize: 11, color: p.textFaint, textDecoration: "none",
+                    display: "block", transition: "color 0.2s", pointerEvents: "auto" }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = p.accent}
+                  onMouseLeave={(e) => e.currentTarget.style.color = p.textFaint}
                   >© Khaled Alnajjar</a>
               </div>
             </div>

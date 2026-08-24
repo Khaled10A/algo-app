@@ -27,7 +27,7 @@ export const graphDescriptors = [
     id: "dfs",
     name: "DFS",
     category: "graphs",
-    color: "#38bdf8",
+    color: "#0a84ff",
     complexity: {
       best: "O(V + E)",
       average: "O(V + E)",
@@ -55,7 +55,7 @@ export const graphDescriptors = [
     id: "bfs",
     name: "BFS",
     category: "graphs",
-    color: "#f472b6",
+    color: "#ff375f",
     complexity: {
       best: "O(V + E)",
       average: "O(V + E)",

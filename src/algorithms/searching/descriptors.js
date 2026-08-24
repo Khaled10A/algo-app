@@ -62,7 +62,7 @@ export const searchingDescriptors = [
     name: "Brute Force",
     category: "searching",
     group: "string",
-    color: "#a78bfa",
+    color: "#5856d6",
     complexity: {
       best: "O(n)",
       average: "O(n×m)",
@@ -89,7 +89,7 @@ export const searchingDescriptors = [
     name: "Horspool",
     category: "searching",
     group: "string",
-    color: "#fbbf24",
+    color: "#b25000",
     complexity: {
       best: "O(n/m)",
       average: "O(n/m)",
@@ -120,7 +120,7 @@ Horspool(text, pattern):
     name: "KMP",
     category: "searching",
     group: "string",
-    color: "#34d399",
+    color: "#248a3d",
     complexity: {
       best: "O(n)",
       average: "O(n+m)",
@@ -154,7 +154,7 @@ KMP(text, pattern):
     name: "Binary Search",
     category: "searching",
     group: "array",
-    color: "#38bdf8",
+    color: "#0e7490",
     complexity: {
       best: "O(1)",
       average: "O(log n)",
