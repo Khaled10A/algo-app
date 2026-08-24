@@ -45,6 +45,9 @@ export default function App() {
   const [subTabRaw, setSubTabRaw] = usePersistentState("subTab", "benchmark");
   const domain = getDomain(tab) || getDomain("sorting");
   const subTab = domain.subTabs.includes(subTabRaw) ? subTabRaw : domain.subTabs[0];
+  const showInspector =
+    (domain.id === "sorting" || domain.id === "searching") &&
+    ["benchmark", "visualizer", "history", "pseudocode"].includes(subTab);
 
   function switchTab(id) {
     setTabRaw(id);
@@ -269,7 +272,7 @@ export default function App() {
 
   return (
     <ThemeCtx.Provider value={theme}>
-      <div style={{ height: "100vh", width: "100%", background: p.bg, color: p.textPrimary, fontFamily: FONT_SANS, overflow: "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
+      <div style={{ height: "100vh", width: "100%", color: p.textPrimary, fontFamily: FONT_SANS, overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
         <Header
           tab={domain.id}
           setTab={switchTab}
@@ -281,8 +284,8 @@ export default function App() {
           onToggleTheme={() => setTheme(isDark ? "light" : "dark")}
         />
 
-        <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden", paddingTop: 52 }}>
-          <ConfigSidebar
+        <div style={{ flex: 1, width: "100%", overflow: "hidden", paddingTop: 76, position: "relative" }}>
+          {showInspector && <ConfigSidebar
             domain={domain.id}
             subTab={subTab}
             isDark={isDark}
@@ -330,10 +333,12 @@ export default function App() {
             }}
             history={historyControls}
             pseudo={pseudoControls}
-          />
+          />}
+
 
           {/* MAIN CONTENT */}
-          <main style={{ flex: 1, overflowY: "auto", padding: "26px 34px 40px", minWidth: 0, height: "100%" }}>
+          <main style={{ flex: 1, overflowY: "auto", padding: showInspector ? "10px 34px 44px 328px" : "14px 40px 44px", minWidth: 0, height: "100%" }}>
+            <div key={domain.id + ":" + subTab} className="panel-in">
             {subTab === "benchmark" && domain.id === "sorting" && (
               sortResults
                 ? <SortResults results={sortResults} metric={sortMetric} lineRef={sortLineRef} barRef={sortBarRef} />
@@ -379,8 +384,9 @@ export default function App() {
             {subTab === "ai" && (
               <AIAssistantTab isDark={isDark} sortResults={sortResults} searchResults={searchResults} />
             )}
+            </div>
 
-            <div style={{ marginTop: "auto", textAlign: "center", position: "fixed", bottom: 14, left: 0, width: 230, pointerEvents: "none" }}>
+            <div style={{ marginTop: "auto", textAlign: "center", position: "fixed", bottom: 10, right: 18, pointerEvents: "none", zIndex: 5 }}>
               <div style={{ borderTop: `1px solid ${p.border}`, paddingTop: 10, marginTop: 16 }}>
                 <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
                   target="_blank" rel="noopener noreferrer"

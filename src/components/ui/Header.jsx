@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { DOMAINS } from "../../algorithms/registry";
 import { MOTION } from "../../theme/tokens";
 
@@ -36,57 +37,61 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
   const domain = DOMAINS.find((d) => d.id === tab) || DOMAINS[0];
   const p = palette;
 
+  const segRefs = useRef({});
+  const [thumb, setThumb] = useState(null);
+
+  useLayoutEffect(() => {
+    const el = segRefs.current[tab];
+    if (el) setThumb({ left: el.offsetLeft, width: el.offsetWidth });
+  }, [tab]);
+
+  const tabRefs = useRef({});
+  const [tabThumb, setTabThumb] = useState(null);
+  useLayoutEffect(() => {
+    const el = tabRefs.current[subTab];
+    if (el) setTabThumb({ left: el.offsetLeft, width: el.offsetWidth });
+  }, [subTab, domain.id]);
+
   const segContainer = {
+    position: "relative",
     display: "flex",
     alignItems: "center",
     gap: 2,
-    background: p.trackBg,
-    borderRadius: 8,
+    background: "rgba(0, 0, 0, 0.22)",
+    borderRadius: 9,
     padding: 2,
+    boxShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.22)",
   };
 
   const segBtn = (active) => ({
+    position: "relative",
+    zIndex: 1,
     padding: "5px 14px",
-    borderRadius: 6,
+    borderRadius: 7,
     border: "none",
-    background: active ? p.surface : "transparent",
+    background: "transparent",
     color: active ? p.textPrimary : p.textSecondary,
     fontSize: 13,
     fontWeight: active ? 600 : 400,
     cursor: "pointer",
-    boxShadow: active ? p.shadowCard : "none",
-    transition: `background ${MOTION.fast}, color ${MOTION.fast}`,
-  });
-
-  const tabBtn = (active) => ({
-    padding: "4px 10px",
-    borderRadius: 999,
-    border: "none",
-    background: active ? p.accentTint : "transparent",
-    color: active ? p.accentText : p.textSecondary,
-    fontSize: 11.5,
-    fontWeight: active ? 600 : 400,
-    cursor: "pointer",
-    transition: `background ${MOTION.fast}, color ${MOTION.fast}`,
+    transition: `color ${MOTION.base}`,
   });
 
   return (
     <header
+      className="glass-toolbar"
       style={{
         position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
+        top: 12,
+        left: 14,
+        right: 14,
         height: 52,
-        zIndex: 20,
+        zIndex: 30,
         display: "flex",
         alignItems: "center",
         gap: 14,
-        padding: "0 16px",
-        background: p.toolbar,
-        backdropFilter: "blur(20px) saturate(180%)",
-        WebkitBackdropFilter: "blur(20px) saturate(180%)",
-        borderBottom: `1px solid ${p.border}`,
+        padding: "0 14px",
+        borderRadius: 14,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
@@ -97,6 +102,7 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
             height: 26,
             borderRadius: 7,
             background: `linear-gradient(135deg, ${p.accent}, ${p.indigo})`,
+            boxShadow: `0 2px 8px ${p.accent}44, inset 0 1px 0 rgba(255,255,255,0.35)`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -122,10 +128,27 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
         </div>
       </div>
 
-      <nav aria-label="Algorithm domains" style={{ ...segContainer, marginLeft: 6 }}>
+      <nav aria-label="Algorithm domains" style={{ ...segContainer, marginLeft: 4 }}>
+        {thumb && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: 2,
+              left: thumb.left,
+              width: thumb.width,
+              height: "calc(100% - 4px)",
+              borderRadius: 7,
+              background: p.surface,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.24), 0 3px 10px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.10)",
+              transition: `left ${MOTION.spring}, width ${MOTION.spring}`,
+            }}
+          />
+        )}
         {DOMAINS.map((d) => (
           <button
             key={d.id}
+            ref={(el) => (segRefs.current[d.id] = el)}
             onClick={() => {
               setTab(d.id);
               setSubTab(d.subTabs[0]);
@@ -142,14 +165,51 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
 
       <nav
         aria-label="Sections"
-        style={{ display: "flex", alignItems: "center", gap: 3, overflowX: "auto" }}
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          overflowX: "auto",
+          scrollbarWidth: "none",
+        }}
       >
+        {tabThumb && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: tabThumb.left,
+              width: tabThumb.width,
+              height: "100%",
+              borderRadius: 999,
+              background: p.accentTint,
+              boxShadow: `inset 0 0 0 1px ${p.accent}44`,
+              transition: `left ${MOTION.spring}, width ${MOTION.spring}`,
+            }}
+          />
+        )}
         {domain.subTabs.map((st) => (
           <button
             key={st}
+            ref={(el) => (tabRefs.current[st] = el)}
             onClick={() => setSubTab(st)}
             aria-pressed={subTab === st}
-            style={{ ...tabBtn(subTab === st), whiteSpace: "nowrap" }}
+            style={{
+              position: "relative",
+              zIndex: 1,
+              padding: "5px 10px",
+              borderRadius: 999,
+              border: "none",
+              background: "transparent",
+              color: subTab === st ? p.accentText : p.textSecondary,
+              fontSize: 11.5,
+              fontWeight: subTab === st ? 600 : 400,
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              transition: `color ${MOTION.base}`,
+            }}
           >
             {st}
           </button>
@@ -164,9 +224,9 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
           marginLeft: 4,
           width: 30,
           height: 30,
-          borderRadius: 7,
-          border: `1px solid ${p.border}`,
-          background: "transparent",
+          borderRadius: 8,
+          border: "none",
+          background: p.trackBg,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

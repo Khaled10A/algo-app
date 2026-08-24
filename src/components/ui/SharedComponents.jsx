@@ -86,7 +86,7 @@ export function Chk({ label, checked, onChange, radio, groupName }) {
             </svg>
           ))}
       </span>
-      <span style={{ fontSize: 12.5, color: checked ? p.textPrimary : p.textSecondary, transition: `color ${MOTION.fast}` }}>
+      <span style={{ fontSize: 12.5, color: checked ? p.textPrimary : p.textSecondary, fontWeight: checked ? 500 : 400, transition: `color ${MOTION.fast}` }}>
         {label}
       </span>
     </label>
@@ -165,16 +165,21 @@ export function RunBtn({ onClick, onCancel, running, label }) {
       disabled={running}
       style={{
         width: "100%",
-        padding: "9px 10px",
-        borderRadius: 7,
+        padding: "10px 10px",
+        borderRadius: 8,
         border: "none",
-        background: running ? p.btnDisabledBg : p.accent,
+        background: running
+          ? p.btnDisabledBg
+          : `linear-gradient(180deg, color-mix(in srgb, ${p.accent} 92%, white), ${p.accent})`,
         color: running ? p.btnDisabledText : p.onAccent,
         fontSize: 13,
         fontWeight: 600,
         cursor: running ? "not-allowed" : "pointer",
         fontFamily: "inherit",
-        transition: `filter ${MOTION.fast}, transform ${MOTION.fast}`,
+        boxShadow: running
+          ? "none"
+          : `inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 1px 2px rgba(0, 0, 0, 0.18), 0 4px 14px ${p.accent}44`,
+        transition: `filter ${MOTION.fast}, box-shadow ${MOTION.fast}`,
       }}
       onMouseEnter={(e) => {
         if (!running) e.currentTarget.style.filter = "brightness(1.08)";
@@ -200,19 +205,18 @@ export function GhostBtn({ onClick, label, color }) {
   return (
     <button
       onClick={onClick}
+      className="glass-thin"
       style={{
         width: "100%",
-        padding: "7px 10px",
-        borderRadius: 7,
-        border: `1px solid ${p.btnBorder}`,
-        background: p.surface,
+        padding: "8px 10px",
+        borderRadius: 8,
+        border: "none",
         color: color || p.textPrimary,
         fontSize: 12,
         fontWeight: 500,
         cursor: "pointer",
         marginTop: 6,
         fontFamily: "inherit",
-        transition: `background ${MOTION.fast}`,
       }}
       onMouseEnter={(e) => (e.currentTarget.style.background = p.trackBg)}
       onMouseLeave={(e) => (e.currentTarget.style.background = p.surface)}
@@ -260,12 +264,10 @@ export const ChartBox = forwardRef(({ title, children, onExport, onFullscreen },
   return (
     <div
       ref={ref}
+      className="surface-card"
       style={{
-        background: p.surface,
-        borderRadius: 10,
-        border: `1px solid ${p.border}`,
-        boxShadow: p.shadowCard,
-        padding: "12px 14px",
+        borderRadius: 12,
+        padding: "14px 16px",
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -338,10 +340,9 @@ export function FullscreenChart({ chart, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="glass-modal popover-in"
         style={{
-          background: p.surface,
-          borderRadius: 14,
-          boxShadow: p.shadowPopover,
+          borderRadius: 16,
           padding: "22px 26px",
           maxWidth: "90vw",
           width: 780,

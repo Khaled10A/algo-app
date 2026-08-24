@@ -451,8 +451,11 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
         <div ref={bottomRef} />
       </div>
 
-      {/* INPUT */}
-      <div style={{ display: "flex", gap: 8, direction: isRTL ? "rtl" : "ltr" }}>
+      {/* FLOATING INPUT BAR */}
+      <div
+        className="glass-floating"
+        style={{ display: "flex", gap: 8, direction: isRTL ? "rtl" : "ltr", borderRadius: 14, padding: 8, alignItems: "center" }}
+      >
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -460,19 +463,25 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
           placeholder={PLACEHOLDERS[lang]}
           disabled={loading}
           style={{
-            flex: 1, background: cardBg, border: `1px solid ${border}`,
-            borderRadius: 8, padding: "10px 14px", color: textMain,
-            fontSize: 12, fontFamily: FONT_SANS, outline: "none",
+            flex: 1, background: "transparent", border: "none",
+            borderRadius: 8, padding: "8px 10px", color: textMain,
+            fontSize: 13, fontFamily: FONT_SANS, outline: "none",
             opacity: loading ? 0.6 : 1, textAlign: isRTL ? "right" : "left",
             direction: isRTL ? "rtl" : "ltr",
           }}
         />
-        <button onClick={() => send()} disabled={loading || !input.trim()} style={{
-          padding: "10px 20px", borderRadius: 8, border: "none",
-          background: loading || !input.trim() ? p3Disabled(border) : pf.accent,
-          color: "#fff", fontSize: 13, cursor: loading || !input.trim() ? "default" : "pointer",
+        <button onClick={() => send()} disabled={loading || !input.trim()} aria-label="Send message" style={{
+          width: 34, height: 34, borderRadius: 9, border: "none",
+          background: loading || !input.trim() ? pf.trackBg : pf.accent,
+          boxShadow: loading || !input.trim() ? "none" : `inset 0 1px 0 rgba(255,255,255,0.25), 0 3px 10px ${pf.accent}44`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: pf.onAccent, cursor: loading || !input.trim() ? "default" : "pointer",
           transition: "all 0.2s",
-        }}>➤</button>
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
       </div>
 
       <style>{`

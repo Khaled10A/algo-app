@@ -16,14 +16,13 @@ export function ConfigSidebar({
   pseudo,
 }) {
   return (
-    <div style={{ width: 280, borderRight: `1px solid ${border}`, background: palette.sidebar, backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", flexShrink: 0, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: FONT_SANS }}>
+    <aside className="glass-sidebar" style={{ position: "absolute", top: 76, bottom: 14, left: 14, width: 296, borderRadius: 16, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: FONT_SANS }}>
       {subTab === "benchmark" && domain !== "graphs" && (
         <div
           style={{
             flexShrink: 0,
-            padding: "14px 16px 12px",
-            borderBottom: `1px solid ${border}`,
-            background: palette.sidebar,
+            padding: "16px 16px 12px",
+            boxShadow: "inset 0 -1px 0 rgba(255, 255, 255, 0.05)",
           }}
         >
           {domain === "sorting" ? (
@@ -40,7 +39,7 @@ export function ConfigSidebar({
         </div>
       )}
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "18px 16px 26px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 26px" }}>
         {domain === "graphs" ? (
           <Sec title="Graph algorithms">
             <div style={{ fontSize: 12, color: palette.textSecondary }}>
@@ -53,7 +52,7 @@ export function ConfigSidebar({
           <StringPanel subTab={subTab} isDark={isDark} border={border} palette={palette} search={search} history={history} pseudo={pseudo} />
         )}
       </div>
-    </div>
+    </aside>
   );
 }
 
@@ -123,17 +122,18 @@ function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pse
         </Sec>
         <button onClick={viz.generate} style={{
           width: "100%", padding: "10px", borderRadius: 7, border: "none",
-          background: "linear-gradient(135deg,#0284c7,#6366f1)",
-          color: "#fff", fontSize: 11, letterSpacing: 2,
-          cursor: "pointer", fontFamily: "monospace", fontWeight: "bold",
-        }}>▶ GENERATE ARRAY</button>
+          background: "linear-gradient(180deg, color-mix(in srgb, #0a84ff 92%, white), #0a84ff)",
+          color: "#fff", fontSize: 13,
+          cursor: "pointer", fontWeight: 600,
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.28), 0 1px 2px rgba(0,0,0,0.18), 0 4px 14px rgba(10,132,255,0.30)",
+        }}>Generate array</button>
         {viz.hasSteps && (
           <button onClick={viz.togglePlay} aria-label={viz.playing ? "Pause visualization" : "Play visualization"} style={{
             width: "100%", marginTop: 6, padding: "8px", borderRadius: 6, border: `1px solid ${isDark ? "#1e293b" : "#cbd5e1"}`,
-            background: viz.playing ? "#7f1d1d22" : "#164e6322",
-            color: viz.playing ? "#f87171" : "#4ade80",
-            fontSize: 10, cursor: "pointer", fontFamily: "monospace", letterSpacing: 2,
-          }}>{viz.playing ? "⏸ PAUSE" : "▶ PLAY"}</button>
+            background: viz.playing ? "rgba(255, 59, 48, 0.08)" : "rgba(48, 209, 88, 0.10)",
+            color: viz.playing ? "#ff453a" : "#30d158",
+            fontSize: 12, fontWeight: 600, cursor: "pointer",
+          }}>{viz.playing ? "Pause" : "Play"}</button>
         )}
       </>}
 

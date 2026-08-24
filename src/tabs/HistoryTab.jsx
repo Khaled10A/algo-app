@@ -124,8 +124,10 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
           return (
             <div key={run.id} style={{
               background: isSelected ? pf.accentTint : cardBg,
-              border: `1px solid ${isSelected ? pf.accent : border}`,
-              borderRadius: 10, padding: "14px 16px", transition: "border-color 0.15s",
+              boxShadow: isSelected
+                ? `0 0 0 1.5px ${pf.accent}, ${pf.shadowFloat}`
+                : "0 0 0 1px rgba(127,127,127,0.14)",
+              borderRadius: 12, padding: "14px 16px", transition: "box-shadow 0.2s",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                 <div>

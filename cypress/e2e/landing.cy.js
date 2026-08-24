@@ -1,14 +1,25 @@
+// Tests the standalone landing/ artifact. Excluded from the default run
+// (see excludeSpecPattern in cypress.config.js) because it needs its own
+// static server. Run with:
+//   cd landing && python3 -m http.server 4173
+//   CYPRESS_BASE_URL=http://localhost:5173 npx cypress run --e2e --spec cypress/e2e/landing.cy.js
 const LANDING_URL = "http://localhost:4173/index.html";
 
 describe("Landing page", () => {
   before(() => {
     cy.request({ url: LANDING_URL, failOnStatusCode: false, timeout: 2000 })
-      .then((resp) => {
-        if (!resp || resp.status !== 200) {
+      .then(
+        (resp) => {
+          if (!resp || resp.status !== 200) {
+            cy.log("Landing dev server not running — skipping suite (start: cd landing && python3 -m http.server 4173)");
+            Cypress.skip();
+          }
+        },
+        () => {
           cy.log("Landing dev server not running — skipping suite (start: cd landing && python3 -m http.server 4173)");
           Cypress.skip();
         }
-      });
+      );
   });
 
   beforeEach(() => {

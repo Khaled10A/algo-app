@@ -74,8 +74,13 @@ function EnhancedViz({ steps, currentStep, isDark }) {
 
   return (
     <div>
+      {/* AMBIENT LIGHT */}
+      <div aria-hidden="true" style={{
+        position:"absolute", inset:0, pointerEvents:"none",
+        background:"radial-gradient(560px 240px at 50% 96%, rgba(10,132,255,0.075), transparent 70%)",
+      }} />
       {/* BARS */}
-      <div style={{ display:"flex", alignItems:"flex-end", gap:3, height:120, padding:"0 4px", marginBottom:8 }}>
+      <div style={{ position:"relative", display:"flex", alignItems:"flex-end", gap:3, height:120, padding:"0 4px", marginBottom:8 }}>
         {arr.map((v, i) => {
           const isHi = hi.includes(i);
           const changed = prevArr[i] !== v;
@@ -94,8 +99,8 @@ function EnhancedViz({ steps, currentStep, isDark }) {
                 height: `${Math.max((v / maxVal) * 100, 4)}px`,
                 background: getBarColor(v, maxVal, isHi),
                 borderRadius: "3px 3px 0 0",
-                transition: "height 0.12s ease, background 0.1s",
-                boxShadow: isHi ? `0 0 8px ${getBarColor(v, maxVal, true)}` : "none",
+                transition: "height 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.18s ease, box-shadow 0.18s ease",
+                boxShadow: isHi ? `0 0 14px ${getBarColor(v, maxVal, true)}55, 0 0 3px ${getBarColor(v, maxVal, true)}66` : "none",
                 transform: isHi ? "scaleY(1.05)" : "scaleY(1)",
                 transformOrigin: "bottom",
               }}/>
@@ -174,7 +179,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
       ) : vizSteps.length === 0 ? (
         <Empty icon="🎬" text="Generate an array to visualize" />
       ) : (
-        <div style={{ background: cardBg, borderRadius:10, border:`1px solid ${border}`, padding:18, maxWidth:680 }}>
+        <div className="surface-card" style={{ borderRadius:16, padding:"18px 18px 14px", maxWidth:720, position:"relative", overflow:"hidden" }}>
 
           {/* HEADER ROW */}
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12, flexWrap:"wrap", gap:8 }}>
@@ -212,12 +217,14 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
           {/* BARS */}
           <EnhancedViz steps={vizSteps} currentStep={vizStep} isDark={isDark} />
 
+          {/* FLOATING CONTROL SURFACE */}
+          <div className="glass-floating" style={{ borderRadius:14, padding:"12px 14px 10px", marginTop:16 }}>
           {/* PROGRESS BAR */}
-          <div style={{ background: border, borderRadius:4, height:4, margin:"14px 0 4px" }}>
+          <div style={{ background: "rgba(127,127,127,0.30)", borderRadius:4, height:4, margin:"0 0 4px" }}>
             <div style={{ width:`${((vizStep+1)/vizSteps.length)*100}%`, height:"100%",
               background:"linear-gradient(90deg,#30d158,#0a84ff)", borderRadius:4, transition:"width 0.1s" }}/>
           </div>
-          <input type="range" min={0} max={vizSteps.length-1} value={vizStep}
+          <input type="range" min={0} max={vizSteps.length-1} value={vizStep} aria-label="Step position"
             onChange={e => { pauseViz(); setVizStep(+e.target.value); }}
             style={{ width:"100%", accentColor:"#30d158", marginBottom:10 }} />
 
@@ -233,7 +240,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
             </div>
 
             {/* Speed presets */}
-            <div style={{ display:"flex", gap:4, alignItems:"center" }}>
+            <div style={{ display:"flex", gap:3, alignItems:"center" }}>
               <span style={{ fontSize:11, fontWeight:600, color:textMute, marginRight:4 }}>Speed</span>
               {SPEEDS.map(({ label, name, val }) => (
                 <button key={name} onClick={() => setVizSpeed && setVizSpeed(val)} style={{
@@ -245,6 +252,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
                 }} title={name}>{name}</button>
               ))}
             </div>
+          </div>
           </div>
         </div>
       )}

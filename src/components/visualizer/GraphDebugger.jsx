@@ -75,7 +75,7 @@ export function GraphDebugger({ isDark }) {
       </div>
 
       {/* CONTROLS */}
-      <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 16px", marginBottom:14, display:"flex", gap:14, flexWrap:"wrap", alignItems:"flex-end" }}>
+      <div className="glass-floating" style={{ borderRadius:14, padding:"12px 16px", marginBottom:14, display:"flex", gap:16, flexWrap:"wrap", alignItems:"flex-end" }}>
         <div>
           <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
@@ -106,9 +106,10 @@ export function GraphDebugger({ isDark }) {
 
         <div style={{ display:"flex", gap:6, marginLeft:"auto" }}>
           <button onClick={generate} style={{
-            padding:"7px 16px", borderRadius:6, border:"none",
-            background:`linear-gradient(135deg,${accentColor},#818cf8)`,
-            color:"#fff", fontSize:10, cursor:"pointer", fontFamily:"monospace", fontWeight:"bold",
+            padding:"8px 16px", borderRadius:8, border:"none",
+            background:`linear-gradient(180deg, color-mix(in srgb, ${accentColor} 90%, white), ${accentColor})`,
+            color:"#fff", fontSize:12, cursor:"pointer", fontWeight:600,
+            boxShadow:`inset 0 1px 0 rgba(255,255,255,0.28), 0 3px 10px ${accentColor}44`,
           }}>GENERATE</button>
           {steps.length > 0 && <>
             <button onClick={playback.toggle} aria-label={playing?"Pause":"Play"} title={playing?"Pause":"Play"} style={{
@@ -149,13 +150,13 @@ export function GraphDebugger({ isDark }) {
 
           {/* LEFT — Graph + Visit Order */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-            <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>Graph</div>
+            <div className="surface-card" style={{ borderRadius:12, padding:"14px" }}>
+              <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Graph</div>
               <GraphSVG graph={DEFAULT_GRAPH} step={current} isDark={isDark} />
             </div>
 
-            <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>Visit order</div>
+            <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+              <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Visit order</div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
                 {(current?.visitOrder || []).map((n, i) => (
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:4 }}>
@@ -176,8 +177,8 @@ export function GraphDebugger({ isDark }) {
           {/* RIGHT — Code + Stack/Queue + Variables */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
 
-            <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, overflow:"hidden" }}>
-              <div style={{ background:codeBg, padding:"7px 12px", borderBottom:`1px solid ${border}`, display:"flex", justifyContent:"space-between" }}>
+            <div className="editor-surface" style={{ borderRadius:12, overflow:"hidden" }}>
+              <div style={{ padding:"8px 12px", borderBottom:`1px solid ${border}`, display:"flex", justifyContent:"space-between" }}>
                 <span style={{ fontSize:9, color:accentColor, letterSpacing:2, fontFamily:"monospace" }}>{descriptor.name}.JS</span>
                 <span style={{ fontSize:9, color:textMute, fontFamily:"monospace" }}>line {(current?.activeLine||0)+1}</span>
               </div>
@@ -238,8 +239,8 @@ export function GraphDebugger({ isDark }) {
               )}
             </div>
 
-            <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>Variables</div>
+            <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+              <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Variables</div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
                 {Object.entries(current?.vars || {}).map(([k,v]) => (
                   <div key={k} style={{ background:codeBg, borderRadius:5, padding:"6px 10px", border:`1px solid ${border}` }}>

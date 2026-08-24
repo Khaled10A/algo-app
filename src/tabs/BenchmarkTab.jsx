@@ -44,20 +44,18 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
       <FullscreenChart chart={fsChart} onClose={() => setFsChart(null)} />
       <Label>SORTING RESULTS</Label>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 180, background: "rgba(255, 59, 48, 0.07)", border: "1px solid rgba(255, 59, 48, 0.28)", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 18 }}>🔴</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#d70015", marginBottom: 2 }}>Worst performer</div>
-            <div style={{ fontSize: 13, fontWeight: "bold", color: "#d70015" }}>{worstAlgo}</div>
-          </div>
+      <div
+        className="surface-card"
+        style={{ borderRadius: 12, padding: "13px 18px", marginBottom: 18, display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}
+      >
+        <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "#d70015" }}>Worst performer</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#d70015" }}>{getAlgorithmForDisplay(worstAlgo).name}</span>
         </div>
-        <div style={{ flex: 1, minWidth: 180, background: "rgba(48, 209, 88, 0.08)", border: "1px solid rgba(48, 209, 88, 0.28)", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 18 }}>🟢</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#1f9d48", marginBottom: 2 }}>Best performer</div>
-            <div style={{ fontSize: 13, fontWeight: "bold", color: "#1f9d48" }}>{bestAlgo}</div>
-          </div>
+        <div aria-hidden="true" style={{ width: 1, height: 22, background: "rgba(127,127,127,0.30)" }} />
+        <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "#1f9d48" }}>Best performer</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#1f9d48" }}>{getAlgorithmForDisplay(bestAlgo).name}</span>
         </div>
       </div>
 
@@ -256,20 +254,18 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
       <FullscreenChart chart={fsChart} onClose={() => setFsChart(null)} />
       <Label>STRING MATCHING RESULTS</Label>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 180, background: "rgba(255, 59, 48, 0.07)", border: "1px solid rgba(255, 59, 48, 0.28)", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 18 }}>🔴</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#d70015", marginBottom: 2 }}>Worst performer</div>
-            <div style={{ fontSize: 13, fontWeight: "bold", color: "#d70015" }}>{worstAlgo}</div>
-          </div>
+      <div
+        className="surface-card"
+        style={{ borderRadius: 12, padding: "13px 18px", marginBottom: 18, display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}
+      >
+        <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "#d70015" }}>Worst performer</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#d70015" }}>{getAlgorithmForDisplay(worstAlgo).name}</span>
         </div>
-        <div style={{ flex: 1, minWidth: 180, background: "rgba(48, 209, 88, 0.08)", border: "1px solid rgba(48, 209, 88, 0.28)", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 18 }}>🟢</span>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: "#1f9d48", marginBottom: 2 }}>Best performer</div>
-            <div style={{ fontSize: 13, fontWeight: "bold", color: "#1f9d48" }}>{bestAlgo}</div>
-          </div>
+        <div aria-hidden="true" style={{ width: 1, height: 22, background: "rgba(127,127,127,0.30)" }} />
+        <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: "#1f9d48" }}>Best performer</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#1f9d48" }}>{getAlgorithmForDisplay(bestAlgo).name}</span>
         </div>
       </div>
 

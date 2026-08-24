@@ -3,7 +3,7 @@ import { getAlgorithm, getWithDebug } from "../algorithms/registry";
 import { generateArray } from "../utils/generators";
 import { playTone, playVictory } from "../utils/audio";
 import { usePlayback } from "../hooks/usePlayback";
-import { getPalette } from "../theme/tokens";
+import { getPalette, MOTION } from "../theme/tokens";
 
 const SORTING_ALGOS = getWithDebug("sorting");
 const ARRAY_SEARCH_ALGOS = getWithDebug("searching").filter((d) => d.group === "array");
@@ -247,8 +247,9 @@ export function DebuggerTab({ isDark }) {
   };
 
   const stepBtn = {
-    padding: "6px 10px", borderRadius: 5, border: `1px solid ${p.border}`,
+    padding: "6px 10px", borderRadius: 7, border: "none",
     background: "transparent", color: p.textSecondary, fontSize: 13, cursor: "pointer",
+    transition: `background ${MOTION.fast}`,
   };
 
   return (
@@ -258,11 +259,13 @@ export function DebuggerTab({ isDark }) {
       </div>
 
       {/* CONTROLS ROW */}
-      <div style={{
-        background: p.surface, border: `1px solid ${p.border}`,
-        borderRadius: 10, padding: "14px 18px", marginBottom: 14,
-        display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-start",
-      }}>
+      <div
+        className="glass-floating"
+        style={{
+          borderRadius: 14, padding: "14px 18px", marginBottom: 14,
+          display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-start",
+        }}
+      >
         <div>
           <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Sorting</div>
           <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
@@ -410,22 +413,29 @@ export function DebuggerTab({ isDark }) {
             style={{ accentColor, width: 100 }} />
         </div>
 
-        <div style={{ display: "flex", gap: 6, marginLeft: "auto", alignItems: "center" }}>
+        <div
+          className="glass-thin"
+          style={{ display: "flex", gap: 6, marginLeft: "auto", alignItems: "center", padding: 6, borderRadius: 12 }}
+        >
           <button onClick={generate} style={{
-            padding: "7px 16px", borderRadius: 6, border: "none",
-            background: `linear-gradient(135deg,${accentColor},#818cf8)`,
-            color: "#fff", fontSize: 10, cursor: "pointer", fontFamily: "monospace", fontWeight: "bold", letterSpacing: 1,
+            padding: "8px 16px", borderRadius: 8, border: "none",
+            background: `linear-gradient(180deg, color-mix(in srgb, ${accentColor} 90%, white), ${accentColor})`,
+            color: "#fff", fontSize: 12, cursor: "pointer", fontWeight: 600,
+            boxShadow: `inset 0 1px 0 rgba(255,255,255,0.28), 0 3px 10px ${accentColor}44`,
           }}>GENERATE</button>
           {steps.length > 0 && <>
             <button onClick={playback.toggle} aria-label={playing ? "Pause" : "Play"} title={playing ? "Pause" : "Play"} style={{
-              padding: "7px 14px", borderRadius: 6,
-              border: `1px solid ${playing ? p.red : p.green}`,
-              background: playing ? "rgba(248,113,113,0.1)" : "rgba(74,222,128,0.1)",
+              padding: "7px 13px", borderRadius: 8, border: "none",
+              background: playing ? "rgba(255, 59, 48, 0.12)" : "rgba(48, 209, 88, 0.14)",
               color: playing ? p.red : p.green,
-              fontSize: 12, cursor: "pointer",
+              fontSize: 13, cursor: "pointer",
             }}>{playing ? "⏸" : "▶"}</button>
-            <button onClick={playback.prev} aria-label="Previous step" title="Previous step" style={stepBtn}>◀</button>
-            <button onClick={playback.next} aria-label="Next step" title="Next step" style={stepBtn}>▶</button>
+            <button onClick={playback.prev} aria-label="Previous step" title="Previous step" style={stepBtn}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,0.14)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>◀</button>
+            <button onClick={playback.next} aria-label="Next step" title="Next step" style={stepBtn}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,0.14)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>▶</button>
             <button onClick={playback.reset} aria-label="First step" title="First step" style={stepBtn}>⏮</button>
             <button onClick={playback.goToEnd} aria-label="Last step" title="Last step" style={stepBtn}>⏭</button>
           </>}
@@ -455,7 +465,7 @@ export function DebuggerTab({ isDark }) {
               }}>→ {current.log}</span>
             )}
           </div>
-          <div style={{ background: p.trackBg, borderRadius: 4, height: 4 }}>
+          <div style={{ background: "rgba(127,127,127,0.30)", borderRadius: 4, height: 4 }}>
             <div style={{
               width: `${((step + 1) / steps.length) * 100}%`, height: "100%",
               background: accentColor, borderRadius: 4, transition: "width 0.1s"
@@ -469,9 +479,9 @@ export function DebuggerTab({ isDark }) {
 
       {steps.length > 0 && current ? (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, overflow: "hidden" }}>
+          <div className="editor-surface" style={{ borderRadius: 12, overflow: "hidden" }}>
             <div style={{
-              background: p.codeBg, padding: "8px 14px",
+              padding: "9px 14px",
               display: "flex", justifyContent: "space-between", alignItems: "center",
               borderBottom: `1px solid ${p.border}`
             }}>
@@ -514,15 +524,15 @@ export function DebuggerTab({ isDark }) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 14 }}>
-                {isStringSearch ? "STRING STATE" : "ARRAY STATE"}
+            <div className="surface-card" style={{ borderRadius: 12, padding: "14px 16px" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 14 }}>
+                {isStringSearch ? "String state" : "Array state"}
               </div>
               {isStringSearch ? renderStringViz() : renderBars()}
             </div>
 
-            <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>Variables</div>
+            <div className="glass-floating" style={{ borderRadius: 12, padding: "13px 16px" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 10 }}>Variables</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                 {Object.entries(current.vars || {}).filter(([, v]) => v !== undefined).map(([k, v]) => (
                   <div key={k} style={{ background: p.codeBg, borderRadius: 6, padding: "7px 10px", border: `1px solid ${p.border}` }}>
@@ -535,8 +545,8 @@ export function DebuggerTab({ isDark }) {
               </div>
             </div>
 
-            <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>Memory</div>
+            <div className="glass-floating" style={{ borderRadius: 12, padding: "13px 16px" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 10 }}>Memory</div>
               {Object.entries(current.memory || {}).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 5, fontFamily: "monospace" }}>
                   <span style={{ fontSize: 10, color: p.purple, width: 60, flexShrink: 0 }}>{k}</span>
@@ -550,8 +560,8 @@ export function DebuggerTab({ isDark }) {
               ))}
             </div>
 
-            <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>Call stack</div>
+            <div className="glass-floating" style={{ borderRadius: 12, padding: "13px 16px" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 10 }}>Call stack</div>
               {(current.callStack || []).map((line, i) => (
                 <div key={i} style={{
                   fontFamily: "monospace", fontSize: 10,

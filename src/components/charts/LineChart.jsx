@@ -1,6 +1,6 @@
 export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
   if (!data || data.length === 0) return null;
-  const W = 440, H = 200, PL = 58, PR = 16, PT = 28, PB = 48;
+  const W = 440, H = 216, PL = 58, PR = 16, PT = 28, PB = 48;
   const allVals = data.flatMap(d => d.values);
   const maxV = Math.max(...allVals, 1);
   const xs = data[0].xLabels;
@@ -44,7 +44,7 @@ export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
 
 export function BarChart({ data, colors, labels, title, xTitle, yTitle }) {
   if (!data || data.length === 0) return null;
-  const W = 440, H = 200, PL = 58, PR = 16, PT = 28, PB = 48;
+  const W = 440, H = 216, PL = 58, PR = 16, PT = 28, PB = 48;
   const groupCount = data[0].values.length;
   const barW = Math.max(6, Math.floor((W - PL - PR) / (groupCount * data.length + groupCount + 2)));
   const groupW = barW * data.length + 4;
