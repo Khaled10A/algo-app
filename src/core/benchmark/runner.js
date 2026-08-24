@@ -1,6 +1,10 @@
 import { executeSpec } from './jobs';
 
+const WORKERS_ENABLED =
+  typeof Worker !== "undefined" && import.meta.env?.MODE !== "test";
+
 function createWorker() {
+  if (!WORKERS_ENABLED) return null;
   try {
     return new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
   } catch {

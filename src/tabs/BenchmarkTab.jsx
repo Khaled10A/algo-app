@@ -141,6 +141,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
   const internalBarRef = useRef();
   const [fsChart, setFsChart] = useState(null);
   const th = useTheme();
+  const ts = tableStyles(th);
   const lineRef = externalLineRef || internalLineRef;
   const barRef = externalBarRef || internalBarRef;
 

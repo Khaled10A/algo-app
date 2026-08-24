@@ -1,6 +1,6 @@
 import { DOMAINS } from "../../algorithms/registry";
 
-export function Header({ tab, setTab, subTab, setSubTab, isDark, border }) {
+export function Header({ tab, setTab, subTab, setSubTab, isDark, border, onToggleTheme }) {
   const domain = DOMAINS.find((d) => d.id === tab) || DOMAINS[0];
 
   return (
@@ -41,6 +41,11 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, border }) {
             fontSize: 9, letterSpacing: 1, cursor: "pointer", fontFamily: "monospace", textTransform: "uppercase",
           }}>{st}</button>
         ))}
+        <button onClick={onToggleTheme} aria-label="Toggle theme" title="Toggle theme" style={{
+          marginLeft: 8, padding: "4px 10px", borderRadius: 4, border: `1px solid ${border}`,
+          background: "transparent", color: isDark ? "#fbbf24" : "#475569",
+          fontSize: 13, cursor: "pointer", lineHeight: 1,
+        }}>{isDark ? "☀️" : "🌙"}</button>
       </div>
     </div>
   );

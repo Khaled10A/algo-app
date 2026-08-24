@@ -256,6 +256,7 @@ export default function App() {
           setSubTab={setSubTabRaw}
           isDark={isDark}
           border={p.border}
+          onToggleTheme={() => setTheme(isDark ? "light" : "dark")}
         />
 
         <div style={{ display: "flex", flex: 1, width: "100%", overflow: "hidden" }}>
