@@ -486,7 +486,7 @@ export function DebuggerTab({ isDark }) {
               borderBottom: `1px solid ${p.border}`
             }}>
               <span style={{ fontSize: 9, color: accentColor, letterSpacing: 2, fontFamily: "monospace" }}>
-                {descriptor.name.toUpperCase().replace(/ /g, "_")}
+                {descriptor.name.replace(/ /g, "_").toLowerCase()}
               </span>
               <span style={{ fontSize: 9, color: p.textSecondary, fontFamily: "monospace" }}>
                 line {(current.activeLine ?? 0) + 1}

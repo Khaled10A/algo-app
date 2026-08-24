@@ -88,7 +88,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {typeWinners.map(({ type, winner }) => (
             <div key={type} style={{ background: pf.surfaceAlt, border: `1px solid ${border}`, borderRadius: 7, padding: "7px 12px" }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: textMuted, marginBottom: 2 }}>{INPUT_LABELS[type].toUpperCase()}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: textMuted, marginBottom: 2 }}>{INPUT_LABELS[type]}</div>
               <div style={{ fontSize: 11, color: "#1f9d48", fontWeight: "bold" }}>{getAlgorithmForDisplay(winner).name}</div>
             </div>
           ))}
@@ -159,7 +159,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {scWinners.map(({ sc, winner }) => (
             <div key={sc} style={{ background: pf.surfaceAlt, border: `1px solid ${border}`, borderRadius: 7, padding: "7px 12px" }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: textMuted, marginBottom: 2 }}>{SCENARIO_LABELS[sc].toUpperCase()}</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: textMuted, marginBottom: 2 }}>{SCENARIO_LABELS[sc]}</div>
               <div style={{ fontSize: 11, color: "#e8386d", fontWeight: "bold" }}>{winner}</div>
             </div>
           ))}
