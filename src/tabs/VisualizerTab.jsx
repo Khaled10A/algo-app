@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Label, Empty } from '../components/ui/SharedComponents';
+import { getAlgorithm } from '../algorithms/registry';
+import { playTone } from '../utils/audio';
 
 function btnBase(isDark) {
   return {
@@ -9,22 +11,6 @@ function btnBase(isDark) {
     color: isDark ? "#94a3b8" : "#475569",
     fontSize: 11, cursor: "pointer", padding: "6px 12px", fontFamily: "monospace",
   };
-}
-
-// ── AUDIO ────────────────────────────────────────────────────
-function playSwapSound(val, maxVal) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = "sine";
-    const freq = 200 + (val / maxVal) * 600;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
-  } catch(e) {}
 }
 
 // ── COLOR by value ────────────────────────────────────────────
@@ -136,29 +122,37 @@ function EnhancedViz({ steps, currentStep, isDark }) {
 }
 
 // ── MAIN COMPONENT ────────────────────────────────────────────
-export function VisualizerTab({ vizAlgo, vizSteps, vizStep, setVizStep, pauseViz, vizSpeed, setVizSpeed, isDark }) {
+export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
   const border  = isDark ? "#1e293b" : "#e2e8f0";
   const cardBg  = isDark ? "#0f172a" : "#f1f5f9";
-  const textMute = isDark ? "#475569" : "#94a3b8";
+  const textMute = isDark ? "#94a3b8" : "#64748b";
+
+  const vizStep = playback.index;
+  const setVizStep = playback.setStep;
+  const pauseViz = playback.pause;
+  const vizSpeed = playback.speed;
+  const setVizSpeed = playback.setSpeed;
+  const algoName = getAlgorithm(vizAlgo).name;
 
   const currentStep = vizSteps[vizStep] || null;
-  const stepDesc = getStepDesc(currentStep, vizAlgo);
+  const stepDesc = getStepDesc(currentStep, algoName);
   const prevStep = vizStep > 0 ? vizSteps[vizStep - 1] : null;
   const isSwap = currentStep && prevStep &&
-    JSON.stringify(currentStep.arr) !== JSON.stringify(prevStep.arr);
+    currentStep.arr.some((v, i) => v !== prevStep.arr[i]);
 
-  // Play sound on swap
+  // Play sound on each animated step while playing
   const lastStep = useRef(-1);
   useEffect(() => {
+    if (!playback.playing) return;
     if (vizStep !== lastStep.current && currentStep?.highlight?.length > 0) {
       const arr = currentStep.arr;
       const hi = currentStep.highlight;
       if (arr && hi[0] !== undefined) {
-        playSwapSound(arr[hi[0]], Math.max(...arr));
+        playTone(200 + (arr[hi[0]] / Math.max(...arr)) * 600, 0.1, "sine", 0.12);
       }
       lastStep.current = vizStep;
     }
-  }, [vizStep]);
+  }, [vizStep, playback.playing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Comparison counter
   const totalComps = vizSteps.filter(s => s.highlight?.length > 0).length;
@@ -175,7 +169,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, vizStep, setVizStep, pauseViz
           {/* HEADER ROW */}
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12, flexWrap:"wrap", gap:8 }}>
             <span style={{ fontSize:11, color:"#4ade80", letterSpacing:2, fontFamily:"monospace", fontWeight:"bold" }}>
-              {vizAlgo.toUpperCase()}
+              {algoName.toUpperCase()}
             </span>
             <div style={{ display:"flex", gap:10 }}>
               <div style={{ textAlign:"center" }}>
@@ -221,8 +215,8 @@ export function VisualizerTab({ vizAlgo, vizSteps, vizStep, setVizStep, pauseViz
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8 }}>
             {/* Step buttons */}
             <div style={{ display:"flex", gap:6 }}>
-              {[["⏮",()=>setVizStep(0)],["◀",()=>setVizStep(s=>Math.max(0,s-1))],
-                ["▶",()=>setVizStep(s=>Math.min(vizSteps.length-1,s+1))],["⏭",()=>setVizStep(vizSteps.length-1)]
+              {[["⏮",playback.reset],["◀",playback.prev],
+                ["▶",playback.next],["⏭",playback.goToEnd]
               ].map(([lbl,fn]) => (
                 <button key={lbl} onClick={fn} style={{ ...btnBase(isDark), fontSize:14, padding:"5px 12px" }} aria-label={btnLabel(lbl)}>{lbl}</button>
               ))}

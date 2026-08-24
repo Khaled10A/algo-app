@@ -1,6 +1,7 @@
 import { Label } from '../components/ui/SharedComponents';
 import { useTheme } from '../components/ui/Sidebar';
-import { COMPLEXITY, INPUT_LABELS, SCENARIO_LABELS } from '../utils/constants';
+import { INPUT_LABELS, SCENARIO_LABELS } from '../utils/constants';
+import { getAlgorithm } from '../algorithms/registry';
 
 export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric, pattern }) {
   const th = useTheme();
@@ -65,13 +66,13 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
         All algorithms were implemented from scratch without library functions.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#4ade80" }}>Best overall: {best.algo}</strong> — average{" "}
-        <strong style={{ color: "#4ade80" }}>{best.avg.toFixed(4)} {unit}</strong>, consistent with its {COMPLEXITY[best.algo]?.average} complexity.
+        <strong style={{ color: "#4ade80" }}>Best overall: {getAlgorithm(best.algo).name}</strong> — average{" "}
+        <strong style={{ color: "#4ade80" }}>{best.avg.toFixed(4)} {unit}</strong>, consistent with its {getAlgorithm(best.algo).complexity.average} complexity.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#f87171" }}>Worst overall: {worst.algo}</strong> — average{" "}
+        <strong style={{ color: "#f87171" }}>Worst overall: {getAlgorithm(worst.algo).name}</strong> — average{" "}
         <strong style={{ color: "#f87171" }}>{worst.avg.toFixed(4)} {unit}</strong>,{" "}
-        approximately <strong style={{ color: "#fb923c" }}>{ratio}×</strong> slower than {best.algo}.
+        approximately <strong style={{ color: "#fb923c" }}>{ratio}×</strong> slower than {getAlgorithm(best.algo).name}.
       </p>
       {algoStats.length > 2 && (
         <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
@@ -86,7 +87,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
           {typeWinners.map(({ type, winner }) => (
             <div key={type} style={{ background: isDark ? "#0a0f1e" : "#f1f5f9", border: `1px solid ${border}`, borderRadius: 6, padding: "6px 12px" }}>
               <div style={{ fontSize: 8, color: textMuted, letterSpacing: 2, marginBottom: 2 }}>{INPUT_LABELS[type].toUpperCase()}</div>
-              <div style={{ fontSize: 11, color: "#4ade80", fontWeight: "bold" }}>{winner}</div>
+              <div style={{ fontSize: 11, color: "#4ade80", fontWeight: "bold" }}>{getAlgorithm(winner).name}</div>
             </div>
           ))}
         </div>
@@ -96,13 +97,13 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
     const conclusionCard = card(<>
       {secTitle("SORTING — CONCLUSION", "#38bdf8")}
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8 }}>
-        <strong style={{ color: "#4ade80" }}>{best.algo}</strong> is recommended for general-purpose sorting due to its consistent {COMPLEXITY[best.algo]?.average} average-case performance.{" "}
+        <strong style={{ color: "#4ade80" }}>{getAlgorithm(best.algo).name}</strong> is recommended for general-purpose sorting due to its consistent {getAlgorithm(best.algo).complexity.average} average-case performance.{" "}
         {COMPLEXITY[best.algo]?.paradigm === "Divide & Conquer"
           ? "Its divide-and-conquer strategy efficiently reduces problem size at each step."
           : "Its incremental approach adapts well to partially sorted data."}
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginTop: 10 }}>
-        <strong style={{ color: "#f87171" }}>{worst.algo}</strong> should be avoided for large datasets given its {COMPLEXITY[worst.algo]?.worst} worst-case complexity,
+        <strong style={{ color: "#f87171" }}>{getAlgorithm(worst.algo).name}</strong> should be avoided for large datasets given its {getAlgorithm(worst.algo).complexity.worst} worst-case complexity,
         though it remains acceptable for very small inputs (n ≤ 20).
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginTop: 10 }}>
@@ -145,13 +146,13 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
         <strong style={{ color: "#e2e8f0" }}>{sizes.join(", ")} characters</strong>. Pattern used: <strong style={{ color: "#fbbf24" }}>"{pattern}"</strong>.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#4ade80" }}>Best: {best.algo}</strong> — averaged{" "}
+        <strong style={{ color: "#4ade80" }}>Best: {getAlgorithm(best.algo).name}</strong> — averaged{" "}
         <strong style={{ color: "#4ade80" }}>{best.avg.toFixed(4)} {unit}</strong> across all scenarios.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#f87171" }}>Most expensive: {worst.algo}</strong> — averaged{" "}
+        <strong style={{ color: "#f87171" }}>Most expensive: {getAlgorithm(worst.algo).name}</strong> — averaged{" "}
         <strong style={{ color: "#f87171" }}>{worst.avg.toFixed(4)} {unit}</strong>,{" "}
-        about <strong style={{ color: "#fb923c" }}>{ratio}×</strong> more than {best.algo}.
+        about <strong style={{ color: "#fb923c" }}>{ratio}×</strong> more than {getAlgorithm(best.algo).name}.
       </p>
       <div style={{ marginBottom: 12 }}>
         {secTitle("SCENARIO WINNERS", "#475569")}

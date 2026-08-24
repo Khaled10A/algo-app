@@ -1,4 +1,8 @@
-export function Header({ tab, setTab, setSubTab, subTabs, subTab, setSubTab: setSubTabMain, isDark, border, theme, setTheme }) {
+import { DOMAINS } from "../../algorithms/registry";
+
+export function Header({ tab, setTab, subTab, setSubTab, isDark, border }) {
+  const domain = DOMAINS.find((d) => d.id === tab) || DOMAINS[0];
+
   return (
     <div style={{
       borderBottom: `1px solid ${border}`, padding: "12px 32px",
@@ -15,33 +19,28 @@ export function Header({ tab, setTab, setSubTab, subTabs, subTab, setSubTab: set
         <div style={{ fontSize: 8, color: isDark ? "#475569" : "#94a3b8", letterSpacing: 3 }}>DESIGN & ANALYSIS OF ALGORITHMS</div>
       </div>
 
-      <div style={{ display: "flex", gap: 5, marginLeft: 20 }}>
-        {["sorting", "string"].map(t => (
-          <button key={t} onClick={() => { setTab(t); setSubTabMain("benchmark"); }} style={{
+      <nav style={{ display: "flex", gap: 5, marginLeft: 20 }} aria-label="Algorithm domains">
+        {DOMAINS.map((d) => (
+          <button key={d.id} onClick={() => { setTab(d.id); setSubTab(d.subTabs[0]); }} aria-pressed={tab === d.id} style={{
             padding: "5px 14px", borderRadius: 5, border: "1px solid",
-            borderColor: tab === t ? "#38bdf8" : border,
-            background: tab === t ? "rgba(56,189,248,0.1)" : "transparent",
-            color: tab === t ? "#38bdf8" : (isDark ? "#475569" : "#94a3b8"),
+            borderColor: tab === d.id ? "#38bdf8" : border,
+            background: tab === d.id ? "rgba(56,189,248,0.1)" : "transparent",
+            color: tab === d.id ? "#38bdf8" : (isDark ? "#475569" : "#94a3b8"),
             fontSize: 10, letterSpacing: 2, cursor: "pointer", fontFamily: "monospace", textTransform: "uppercase",
-          }}>{t === "sorting" ? "Sorting" : "String Matching"}</button>
+          }}>{d.label}</button>
         ))}
-      </div>
+      </nav>
 
-      <div style={{ display: "flex", gap: 4, marginLeft: "auto", alignItems: "center" }}>
-        {subTabs.map(st => (
-          <button key={st} onClick={() => setSubTabMain(st)} style={{
+      <div style={{ display: "flex", gap: 4, marginLeft: "auto", alignItems: "center" }} aria-label="Sections">
+        {domain.subTabs.map((st) => (
+          <button key={st} onClick={() => setSubTab(st)} aria-pressed={subTab === st} style={{
             padding: "4px 10px", borderRadius: 4, border: "1px solid",
-            borderColor: subTab === st ? "#38bdf8" : border,
-            background: subTab === st ? "rgba(56,189,248,0.08)" : "transparent",
-            color: subTab === st ? "#38bdf8" : (isDark ? "#475569" : "#94a3b8"),
+            borderColor: subTab === st ? "#f472b6" : border,
+            background: subTab === st ? "rgba(244,114,182,0.08)" : "transparent",
+            color: subTab === st ? "#f472b6" : (isDark ? "#475569" : "#94a3b8"),
             fontSize: 9, letterSpacing: 1, cursor: "pointer", fontFamily: "monospace", textTransform: "uppercase",
           }}>{st}</button>
         ))}
-        <button onClick={() => setTheme(t => t === "dark" ? "light" : "dark")} style={{
-          marginLeft: 8, padding: "4px 10px", borderRadius: 4, border: `1px solid ${border}`,
-          background: "transparent", color: isDark ? "#475569" : "#94a3b8",
-          fontSize: 9, cursor: "pointer", fontFamily: "monospace",
-        }}>{isDark ? "☀ LIGHT" : "🌙 DARK"}</button>
       </div>
     </div>
   );
