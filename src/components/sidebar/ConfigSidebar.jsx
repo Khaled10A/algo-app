@@ -16,18 +16,43 @@ export function ConfigSidebar({
   pseudo,
 }) {
   return (
-    <div style={{ width: 280, borderRight: `1px solid ${border}`, padding: "20px 16px", overflowY: "auto", background: palette.sidebar, backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", flexShrink: 0, display: "flex", flexDirection: "column", fontFamily: FONT_SANS }}>
-      {domain === "graphs" ? (
-        <Sec title="Graph algorithms">
-          <div style={{ fontSize: 10, color: "#64748b" }}>
-            BFS &amp; DFS traversal debugging lives in the Debugger section.
-          </div>
-        </Sec>
-      ) : domain === "sorting" ? (
-        <SortingPanel subTab={subTab} isDark={isDark} border={border} palette={palette} sort={sort} viz={viz} history={history} pseudo={pseudo} />
-      ) : (
-        <StringPanel subTab={subTab} isDark={isDark} border={border} palette={palette} search={search} history={history} pseudo={pseudo} />
+    <div style={{ width: 280, borderRight: `1px solid ${border}`, background: palette.sidebar, backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", flexShrink: 0, display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: FONT_SANS }}>
+      {subTab === "benchmark" && domain !== "graphs" && (
+        <div
+          style={{
+            flexShrink: 0,
+            padding: "14px 16px 12px",
+            borderBottom: `1px solid ${border}`,
+            background: palette.sidebar,
+          }}
+        >
+          {domain === "sorting" ? (
+            <>
+              <RunBtn onClick={sort.run} onCancel={sort.cancel} running={sort.running} />
+              <BenchmarkError message={sort.error} />
+            </>
+          ) : (
+            <>
+              <RunBtn onClick={search.run} onCancel={search.cancel} running={search.running} />
+              <BenchmarkError message={search.error} />
+            </>
+          )}
+        </div>
       )}
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "18px 16px 26px" }}>
+        {domain === "graphs" ? (
+          <Sec title="Graph algorithms">
+            <div style={{ fontSize: 12, color: palette.textSecondary }}>
+              BFS &amp; DFS traversal debugging lives in the Debugger section.
+            </div>
+          </Sec>
+        ) : domain === "sorting" ? (
+          <SortingPanel subTab={subTab} isDark={isDark} border={border} palette={palette} sort={sort} viz={viz} history={history} pseudo={pseudo} />
+        ) : (
+          <StringPanel subTab={subTab} isDark={isDark} border={border} palette={palette} search={search} history={history} pseudo={pseudo} />
+        )}
+      </div>
     </div>
   );
 }
@@ -36,8 +61,14 @@ function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pse
   return (
     <>
       {subTab === "benchmark" && <>
+                <div style={{ position: "sticky", top: 0, zIndex: 5, background: palette.bg, margin: "0 -16px 12px", padding: "0 16px 10px", borderBottom: `1px solid ${palette.border}` }}>
+          <RunBtn onClick={sort.run} onCancel={sort.cancel} running={sort.running} />
+          <BenchmarkError message={sort.error} />
+        </div>
         <Sec title="Algorithms">
-          {getBenchmarkable("sorting").map((a) => <Chk key={a.id} label={a.name} checked={sort.algos.includes(a.id)} onChange={() => sort.toggleAlgo(a.id)} />)}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5px 10px" }}>
+            {getBenchmarkable("sorting").map((a) => <Chk key={a.id} label={a.name} checked={sort.algos.includes(a.id)} onChange={() => sort.toggleAlgo(a.id)} />)}
+          </div>
         </Sec>
         <Sec title="Input mode">
           {[["random", "Random / Generated"], ["custom", "Custom Array"]].map(([v, l]) => (
@@ -56,7 +87,9 @@ function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pse
         ) : (
           <>
             <Sec title="Input type">
-              {INPUT_TYPES.map((t) => <Chk key={t} label={INPUT_LABELS[t]} checked={sort.types.includes(t)} onChange={() => sort.toggleType(t)} />)}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5px 10px" }}>
+                {INPUT_TYPES.map((t) => <Chk key={t} label={INPUT_LABELS[t]} checked={sort.types.includes(t)} onChange={() => sort.toggleType(t)} />)}
+              </div>
             </Sec>
             <Sec title="Input sizes">
               <SInput value={sort.sizesStr} onChange={(e) => sort.setSizesStr(e.target.value)} placeholder="50,100,150" hint="comma-separated" />
@@ -68,11 +101,9 @@ function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pse
             <Chk key={v} radio groupName="sort-metric" label={l} checked={sort.metric === v} onChange={() => sort.setMetric(v)} />
           ))}
         </Sec>
-        <RunBtn onClick={sort.run} onCancel={sort.cancel} running={sort.running} />
-        <BenchmarkError message={sort.error} />
-        {sort.hasResults && <GhostBtn onClick={sort.exportCSV} label="⬇ Export CSV" />}
-        {sort.hasResults && <GhostBtn color="#38bdf8" onClick={sort.exportXLSX} label="⬇ Export Excel (.xlsx)" />}
-        {sort.hasResults && <GhostBtn color="#fb923c" onClick={sort.exportPNG} label="⬇ All Charts PNG" />}
+        {sort.hasResults && <GhostBtn onClick={sort.exportCSV} label="Export CSV" />}
+        {sort.hasResults && <GhostBtn onClick={sort.exportXLSX} label="Export Excel (.xlsx)" />}
+        {sort.hasResults && <GhostBtn onClick={sort.exportPNG} label="Export all charts (PNG)" />}
       </>}
 
       {subTab === "visualizer" && <>
@@ -154,7 +185,9 @@ function StringPanel({ subTab, isDark, border, palette, search, history, pseudo 
         ) : (
           <>
             <Sec title="Scenario">
-              {TEXT_SCENARIOS.map((sc) => <Chk key={sc} label={SCENARIO_LABELS[sc]} checked={search.scenarios.includes(sc)} onChange={() => search.toggleScenario(sc)} />)}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5px 10px" }}>
+                {TEXT_SCENARIOS.map((sc) => <Chk key={sc} label={SCENARIO_LABELS[sc]} checked={search.scenarios.includes(sc)} onChange={() => search.toggleScenario(sc)} />)}
+              </div>
             </Sec>
             <Sec title="Text sizes">
               <SInput value={search.sizesStr} onChange={(e) => search.setSizesStr(e.target.value)} placeholder="300,500" hint="comma-separated" />
@@ -169,11 +202,9 @@ function StringPanel({ subTab, isDark, border, palette, search, history, pseudo 
             <Chk key={v} radio groupName="search-metric" label={l} checked={search.metric === v} onChange={() => search.setMetric(v)} />
           ))}
         </Sec>
-        <RunBtn onClick={search.run} onCancel={search.cancel} running={search.running} />
-        <BenchmarkError message={search.error} />
-        {search.hasResults && <GhostBtn onClick={search.exportCSV} label="⬇ Export CSV" />}
-        {search.hasResults && <GhostBtn color="#38bdf8" onClick={search.exportXLSX} label="⬇ Export Excel (.xlsx)" />}
-        {search.hasResults && <GhostBtn color="#fb923c" onClick={search.exportPNG} label="⬇ All Charts PNG" />}
+        {search.hasResults && <GhostBtn onClick={search.exportCSV} label="Export CSV" />}
+        {search.hasResults && <GhostBtn onClick={search.exportXLSX} label="Export Excel (.xlsx)" />}
+        {search.hasResults && <GhostBtn onClick={search.exportPNG} label="Export all charts (PNG)" />}
       </>}
       {subTab === "history" && <HistorySection history={history} palette={palette} />}
       {subTab === "pseudocode" && <PseudoSection pseudo={pseudo} />}

@@ -186,7 +186,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
 
   return (
     <div>
-      <Label>Auto-generated report</Label>
+      <Label>AUTO-GENERATED REPORT</Label>
       <div style={{ background: pf.accentTint, border: `1px solid ${pf.accent}40`, borderRadius: 8, padding: "10px 16px", marginBottom: 20, fontSize: 12, color: pf.textPrimary }}>
         This report was generated automatically from your benchmark results. Copy any section directly into your project documentation.
       </div>

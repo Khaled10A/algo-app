@@ -6,18 +6,18 @@ export function Sec({ title, children }) {
   const th = useTheme();
   const p = getPalette(th);
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 14 }}>
       <div
         style={{
           fontSize: 11,
           fontWeight: 600,
           color: p.textSecondary,
-          marginBottom: 8,
+          marginBottom: 6,
         }}
       >
         {title}
       </div>
-      <div role="group" aria-label={title} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div role="group" aria-label={title} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
         {children}
       </div>
     </div>
@@ -32,16 +32,32 @@ const hiddenInputStyle = {
   margin: 0,
 };
 
+function handleRadioArrows(e, groupName) {
+  const down = e.key === "ArrowDown" || e.key === "ArrowRight";
+  const up = e.key === "ArrowUp" || e.key === "ArrowLeft";
+  if (!down && !up) return;
+  const group = Array.from(
+    document.querySelectorAll(`input[type="radio"][name="${CSS.escape(groupName)}"]`)
+  );
+  if (group.length < 2) return;
+  const idx = group.indexOf(e.currentTarget);
+  if (idx === -1) return;
+  e.preventDefault();
+  const target = group[(idx + (down ? 1 : -1) + group.length) % group.length];
+  target.click();
+}
+
 export function Chk({ label, checked, onChange, radio, groupName }) {
   const th = useTheme();
   const p = getPalette(th);
   return (
-    <label style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer", userSelect: "none", minHeight: 22 }}>
+    <label style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer", userSelect: "none", minHeight: 20 }}>
       <input
         type={radio ? "radio" : "checkbox"}
         name={radio ? groupName : undefined}
         checked={checked}
         onChange={onChange}
+        onKeyDown={radio && groupName ? (e) => handleRadioArrows(e, groupName) : undefined}
         className="chk-input"
         style={hiddenInputStyle}
       />
@@ -70,7 +86,7 @@ export function Chk({ label, checked, onChange, radio, groupName }) {
             </svg>
           ))}
       </span>
-      <span style={{ fontSize: 13, color: checked ? p.textPrimary : p.textSecondary, transition: `color ${MOTION.fast}` }}>
+      <span style={{ fontSize: 12.5, color: checked ? p.textPrimary : p.textSecondary, transition: `color ${MOTION.fast}` }}>
         {label}
       </span>
     </label>

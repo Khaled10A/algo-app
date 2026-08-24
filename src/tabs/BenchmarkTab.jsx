@@ -42,7 +42,7 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
   return (
     <div>
       <FullscreenChart chart={fsChart} onClose={() => setFsChart(null)} />
-      <Label>Sorting results</Label>
+      <Label>SORTING RESULTS</Label>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ flex: 1, minWidth: 180, background: "rgba(255, 59, 48, 0.07)", border: "1px solid rgba(255, 59, 48, 0.28)", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
@@ -162,7 +162,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
 
     return (
       <div>
-        <Label>String matching — file results</Label>
+        <Label>STRING MATCHING — FILE RESULTS</Label>
 
         {/* File info card */}
         <div style={{ background: "rgba(255, 55, 95, 0.06)", border: "1px solid rgba(255, 55, 95, 0.25)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 16, flexWrap: "wrap" }}>
@@ -254,7 +254,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
   return (
     <div>
       <FullscreenChart chart={fsChart} onClose={() => setFsChart(null)} />
-      <Label>String matching results</Label>
+      <Label>STRING MATCHING RESULTS</Label>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ flex: 1, minWidth: 180, background: "rgba(255, 59, 48, 0.07)", border: "1px solid rgba(255, 59, 48, 0.28)", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
