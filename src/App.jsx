@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import "./styles/index.css";
 
-import { ThemeCtx } from './components/ui/Sidebar';
+import { ThemeCtx } from './theme/ThemeContext';
 import { Header } from './components/ui/Header';
 import { Empty } from './components/ui/SharedComponents';
 import { ConfigSidebar } from './components/sidebar/ConfigSidebar';
@@ -18,7 +18,7 @@ import { AIAssistantTab } from './tabs/AIAssistantTab';
 
 import { generateArray } from './utils/generators';
 import { exportCSV, exportXLSX, exportAllChartsPNG } from './utils/exportUtils';
-import { getDomain, getAlgorithm } from './algorithms/registry';
+import { getDomain, getAlgorithmForDisplay } from './algorithms/registry';
 import { INPUT_LABELS, SCENARIO_LABELS } from './utils/constants';
 import { getPalette } from './theme/tokens';
 
@@ -81,7 +81,18 @@ export default function App() {
   const [pseudoAlgo, setPseudoAlgo] = usePersistentState("pseudo:algo", "insertion-sort");
 
   // BENCHMARKS + HISTORY
-  const { sortResults, searchResults, sortRunning, searchRunning, runSort, runSearch } = useBenchmarks();
+  const {
+    sortResults,
+    searchResults,
+    sortRunning,
+    searchRunning,
+    sortError,
+    searchError,
+    cancelSort,
+    cancelSearch,
+    runSort,
+    runSearch,
+  } = useBenchmarks();
   const { history, compare, addRun, clearAll: clearHistory, clearSelection, updateCompare } = useRunHistory();
 
   // CHART REFS FOR BULK EXPORT
@@ -120,7 +131,7 @@ export default function App() {
 
   function startViz() {
     vizPlayback.pause();
-    const d = getAlgorithm(vizAlgo);
+    const d = getAlgorithmForDisplay(vizAlgo);
     if (!d || typeof d.steps !== "function") return;
     setVizSteps(d.steps(generateArray(vizSize, "random")));
     vizPlayback.reset();
@@ -147,7 +158,7 @@ export default function App() {
       ["Algorithm", "Input Type", ...sortResults.sizes.map((n) => `n=${n}`)],
       sortResults.algos.flatMap((a) =>
         sortResults.types.map((t) => [
-          getAlgorithm(a).name,
+          getAlgorithmForDisplay(a).name,
           INPUT_LABELS[t],
           ...sortResults.results[a][t].map((r) => r[mk]),
         ])
@@ -163,7 +174,7 @@ export default function App() {
       ["Algorithm", "Scenario", ...searchResults.sizes.map((n) => `n=${n}`)],
       searchResults.algos.flatMap((a) =>
         searchResults.scenarios.map((sc) => [
-          getAlgorithm(a).name,
+          getAlgorithmForDisplay(a).name,
           SCENARIO_LABELS[sc],
           ...searchResults.results[a][sc].map((r) => r[mk]),
         ])
@@ -181,7 +192,7 @@ export default function App() {
       headers: ["Algorithm", "Input Type", ...sortResults.sizes.map((n) => `n=${n}`)],
       rows: sortResults.algos.flatMap((a) =>
         sortResults.types.map((t) => [
-          getAlgorithm(a).name,
+          getAlgorithmForDisplay(a).name,
           INPUT_LABELS[t],
           ...sortResults.results[a][t].map((r) => r[mk]),
         ])
@@ -198,7 +209,7 @@ export default function App() {
       headers: ["Algorithm", "Scenario", ...searchResults.sizes.map((n) => `n=${n}`)],
       rows: searchResults.algos.flatMap((a) =>
         searchResults.scenarios.map((sc) => [
-          getAlgorithm(a).name,
+          getAlgorithmForDisplay(a).name,
           SCENARIO_LABELS[sc],
           ...searchResults.results[a][sc].map((r) => r[mk]),
         ])
@@ -221,6 +232,8 @@ export default function App() {
     algos: selSort,
     hasResults: !!sortResults,
     running: sortRunning,
+    error: sortError,
+    cancel: cancelSort,
     metric: sortMetric,
     sizesStr: sortSizes,
     types: sortTypes,
@@ -302,6 +315,8 @@ export default function App() {
               removeFile: removeUploadedFile,
               run: handleRunSearch,
               running: searchRunning,
+              error: searchError,
+              cancel: cancelSearch,
               hasResults: !!searchResults,
               exportCSV: exportSearchCSV,
               exportXLSX: exportSearchXLSX,

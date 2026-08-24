@@ -1,5 +1,5 @@
-import { Sec, Chk, SInput, RunBtn, GhostBtn } from '../ui/SharedComponents';
-import { getBenchmarkable, getWithSteps, getAlgorithm } from '../../algorithms/registry';
+import { Sec, Chk, SInput, RunBtn, GhostBtn, BenchmarkError } from '../ui/SharedComponents';
+import { getBenchmarkable, getWithSteps, getByCategory } from '../../algorithms/registry';
 import { INPUT_TYPES, INPUT_LABELS, TEXT_SCENARIOS, SCENARIO_LABELS } from '../../utils/constants';
 
 export function ConfigSidebar({
@@ -39,7 +39,7 @@ function SortingPanel({ subTab, isDark, border, sort, viz, history, pseudo }) {
         </Sec>
         <Sec title="INPUT MODE">
           {[["random", "Random / Generated"], ["custom", "Custom Array"]].map(([v, l]) => (
-            <Chk key={v} radio label={l} checked={sort.inputMode === v} onChange={() => sort.setInputMode(v)} />
+            <Chk key={v} radio groupName="sort-input-mode" label={l} checked={sort.inputMode === v} onChange={() => sort.setInputMode(v)} />
           ))}
         </Sec>
         {sort.inputMode === "custom" ? (
@@ -63,10 +63,11 @@ function SortingPanel({ subTab, isDark, border, sort, viz, history, pseudo }) {
         )}
         <Sec title="METRIC">
           {[["time", "Execution Time (ms)"], ["comparisons", "Comparisons"]].map(([v, l]) => (
-            <Chk key={v} radio label={l} checked={sort.metric === v} onChange={() => sort.setMetric(v)} />
+            <Chk key={v} radio groupName="sort-metric" label={l} checked={sort.metric === v} onChange={() => sort.setMetric(v)} />
           ))}
         </Sec>
-        <RunBtn onClick={sort.run} running={sort.running} />
+        <RunBtn onClick={sort.run} onCancel={sort.cancel} running={sort.running} />
+        <BenchmarkError message={sort.error} />
         {sort.hasResults && <GhostBtn onClick={sort.exportCSV} label="⬇ Export CSV" />}
         {sort.hasResults && <GhostBtn color="#38bdf8" onClick={sort.exportXLSX} label="⬇ Export Excel (.xlsx)" />}
         {sort.hasResults && <GhostBtn color="#fb923c" onClick={sort.exportPNG} label="⬇ All Charts PNG" />}
@@ -74,7 +75,7 @@ function SortingPanel({ subTab, isDark, border, sort, viz, history, pseudo }) {
 
       {subTab === "visualizer" && <>
         <Sec title="ALGORITHM">
-          {getWithSteps("sorting").map((a) => <Chk key={a.id} radio label={a.name} checked={viz.algo === a.id} onChange={() => viz.setAlgo(a.id)} />)}
+          {getWithSteps("sorting").map((a) => <Chk key={a.id} radio groupName="viz-algo" label={a.name} checked={viz.algo === a.id} onChange={() => viz.setAlgo(a.id)} />)}
         </Sec>
         <Sec title="ARRAY SIZE">
           <input type="range" min={6} max={32} value={viz.size} aria-label="Array size" onChange={(e) => viz.setSize(+e.target.value)} style={{ width: "100%", accentColor: "#38bdf8" }} />
@@ -122,7 +123,7 @@ function StringPanel({ subTab, isDark, border, search, history, pseudo }) {
       {subTab === "benchmark" && <>
         <Sec title="INPUT MODE">
           {[["generate", "Auto Generate"], ["file", "Upload File (.txt)"]].map(([v, l]) => (
-            <Chk key={v} radio label={l} checked={search.inputMode === v} onChange={() => search.setInputMode(v)} />
+            <Chk key={v} radio groupName="search-input-mode" label={l} checked={search.inputMode === v} onChange={() => search.setInputMode(v)} />
           ))}
         </Sec>
         {search.inputMode === "file" ? (
@@ -163,10 +164,11 @@ function StringPanel({ subTab, isDark, border, search, history, pseudo }) {
         </Sec>
         <Sec title="METRIC">
           {[["time", "Execution Time (ms)"], ["comparisons", "Comparisons"]].map(([v, l]) => (
-            <Chk key={v} radio label={l} checked={search.metric === v} onChange={() => search.setMetric(v)} />
+            <Chk key={v} radio groupName="search-metric" label={l} checked={search.metric === v} onChange={() => search.setMetric(v)} />
           ))}
         </Sec>
-        <RunBtn onClick={search.run} running={search.running} />
+        <RunBtn onClick={search.run} onCancel={search.cancel} running={search.running} />
+        <BenchmarkError message={search.error} />
         {search.hasResults && <GhostBtn onClick={search.exportCSV} label="⬇ Export CSV" />}
         {search.hasResults && <GhostBtn color="#38bdf8" onClick={search.exportXLSX} label="⬇ Export Excel (.xlsx)" />}
         {search.hasResults && <GhostBtn color="#fb923c" onClick={search.exportPNG} label="⬇ All Charts PNG" />}
@@ -191,11 +193,11 @@ function PseudoSection({ pseudo }) {
   const options = [
     ...getBenchmarkable("sorting"),
     ...getBenchmarkable("searching"),
-    getAlgorithm("binary-search"),
+    ...getByCategory("graphs"),
   ];
   return (
     <Sec title="SELECT ALGORITHM">
-      {options.map((a) => <Chk key={a.id} radio label={a.name} checked={pseudo.algo === a.id} onChange={() => pseudo.setAlgo(a.id)} />)}
+      {options.map((a) => <Chk key={a.id} radio groupName="pseudo-algo" label={a.name} checked={pseudo.algo === a.id} onChange={() => pseudo.setAlgo(a.id)} />)}
     </Sec>
   );
 }

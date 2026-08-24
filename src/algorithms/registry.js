@@ -38,8 +38,38 @@ export function getAlgorithm(id) {
   return d;
 }
 
-export function hasAlgorithm(id) {
-  return BY_ID.has(id);
+const FALLBACK_COMPLEXITY = {
+  best: "—",
+  average: "—",
+  worst: "—",
+  space: "—",
+  paradigm: "Unknown",
+};
+
+/**
+ * Never throws. Returns null for unknown/stale IDs so render paths can
+ * degrade gracefully instead of crashing on persisted state.
+ */
+export function getAlgorithmSafe(id) {
+  return BY_ID.get(id) || null;
+}
+
+/** Safe descriptor for display contexts; falls back to a stub using the raw id. */
+export function getAlgorithmForDisplay(id) {
+  return (
+    BY_ID.get(id) || {
+      id,
+      name: id,
+      category: "unknown",
+      color: "#94a3b8",
+      complexity: FALLBACK_COMPLEXITY,
+      run: null,
+      steps: null,
+      debug: null,
+      pseudocode: null,
+      codeLines: [],
+    }
+  );
 }
 
 export function getByCategory(category) {

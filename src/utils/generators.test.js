@@ -41,6 +41,11 @@ describe("generateText", () => {
     expect(text).toHaveLength(100);
   });
 
+  it("start scenario preserves exact length even for long patterns", () => {
+    expect(generateText(10, "algoreallylongpattern", "start")).toHaveLength(10);
+    expect(generateText(4, "toolong", "start")).toBe("tool");
+  });
+
   it("end scenario places the pattern at the end", () => {
     const text = generateText(100, "algo", "end");
     expect(text.endsWith("algo")).toBe(true);

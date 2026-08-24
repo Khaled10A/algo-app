@@ -1,7 +1,6 @@
 import { bruteForceSearch } from './bruteForce';
 import { horspoolSearch } from './horspool';
 import { kmpSearch } from './kmp';
-import { binarySearch } from './binarySearch';
 import { bruteForceDebug } from './bruteForceDebug';
 import { horspoolDebug } from './horspoolDebug';
 import { kmpDebug } from './kmpDebug';

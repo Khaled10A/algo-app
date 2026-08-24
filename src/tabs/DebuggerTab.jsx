@@ -12,6 +12,10 @@ const STRING_MATCH_ALGOS = getWithDebug("searching").filter((d) => d.group === "
 const DEFAULT_TEXT = "abcababcabcabc";
 const DEFAULT_PATTERN = "abc";
 
+export const MAX_DEBUG_ARRAY = 64;
+export const MAX_DEBUG_TEXT = 2000;
+export const MAX_DEBUG_PATTERN = 100;
+
 export function DebuggerTab({ isDark }) {
   const p = getPalette(isDark ? "dark" : "light");
 
@@ -25,6 +29,7 @@ export function DebuggerTab({ isDark }) {
   const [debugFileName, setDebugFileName] = useState("");
   const [binaryTargetMode, setBinaryTargetMode] = useState("present");
   const [steps, setSteps] = useState([]);
+  const [inputNotice, setInputNotice] = useState(null);
 
   const playback = usePlayback({ length: steps.length, initialSpeed: 600, onFinish: playVictory });
   const { index: step, playing } = playback;
@@ -55,13 +60,29 @@ export function DebuggerTab({ isDark }) {
 
   function generate() {
     let s;
+    let notice = null;
+
     if (isStringSearch) {
-      s = descriptor.debug(textInput, patInput);
+      let text = textInput;
+      let pattern = patInput;
+      if (text.length > MAX_DEBUG_TEXT) {
+        text = text.slice(0, MAX_DEBUG_TEXT);
+        notice = `Text truncated to ${MAX_DEBUG_TEXT.toLocaleString()} characters for debugging.`;
+      }
+      if (pattern.length > MAX_DEBUG_PATTERN) {
+        pattern = pattern.slice(0, MAX_DEBUG_PATTERN);
+        notice = `${notice || ""} Pattern truncated to ${MAX_DEBUG_PATTERN} characters.`;
+      }
+      s = descriptor.debug(text, pattern);
     } else {
       let arr =
         arrInputMode === "custom"
           ? customArrStr.split(",").map((x) => parseInt(x.trim())).filter((n) => !isNaN(n))
           : generateArray(arrSize, "random");
+      if (arrInputMode === "custom" && arr.length > MAX_DEBUG_ARRAY) {
+        notice = `Custom array truncated to the first ${MAX_DEBUG_ARRAY} numbers.`;
+        arr = arr.slice(0, MAX_DEBUG_ARRAY);
+      }
       if (arr.length < 2) arr = generateArray(arrSize, "random");
       if (isBinary) {
         const sortedMax = Math.max(...arr.map((v) => (isNaN(v) ? 0 : v)));
@@ -71,6 +92,8 @@ export function DebuggerTab({ isDark }) {
         s = descriptor.debug(arr);
       }
     }
+
+    setInputNotice(notice);
     setSteps(s);
     playback.reset();
   }
@@ -346,7 +369,17 @@ export function DebuggerTab({ isDark }) {
                     const file = e.target.files[0];
                     if (!file) return;
                     const reader = new FileReader();
-                    reader.onload = (ev) => { setTextInput(ev.target.result); setDebugFileName(file.name); };
+                    reader.onload = (ev) => {
+                      const content = String(ev.target.result || "");
+                      if (content.length > MAX_DEBUG_TEXT) {
+                        setTextInput(content.slice(0, MAX_DEBUG_TEXT));
+                        setInputNotice(`File truncated to the first ${MAX_DEBUG_TEXT.toLocaleString()} characters for debugging.`);
+                      } else {
+                        setTextInput(content);
+                        setInputNotice(null);
+                      }
+                      setDebugFileName(file.name);
+                    };
                     reader.readAsText(file);
                   }} />
                 </label>

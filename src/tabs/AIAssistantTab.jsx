@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { getAlgorithm } from "../algorithms/registry";
+import { getAlgorithmForDisplay } from "../algorithms/registry";
 
 function algoName(id) {
-  try {
-    return getAlgorithm(id).name;
-  } catch {
-    return id;
-  }
+  return getAlgorithmForDisplay(id).name;
 }
 
 // ── SYSTEM PROMPTS ─────────────────────────────────────────────────────────────

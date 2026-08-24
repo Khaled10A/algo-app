@@ -74,8 +74,6 @@ export const CHART_FALLBACK_COLORS = [
   "#fbbf24",
 ];
 
-export const SEARCH_SERIES_COLORS = ["#f472b6", "#4ade80", "#fb923c"];
-
 export function tableStyles(theme) {
   const p = getPalette(theme);
   return {

@@ -3,18 +3,51 @@ const MODEL = "llama-3.3-70b-versatile";
 const MAX_MESSAGES = 20;
 const MAX_CONTENT_LENGTH = 8000;
 
-function cors(res) {
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", process.env.ALLOWED_ORIGIN || "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+// Best-effort per-instance rate limit. Vercel serverless instances are
+// ephemeral and may scale out, so this bounds abuse per warm instance
+// rather than globally. It requires no shared state or external store.
+const RATE_LIMIT = { windowMs: 60_000, maxRequests: 15 };
+const buckets = new Map();
+
+function rateLimit(ip) {
+  const now = Date.now();
+  const bucket = buckets.get(ip) || { count: 0, resetAt: now + RATE_LIMIT.windowMs };
+  if (now > bucket.resetAt) {
+    bucket.count = 0;
+    bucket.resetAt = now + RATE_LIMIT.windowMs;
+  }
+  bucket.count += 1;
+  buckets.set(ip, bucket);
+  if (buckets.size > 10_000) {
+    for (const [key, b] of buckets) {
+      if (now > b.resetAt) buckets.delete(key);
+    }
+  }
+  return bucket.count <= RATE_LIMIT.maxRequests;
+}
+
+function clientIp(req) {
+  const fwd = req.headers["x-forwarded-for"];
+  if (typeof fwd === "string" && fwd.length > 0) return fwd.split(",")[0].trim();
+  return req.socket?.remoteAddress || "unknown";
 }
 
 export default async function handler(req, res) {
-  cors(res);
+  // Same-origin requests need no CORS headers; when ALLOWED_ORIGIN is set
+  // explicitly we allow that single origin without credentials.
+  if (process.env.ALLOWED_ORIGIN) {
+    res.setHeader("Access-Control-Allow-Origin", process.env.ALLOWED_ORIGIN);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
 
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
+  if (!rateLimit(clientIp(req))) {
+    return res.status(429).json({ error: "Too many requests — please wait a minute and try again." });
+  }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {

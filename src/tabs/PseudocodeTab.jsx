@@ -1,8 +1,26 @@
 import { Label } from '../components/ui/SharedComponents';
-import { getAlgorithm } from '../algorithms/registry';
+import { getAlgorithmSafe } from '../algorithms/registry';
 
 export function PseudocodeTab({ pseudoAlgo, isDark }) {
-  const d = getAlgorithm(pseudoAlgo);
+  const d = getAlgorithmSafe(pseudoAlgo);
+
+  if (!d) {
+    return (
+      <div>
+        <Label color="#a78bfa">PSEUDOCODE</Label>
+        <div style={{
+          background: isDark ? "#0f172a" : "#f1f5f9",
+          borderRadius: 10,
+          border: `1px solid ${isDark ? "#1e293b" : "#e2e8f0"}`,
+          padding: "18px 22px", fontSize: 12,
+          color: isDark ? "#94a3b8" : "#475569", fontFamily: "monospace",
+        }}>
+          Unknown algorithm "{String(pseudoAlgo)}" — pick one from the sidebar.
+        </div>
+      </div>
+    );
+  }
+
   const c = d.complexity;
 
   return (

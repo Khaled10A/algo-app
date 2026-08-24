@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { LineChart } from '../components/charts/LineChart';
 import { Label } from '../components/ui/SharedComponents';
-import { useTheme } from '../components/ui/Sidebar';
+import { useTheme } from '../theme/ThemeContext';
 import { getBenchmarkable } from '../algorithms/registry';
 import { generateArray, generateText } from '../utils/generators';
 import { measure } from '../core/benchmark/engine';

@@ -1,5 +1,5 @@
 import { Label } from '../components/ui/SharedComponents';
-import { getAlgorithm } from '../algorithms/registry';
+import { getAlgorithmForDisplay } from '../algorithms/registry';
 import { tableStyles } from '../theme/tokens';
 
 export function HistoryTab({ history, compare, setCompare, isDark }) {
@@ -7,8 +7,8 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
   const cardBg = isDark ? "#0f172a" : "#f8fafc";
   const textMuted = isDark ? "#64748b" : "#94a3b8";
   const ts = tableStyles(isDark ? "dark" : "light");
-  const algoName = (id) => { try { return getAlgorithm(id).name; } catch { return id; } };
-  const algoColor = (id) => { try { return getAlgorithm(id).color; } catch { return undefined; } };
+  const algoName = (id) => getAlgorithmForDisplay(id).name;
+  const algoColor = (id) => getAlgorithmForDisplay(id).color;
 
   const toggleCompare = (run) => {
     setCompare(prev => {

@@ -1,7 +1,7 @@
 import { Label } from '../components/ui/SharedComponents';
-import { useTheme } from '../components/ui/Sidebar';
+import { useTheme } from '../theme/ThemeContext';
 import { INPUT_LABELS, SCENARIO_LABELS } from '../utils/constants';
-import { getAlgorithm } from '../algorithms/registry';
+import { getAlgorithmForDisplay } from '../algorithms/registry';
 
 export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric, pattern }) {
   const th = useTheme();
@@ -66,13 +66,13 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
         All algorithms were implemented from scratch without library functions.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#4ade80" }}>Best overall: {getAlgorithm(best.algo).name}</strong> — average{" "}
-        <strong style={{ color: "#4ade80" }}>{best.avg.toFixed(4)} {unit}</strong>, consistent with its {getAlgorithm(best.algo).complexity.average} complexity.
+        <strong style={{ color: "#4ade80" }}>Best overall: {getAlgorithmForDisplay(best.algo).name}</strong> — average{" "}
+        <strong style={{ color: "#4ade80" }}>{best.avg.toFixed(4)} {unit}</strong>, consistent with its {getAlgorithmForDisplay(best.algo).complexity.average} complexity.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#f87171" }}>Worst overall: {getAlgorithm(worst.algo).name}</strong> — average{" "}
+        <strong style={{ color: "#f87171" }}>Worst overall: {getAlgorithmForDisplay(worst.algo).name}</strong> — average{" "}
         <strong style={{ color: "#f87171" }}>{worst.avg.toFixed(4)} {unit}</strong>,{" "}
-        approximately <strong style={{ color: "#fb923c" }}>{ratio}×</strong> slower than {getAlgorithm(best.algo).name}.
+        approximately <strong style={{ color: "#fb923c" }}>{ratio}×</strong> slower than {getAlgorithmForDisplay(best.algo).name}.
       </p>
       {algoStats.length > 2 && (
         <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
@@ -87,7 +87,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
           {typeWinners.map(({ type, winner }) => (
             <div key={type} style={{ background: isDark ? "#0a0f1e" : "#f1f5f9", border: `1px solid ${border}`, borderRadius: 6, padding: "6px 12px" }}>
               <div style={{ fontSize: 8, color: textMuted, letterSpacing: 2, marginBottom: 2 }}>{INPUT_LABELS[type].toUpperCase()}</div>
-              <div style={{ fontSize: 11, color: "#4ade80", fontWeight: "bold" }}>{getAlgorithm(winner).name}</div>
+              <div style={{ fontSize: 11, color: "#4ade80", fontWeight: "bold" }}>{getAlgorithmForDisplay(winner).name}</div>
             </div>
           ))}
         </div>
@@ -97,18 +97,16 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
     const conclusionCard = card(<>
       {secTitle("SORTING — CONCLUSION", "#38bdf8")}
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8 }}>
-        <strong style={{ color: "#4ade80" }}>{getAlgorithm(best.algo).name}</strong> is recommended for general-purpose sorting due to its consistent {getAlgorithm(best.algo).complexity.average} average-case performance.{" "}
-        {getAlgorithm(best.algo).complexity.paradigm === "Divide & Conquer"
+        <strong style={{ color: "#4ade80" }}>{getAlgorithmForDisplay(best.algo).name}</strong> is recommended for general-purpose sorting due to its consistent {getAlgorithmForDisplay(best.algo).complexity.average} average-case performance.{" "}
+        {getAlgorithmForDisplay(best.algo).complexity.paradigm === "Divide & Conquer"
           ? "Its divide-and-conquer strategy efficiently reduces problem size at each step."
           : "Its incremental approach adapts well to partially sorted data."}
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginTop: 10 }}>
-        <strong style={{ color: "#f87171" }}>{getAlgorithm(worst.algo).name}</strong> should be avoided for large datasets given its {getAlgorithm(worst.algo).complexity.worst} worst-case complexity,
+        <strong style={{ color: "#f87171" }}>{getAlgorithmForDisplay(worst.algo).name}</strong> should be avoided for large datasets given its {getAlgorithmForDisplay(worst.algo).complexity.worst} worst-case complexity,
         though it remains acceptable for very small inputs (n ≤ 20).
       </p>
-      <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginTop: 10 }}>
-        The experimental data closely mirrors theoretical Big-O predictions, validating the benchmark methodology.
-      </p>
+      <ScalingAssessment sortResults={sortResults} unit={unit} isDark={isDark} />
     </>, "#38bdf8");
 
     sortSection = <>{resultCard}{conclusionCard}</>;
@@ -146,13 +144,13 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
         <strong style={{ color: "#e2e8f0" }}>{sizes.join(", ")} characters</strong>. Pattern used: <strong style={{ color: "#fbbf24" }}>"{pattern}"</strong>.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#4ade80" }}>Best: {getAlgorithm(best.algo).name}</strong> — averaged{" "}
+        <strong style={{ color: "#4ade80" }}>Best: {getAlgorithmForDisplay(best.algo).name}</strong> — averaged{" "}
         <strong style={{ color: "#4ade80" }}>{best.avg.toFixed(4)} {unit}</strong> across all scenarios.
       </p>
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8, marginBottom: 14 }}>
-        <strong style={{ color: "#f87171" }}>Most expensive: {getAlgorithm(worst.algo).name}</strong> — averaged{" "}
+        <strong style={{ color: "#f87171" }}>Most expensive: {getAlgorithmForDisplay(worst.algo).name}</strong> — averaged{" "}
         <strong style={{ color: "#f87171" }}>{worst.avg.toFixed(4)} {unit}</strong>,{" "}
-        about <strong style={{ color: "#fb923c" }}>{ratio}×</strong> more than {getAlgorithm(best.algo).name}.
+        about <strong style={{ color: "#fb923c" }}>{ratio}×</strong> more than {getAlgorithmForDisplay(best.algo).name}.
       </p>
       <div style={{ marginBottom: 12 }}>
         {secTitle("SCENARIO WINNERS", "#475569")}
@@ -194,5 +192,89 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
       {sortSection}
       {searchSection}
     </div>
+  );
+}
+
+
+function averageComplexityExponent(label) {
+  if (!label) return null;
+  if (label.includes("n²")) return 2;
+  if (label.includes("n log n")) return "nlogn";
+  if (label.includes("n×m") || label.includes("n+m")) return null;
+  if (label === "O(n)") return 1;
+  return null;
+}
+
+function predictedGrowth(exponent, nMin, nMax) {
+  if (exponent === "nlogn") {
+    if (nMin <= 0 || nMax <= 0) return null;
+    return (nMax * Math.log2(nMax)) / (nMin * Math.log2(nMin));
+  }
+  if (typeof exponent !== "number") return null;
+  if (nMin <= 0) return null;
+  return Math.pow(nMax / nMin, exponent);
+}
+
+/**
+ * Compares observed runtime growth of the winning algorithm against its
+ * stated complexity. States only what was measured — no claims of
+ * statistical significance.
+ */
+function ScalingAssessment({ sortResults, unit, isDark }) {
+  const { results, sizes, algos, types } = sortResults;
+  const d = algos.length ? getAlgorithmForDisplay(algos[0]) : null;
+
+  if (!d || !sizes || sizes.length < 2 || sizes[0] <= 0) {
+    return (
+      <p style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.8, marginTop: 10 }}>
+        Run at least two input sizes to compare observed growth against the stated complexity.
+      </p>
+    );
+  }
+
+  const nMin = Math.min(...sizes);
+  const nMax = Math.max(...sizes);
+
+  const perType = types
+    .map((t) => {
+      const points = results[d.id]?.[t];
+      if (!Array.isArray(points)) return null;
+      const first = points.find((p) => p.n === nMin);
+      const last = points.find((p) => p.n === nMax);
+      if (!first || !last || !(first.time > 0)) return null;
+      return last.time / first.time;
+    })
+    .filter((x) => x != null);
+
+  if (!perType.length) {
+    return (
+      <p style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.8, marginTop: 10 }}>
+        Not enough usable timing data to assess scaling for this run.
+      </p>
+    );
+  }
+
+  const observed = perType.reduce((a, b) => a + b, 0) / perType.length;
+  const exponent = averageComplexityExponent(d.complexity?.average);
+  const predicted = exponent == null ? null : predictedGrowth(exponent, nMin, nMax);
+
+  let verdict;
+  if (predicted == null || !isFinite(predicted) || predicted <= 0) {
+    verdict = `no reliable prediction is available from the stated ${d.complexity?.average} bound`;
+  } else if (observed >= predicted * 0.65 && observed <= predicted * 1.35) {
+    verdict = `close to the ~${predicted.toFixed(1)}× growth implied by its ${d.complexity.average} average case`;
+  } else if (observed > predicted) {
+    verdict = `faster than the ~${predicted.toFixed(1)}× growth implied by ${d.complexity.average} — likely constant-factor effects at these small sizes, not a better asymptotic class`;
+  } else {
+    verdict = `slower than the ~${predicted.toFixed(1)}× growth implied by ${d.complexity.average}`;
+  }
+
+  return (
+    <p style={{ fontSize: 12, color: isDark ? "#e2e8f0" : "#1e293b", lineHeight: 1.8, marginTop: 10 }}>
+      Observed scaling: between n={nMin.toLocaleString()} and n={nMax.toLocaleString()},
+      {" "}<strong style={{ color: "#4ade80" }}>{d.name}</strong>&apos;s median {unit} grew
+      approximately <strong style={{ color: "#fb923c" }}>{observed.toFixed(1)}×</strong> — {verdict}.
+      This is a single-run observation on this machine; it is not a controlled benchmark.
+    </p>
   );
 }

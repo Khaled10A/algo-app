@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { useTheme } from "./Sidebar";
+import { useTheme } from "../../theme/ThemeContext";
 
 export function Sec({ title, children }) {
   const th = useTheme();
@@ -20,16 +20,17 @@ const hiddenInputStyle = {
   pointerEvents: "none",
 };
 
-export function Chk({ label, checked, onChange, radio }) {
+export function Chk({ label, checked, onChange, radio, groupName }) {
   const th = useTheme();
   return (
     <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
       <input
         type={radio ? "radio" : "checkbox"}
+        name={radio ? groupName : undefined}
         checked={checked}
         onChange={onChange}
+        className="chk-input"
         style={hiddenInputStyle}
-        tabIndex={0}
       />
       <span aria-hidden="true" style={{
         width: 14, height: 14, borderRadius: radio ? "50%" : 3,
@@ -58,8 +59,18 @@ export function SInput({ value, onChange, placeholder, hint, label }) {
   );
 }
 
-export function RunBtn({ onClick, running, label }) {
+export function RunBtn({ onClick, onCancel, running, label }) {
   const th = useTheme();
+  if (running && onCancel) {
+    return (
+      <button onClick={onCancel} aria-label="Cancel benchmark" style={{
+        width: "100%", padding: "10px", borderRadius: 7, border: "1px solid rgba(239,68,68,0.5)",
+        background: "rgba(239,68,68,0.12)",
+        color: "#f87171", fontSize: 11, letterSpacing: 2,
+        cursor: "pointer", fontFamily: "monospace", fontWeight: "bold",
+      }}>⏹ CANCEL</button>
+    );
+  }
   return (
     <button onClick={onClick} disabled={running} style={{
       width: "100%", padding: "10px", borderRadius: 7, border: "none",
@@ -67,6 +78,18 @@ export function RunBtn({ onClick, running, label }) {
       color: running ? (th === "light" ? "#64748b" : "#475569") : "#fff", fontSize: 11, letterSpacing: 2,
       cursor: running ? "not-allowed" : "pointer", fontFamily: "monospace", fontWeight: "bold",
     }}>{running ? "⏳ RUNNING..." : `▶  ${label || "RUN BENCHMARK"}`}</button>
+  );
+}
+
+export function BenchmarkError({ message }) {
+  if (!message) return null;
+  return (
+    <div role="alert" style={{
+      marginTop: 8, padding: "8px 10px", borderRadius: 6, fontSize: 10,
+      fontFamily: "monospace", lineHeight: 1.5,
+      background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.35)",
+      color: "#fca5a5", wordBreak: "break-word",
+    }}>{message}</div>
   );
 }
 

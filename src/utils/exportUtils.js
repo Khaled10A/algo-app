@@ -6,8 +6,32 @@ export function exportCSV(headers, rows, filename) {
   a.click();
 }
 
-function renderSvgToPng(svgEl, filename, background, width = 900, height = 420) {
+function svgPixelSize(svgEl, targetWidth = 900) {
+  const viewBox = svgEl.getAttribute && svgEl.getAttribute("viewBox");
+  if (viewBox) {
+    const parts = viewBox.split(/[\s,]+/).map(Number);
+    if (parts.length === 4 && parts[2] > 0) {
+      return { width: targetWidth, height: Math.round((targetWidth * parts[3]) / parts[2]) };
+    }
+  }
+  const box = typeof svgEl.getBBox === "function" ? safeBBox(svgEl) : null;
+  if (box && box.width > 0 && box.height > 0) {
+    return { width: targetWidth, height: Math.round((targetWidth * box.height) / box.width) };
+  }
+  return { width: targetWidth, height: 420 };
+}
+
+function safeBBox(svgEl) {
+  try {
+    return svgEl.getBBox();
+  } catch {
+    return null;
+  }
+}
+
+function renderSvgToPng(svgEl, filename, background) {
   const s = new XMLSerializer().serializeToString(svgEl);
+  const { width, height } = svgPixelSize(svgEl);
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -19,11 +43,13 @@ function renderSvgToPng(svgEl, filename, background, width = 900, height = 420) 
     ctx.fillRect(0, 0, width, height);
     ctx.drawImage(img, 0, 0, width, height);
     canvas.toBlob(b => {
+      if (!b) return;
+      const blobUrl = URL.createObjectURL(b);
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(b);
+      a.href = blobUrl;
       a.download = filename;
       a.click();
-      URL.revokeObjectURL(a.href);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10_000);
     });
     URL.revokeObjectURL(url);
   };
@@ -37,14 +63,17 @@ export function exportSVGasPNG(containerEl, filename, background = "#0f172a") {
 }
 
 export function exportAllChartsPNG(refs, background = "#0f172a") {
-  const entries = Object.entries(refs).filter(([, ref]) => ref?.current?.querySelector?.("svg"));
-  entries.forEach(([name, ref], idx) => {
-    setTimeout(() => {
-      const svgEl = ref.current.querySelector("svg");
-      if (!svgEl) return;
-      renderSvgToPng(svgEl, `${name}.png`, background);
-    }, idx * 400);
-  });
+  const entries = Object.entries(refs)
+    .map(([name, ref]) => [name, ref?.current?.querySelector?.("svg")])
+    .filter(([, svg]) => svg);
+
+  entries.reduce(
+    (delay, [name, svgEl]) => {
+      setTimeout(() => renderSvgToPng(svgEl, `${name}.png`, background), delay);
+      return delay + 350;
+    },
+    0
+  );
 }
 
 export async function exportXLSX(sheets, filename) {

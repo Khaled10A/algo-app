@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 import { LineChart, BarChart } from '../components/charts/LineChart';
 import { Label, Empty, ChartBox, FullscreenChart } from '../components/ui/SharedComponents';
-import { useTheme } from '../components/ui/Sidebar';
+import { useTheme } from '../theme/ThemeContext';
 import { exportSVGasPNG } from '../utils/exportUtils';
-import { getAlgorithm } from '../algorithms/registry';
+import { getAlgorithmForDisplay } from '../algorithms/registry';
 import { INPUT_LABELS, SCENARIO_LABELS } from '../utils/constants';
 import { tableStyles } from '../theme/tokens';
 
@@ -17,7 +17,7 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
   const [fsChart, setFsChart] = useState(null);
   const th = useTheme();
   const ts = tableStyles(th);
-  const meta = algos.map((id) => getAlgorithm(id));
+  const meta = algos.map((id) => getAlgorithmForDisplay(id));
   const algoColors = meta.map((d) => d.color);
 
   const algoTotals = algos.map(algo => ({
@@ -109,7 +109,7 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
                   <td style={{ ...ts.TD, fontSize: 10 }}>
                     {(() => {
                       const n = sizes[sizes.length - 1];
-                      const c = getAlgorithm(algo).complexity;
+                      const c = getAlgorithmForDisplay(algo).complexity;
                       if (!c) return "-";
                       const theoretical = c.worst.includes("n²") ? Math.round(n*n)
                         : c.worst.includes("n log n") ? Math.round(n * Math.log2(n))
@@ -156,7 +156,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
 
     const rows = algos.map((algo) => {
       const r = data[algo]["file"][0];
-      return { algo, name: getAlgorithm(algo).name, time: r.time, comparisons: r.comparisons, matches: r.matches?.length || 0, color: getAlgorithm(algo).color };
+      return { algo, name: getAlgorithmForDisplay(algo).name, time: r.time, comparisons: r.comparisons, matches: r.matches?.length || 0, color: getAlgorithmForDisplay(algo).color };
     }).sort((a, b) => a[mk] - b[mk]);
 
     return (
@@ -247,7 +247,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
     values: sizes.map((_, si) => data[algo][scenarios[0]][si][mk]),
   }));
 
-  const searchMeta = algos.map((id) => getAlgorithm(id));
+  const searchMeta = algos.map((id) => getAlgorithmForDisplay(id));
   const searchColors = searchMeta.map((d) => d.color);
 
   return (

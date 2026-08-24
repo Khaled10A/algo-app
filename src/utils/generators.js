@@ -22,9 +22,15 @@ export function generateText(size, pattern, scenario) {
     }
     return "\u0002".repeat(size);
   }
+  if (scenario === "start") {
+    if (pattern.length >= size) return pattern.slice(0, size);
+    return (
+      pattern +
+      Array.from({ length: size - pattern.length }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+    );
+  }
   let text = Array.from({ length: size }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  if (scenario === "start") text = pattern + text.slice(pattern.length);
-  else if (scenario === "end") text = text.slice(0, size - pattern.length) + pattern;
+  if (scenario === "end") text = text.slice(0, size - pattern.length) + pattern;
   else if (scenario === "multiple") {
     const interval = Math.floor(size / 4);
     let arr2 = text.split("");
