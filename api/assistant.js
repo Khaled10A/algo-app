@@ -49,14 +49,6 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: "Too many requests — please wait a minute and try again." });
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    return res.status(501).json({
-      error:
-        "The AI assistant is not configured on this deployment. The owner must set GROQ_API_KEY as a server-side environment variable.",
-    });
-  }
-
   let body = req.body;
   if (typeof body === "string") {
     try {
@@ -83,6 +75,14 @@ export default async function handler(req, res) {
     messages.push({
       role,
       content: m.content.slice(0, MAX_CONTENT_LENGTH),
+    });
+  }
+
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return res.status(501).json({
+      error:
+        "The AI assistant is not configured on this deployment. The owner must set GROQ_API_KEY as a server-side environment variable.",
     });
   }
 

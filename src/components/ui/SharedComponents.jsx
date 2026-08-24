@@ -13,12 +13,26 @@ export function Sec({ title, children }) {
 
 const hiddenInputStyle = {
   position: "absolute",
-  opacity: 0,
-  width: 1,
-  height: 1,
+  clipPath: "inset(50%)",
+  width: 14,
+  height: 14,
   margin: 0,
-  pointerEvents: "none",
 };
+
+function handleRadioArrows(e, groupName) {
+  const down = e.key === "ArrowDown" || e.key === "ArrowRight";
+  const up = e.key === "ArrowUp" || e.key === "ArrowLeft";
+  if (!down && !up) return;
+  const group = Array.from(
+    document.querySelectorAll(`input[type="radio"][name="${CSS.escape(groupName)}"]`)
+  );
+  if (group.length < 2) return;
+  const idx = group.indexOf(e.currentTarget);
+  if (idx === -1) return;
+  e.preventDefault();
+  const target = group[(idx + (down ? 1 : -1) + group.length) % group.length];
+  target.click();
+}
 
 export function Chk({ label, checked, onChange, radio, groupName }) {
   const th = useTheme();
@@ -29,6 +43,7 @@ export function Chk({ label, checked, onChange, radio, groupName }) {
         name={radio ? groupName : undefined}
         checked={checked}
         onChange={onChange}
+        onKeyDown={radio && groupName ? (e) => handleRadioArrows(e, groupName) : undefined}
         className="chk-input"
         style={hiddenInputStyle}
       />

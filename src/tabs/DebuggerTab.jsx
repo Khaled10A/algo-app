@@ -432,6 +432,15 @@ export function DebuggerTab({ isDark }) {
         </div>
       </div>
 
+      {inputNotice && (
+        <div role="status" style={{
+          marginBottom: 12, padding: "8px 12px", borderRadius: 6, fontSize: 10,
+          fontFamily: "monospace", lineHeight: 1.5,
+          background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.4)",
+          color: "#fbbf24",
+        }}>⚠ {inputNotice}</div>
+      )}
+
       {steps.length > 0 && (
         <div style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 10 }}>
