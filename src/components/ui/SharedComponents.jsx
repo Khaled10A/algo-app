@@ -97,13 +97,16 @@ export function RunBtn({ onClick, onCancel, running, label }) {
 }
 
 export function BenchmarkError({ message }) {
+  const th = useTheme();
+  const isDark = th !== "light";
   if (!message) return null;
   return (
     <div role="alert" style={{
       marginTop: 8, padding: "8px 10px", borderRadius: 6, fontSize: 10,
       fontFamily: "monospace", lineHeight: 1.5,
-      background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.35)",
-      color: "#fca5a5", wordBreak: "break-word",
+      background: isDark ? "rgba(239,68,68,0.08)" : "rgba(239,68,68,0.06)",
+      border: `1px solid ${isDark ? "rgba(239,68,68,0.35)" : "rgba(185,28,28,0.4)"}`,
+      color: isDark ? "#fca5a5" : "#b91c1c", wordBreak: "break-word",
     }}>{message}</div>
   );
 }

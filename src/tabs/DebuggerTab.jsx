@@ -436,8 +436,9 @@ export function DebuggerTab({ isDark }) {
         <div role="status" style={{
           marginBottom: 12, padding: "8px 12px", borderRadius: 6, fontSize: 10,
           fontFamily: "monospace", lineHeight: 1.5,
-          background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.4)",
-          color: "#fbbf24",
+          background: isDark ? "rgba(251,191,36,0.08)" : "rgba(217,119,6,0.08)",
+          border: `1px solid ${isDark ? "rgba(251,191,36,0.4)" : "rgba(180,83,9,0.45)"}`,
+          color: isDark ? "#fbbf24" : "#92400e",
         }}>⚠ {inputNotice}</div>
       )}
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Label, Empty } from '../components/ui/SharedComponents';
-import { getAlgorithm } from '../algorithms/registry';
+import { getAlgorithmForDisplay } from '../algorithms/registry';
 import { playTone } from '../utils/audio';
 
 function btnBase(isDark) {
@@ -132,7 +132,9 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
   const pauseViz = playback.pause;
   const vizSpeed = playback.speed;
   const setVizSpeed = playback.setSpeed;
-  const algoName = getAlgorithm(vizAlgo).name;
+  const vizDescriptor = getAlgorithmForDisplay(vizAlgo);
+  const algoName = typeof vizDescriptor.steps === "function" ? vizDescriptor.name : String(vizAlgo);
+  const hasVizAlgo = typeof vizDescriptor.steps === "function";
 
   const currentStep = vizSteps[vizStep] || null;
   const stepDesc = getStepDesc(currentStep, algoName);
@@ -161,7 +163,9 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
   return (
     <div>
       <Label color="#4ade80">SORTING VISUALIZER</Label>
-      {vizSteps.length === 0 ? (
+      {!hasVizAlgo ? (
+        <Empty icon="🎬" text="Pick an algorithm from the sidebar" />
+      ) : vizSteps.length === 0 ? (
         <Empty icon="🎬" text="Generate an array to visualize" />
       ) : (
         <div style={{ background: cardBg, borderRadius:10, border:`1px solid ${border}`, padding:18, maxWidth:680 }}>
