@@ -1,4 +1,13 @@
 import { useState, useRef, useEffect } from "react";
+import { getAlgorithm } from "../algorithms/registry";
+
+function algoName(id) {
+  try {
+    return getAlgorithm(id).name;
+  } catch {
+    return id;
+  }
+}
 
 // ── SYSTEM PROMPTS ─────────────────────────────────────────────────────────────
 const SYSTEM_PROMPTS = {
@@ -81,23 +90,26 @@ const PLACEHOLDERS = {
   de: "Fragen Sie über Algorithmen...",
 };
 
-// ── CALL GROQ API ──────────────────────────────────────────────────────────────
-async function callClaude(messages, lang) {
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+// ── CALL AI ASSISTANT ENDPOINT (server-side proxy holds the key) ───────────────
+async function callAssistant(messages, lang) {
+  const endpoint = import.meta.env.VITE_AI_ENDPOINT || "/api/assistant";
+  const res = await fetch(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${import.meta.env.VITE_GROQ_KEY}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      max_tokens: 1000,
       messages: [{ role: "system", content: SYSTEM_PROMPTS[lang] }, ...messages],
     }),
   });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.choices[0].message.content;
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    
+  }
+  if (!res.ok || data?.error) {
+    throw new Error(data?.error || `AI request failed (${res.status})`);
+  }
+  return data.content;
 }
 
 // ── QUICK ACTIONS ──────────────────────────────────────────────────────────────
@@ -201,7 +213,7 @@ function RecommendForm({ onSubmit, isDark, accentColor, border, textMute, cardBg
 }
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────────────────────
-export function AIAssistantTab({ isDark, sortResults, searchResults, debugStep }) {
+export function AIAssistantTab({ isDark, sortResults, searchResults }) {
   const bg          = isDark ? "#020817" : "#f8fafc";
   const cardBg      = isDark ? "#0f172a" : "#ffffff";
   const border      = isDark ? "#1e293b" : "#e2e8f0";
@@ -238,7 +250,7 @@ export function AIAssistantTab({ isDark, sortResults, searchResults, debugStep }
     setLoading(true);
     try {
       const history = newMessages.slice(-10).map(m => ({ role: m.role, content: m.content }));
-      const reply = await callClaude(history, lang);
+      const reply = await callAssistant(history, lang);
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
     } catch (e) {
       setMessages(prev => [...prev, { role: "assistant", content: `❌ Error: ${e.message}` }]);
@@ -259,7 +271,7 @@ export function AIAssistantTab({ isDark, sortResults, searchResults, debugStep }
       algos.forEach(algo => {
         types.forEach(type => {
           const vals = results[algo][type].map(r => `n=${r.n}: ${r.time}ms (${r.comparisons} comparisons)`).join(", ");
-          parts.push(`  ${algo} [${type}]: ${vals}`);
+          parts.push(`  ${algoName(algo)} [${type}]: ${vals}`);
         });
       });
     }
@@ -269,7 +281,7 @@ export function AIAssistantTab({ isDark, sortResults, searchResults, debugStep }
       algos.forEach(algo => {
         scenarios.forEach(sc => {
           const vals = results[algo][sc].map(r => `n=${r.n}: ${r.time}ms (${r.comparisons} comparisons)`).join(", ");
-          parts.push(`  ${algo} [${sc}]: ${vals}`);
+          parts.push(`  ${algoName(algo)} [${sc}]: ${vals}`);
         });
       });
     }

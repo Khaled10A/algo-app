@@ -63,12 +63,12 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
         <ChartBox ref={lineRef} title="Line Chart — Avg vs Size"
-          onExport={() => exportSVGasPNG(lineRef.current, "sort_line_chart.png")}
+          onExport={() => exportSVGasPNG(lineRef.current, "sort_line_chart.png", th === "light" ? "#ffffff" : "#0f172a")}
           onFullscreen={() => setFsChart({ title: "Line Chart — Avg vs Size", node: <LineChart data={lineData} colors={algoColors} labels={meta.map(d => d.name)} title={`Avg ${ml} vs n`} xTitle="Input Size (n)" yTitle={ml} fullscreen /> })}>
           <LineChart data={lineData} colors={algoColors} labels={meta.map(d => d.name)} title={`Avg ${ml} vs n`} xTitle="Input Size (n)" yTitle={ml} />
         </ChartBox>
         <ChartBox ref={barRef} title={`Bar Chart — ${INPUT_LABELS[types[0]]}`}
-          onExport={() => exportSVGasPNG(barRef.current, "sort_bar_chart.png")}
+          onExport={() => exportSVGasPNG(barRef.current, "sort_bar_chart.png", th === "light" ? "#ffffff" : "#0f172a")}
           onFullscreen={() => setFsChart({ title: `Bar Chart — ${INPUT_LABELS[types[0]]}`, node: <BarChart data={barData} colors={algoColors} labels={meta.map(d => d.name)} title={`${ml} — ${INPUT_LABELS[types[0]]}`} xTitle="Input Size (n)" yTitle={ml} fullscreen /> })}>
           <BarChart data={barData} colors={algoColors} labels={meta.map(d => d.name)} title={`${ml} — ${INPUT_LABELS[types[0]]}`} xTitle="Input Size (n)" yTitle={ml} />
         </ChartBox>
@@ -273,12 +273,12 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
         <ChartBox ref={lineRef} title="Line Chart — Avg vs Text Size"
-          onExport={() => exportSVGasPNG(lineRef.current, "search_line_chart.png")}
+          onExport={() => exportSVGasPNG(lineRef.current, "search_line_chart.png", th === "light" ? "#ffffff" : "#0f172a")}
           onFullscreen={() => setFsChart({ title: "Line Chart — Avg vs Text Size", node: <LineChart data={lineData} colors={searchColors} labels={algos} title={`Avg ${ml} vs n`} xTitle="Text Size" yTitle={ml} fullscreen /> })}>
           <LineChart data={lineData} colors={searchColors} labels={algos} title={`Avg ${ml} vs n`} xTitle="Text Size" yTitle={ml} />
         </ChartBox>
         <ChartBox ref={barRef} title={`Bar Chart — ${SCENARIO_LABELS[scenarios[0]]}`}
-          onExport={() => exportSVGasPNG(barRef.current, "search_bar_chart.png")}
+          onExport={() => exportSVGasPNG(barRef.current, "search_bar_chart.png", th === "light" ? "#ffffff" : "#0f172a")}
           onFullscreen={() => setFsChart({ title: `Bar Chart — ${SCENARIO_LABELS[scenarios[0]]}`, node: <BarChart data={barData} colors={searchColors} labels={algos} title={`${ml} — ${SCENARIO_LABELS[scenarios[0]]}`} xTitle="Text Size" yTitle={ml} fullscreen /> })}>
           <BarChart data={barData} colors={searchColors} labels={algos} title={`${ml} — ${SCENARIO_LABELS[scenarios[0]]}`} xTitle="Text Size" yTitle={ml} />
         </ChartBox>

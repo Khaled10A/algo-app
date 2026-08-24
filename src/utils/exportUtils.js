@@ -6,53 +6,43 @@ export function exportCSV(headers, rows, filename) {
   a.click();
 }
 
-export function exportSVGasPNG(containerEl, filename) {
-  const svg = containerEl.querySelector("svg");
-  if (!svg) return;
-  const s = new XMLSerializer().serializeToString(svg);
+function renderSvgToPng(svgEl, filename, background, width = 900, height = 420) {
+  const s = new XMLSerializer().serializeToString(svgEl);
   const canvas = document.createElement("canvas");
-  canvas.width = 900; canvas.height = 420;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext("2d");
   const img = new Image();
   const url = URL.createObjectURL(new Blob([s], { type: "image/svg+xml" }));
   img.onload = () => {
-    ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, 900, 420);
-    ctx.drawImage(img, 0, 0, 900, 420);
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
     canvas.toBlob(b => {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(b);
       a.download = filename;
       a.click();
+      URL.revokeObjectURL(a.href);
     });
     URL.revokeObjectURL(url);
   };
   img.src = url;
 }
 
-export function exportAllChartsPNG(refs) {
-  const entries = Object.entries(refs).filter(([, ref]) => ref?.current);
+export function exportSVGasPNG(containerEl, filename, background = "#0f172a") {
+  const svg = containerEl?.querySelector("svg");
+  if (!svg) return;
+  renderSvgToPng(svg, filename, background);
+}
+
+export function exportAllChartsPNG(refs, background = "#0f172a") {
+  const entries = Object.entries(refs).filter(([, ref]) => ref?.current?.querySelector?.("svg"));
   entries.forEach(([name, ref], idx) => {
     setTimeout(() => {
-      const svgEl = ref.current?.querySelector("svg");
+      const svgEl = ref.current.querySelector("svg");
       if (!svgEl) return;
-      const s = new XMLSerializer().serializeToString(svgEl);
-      const canvas = document.createElement("canvas");
-      canvas.width = 900; canvas.height = 420;
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-      const url = URL.createObjectURL(new Blob([s], { type: "image/svg+xml" }));
-      img.onload = () => {
-        ctx.fillStyle = "#0f172a"; ctx.fillRect(0, 0, 900, 420);
-        ctx.drawImage(img, 0, 0, 900, 420);
-        canvas.toBlob(b => {
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(b);
-          a.download = `${name}.png`;
-          a.click();
-        });
-        URL.revokeObjectURL(url);
-      };
-      img.src = url;
+      renderSvgToPng(svgEl, `${name}.png`, background);
     }, idx * 400);
   });
 }
