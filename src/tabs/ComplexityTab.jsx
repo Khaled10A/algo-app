@@ -61,11 +61,11 @@ function ComparePanel({ tab, metric }) {
 function btnStyle(th) {
   const p2 = getPalette(th);
   return {
-    background: th === "light" ? "#ffffff" : "#232325",
-    border: `1px solid ${th === "light" ? "#cbd5e1" : "#1e293b"}`,
-    borderRadius: 6,
-    color: th === "light" ? "#475569" : "#94a3b8",
-    fontSize: 11, cursor: "pointer", padding: "6px 12px", fontFamily: "monospace",
+    background: p2.surface,
+    border: `1px solid ${p2.btnBorder}`,
+    borderRadius: 7,
+    color: p2.textPrimary,
+    fontSize: 12, fontWeight: 500, cursor: "pointer", padding: "7px 14px",
   };
 }
 

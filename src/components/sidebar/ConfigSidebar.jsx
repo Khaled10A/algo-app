@@ -61,10 +61,6 @@ function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pse
   return (
     <>
       {subTab === "benchmark" && <>
-                <div style={{ position: "sticky", top: 0, zIndex: 5, background: palette.bg, margin: "0 -16px 12px", padding: "0 16px 10px", borderBottom: `1px solid ${palette.border}` }}>
-          <RunBtn onClick={sort.run} onCancel={sort.cancel} running={sort.running} />
-          <BenchmarkError message={sort.error} />
-        </div>
         <Sec title="Algorithms">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5px 10px" }}>
             {getBenchmarkable("sorting").map((a) => <Chk key={a.id} label={a.name} checked={sort.algos.includes(a.id)} onChange={() => sort.toggleAlgo(a.id)} />)}
@@ -107,22 +103,22 @@ function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pse
       </>}
 
       {subTab === "visualizer" && <>
-        <Sec title="ALGORITHM">
+        <Sec title="Algorithm">
           {getWithSteps("sorting").map((a) => <Chk key={a.id} radio groupName="viz-algo" label={a.name} checked={viz.algo === a.id} onChange={() => viz.setAlgo(a.id)} />)}
         </Sec>
-        <Sec title="ARRAY SIZE">
+        <Sec title="Array size">
           <input type="range" min={6} max={32} value={viz.size} aria-label="Array size" onChange={(e) => viz.setSize(+e.target.value)} style={{ width: "100%", accentColor: "#38bdf8" }} />
           <div style={{ fontSize: 10, color: "#94a3b8", textAlign: "center" }}>{viz.size} elements</div>
         </Sec>
-        <Sec title="ANIMATION SPEED">
+        <Sec title="Animation speed">
           <input type="range" min={20} max={500} step={10} aria-label="Animation speed"
             value={501 - viz.speed}
             onChange={(e) => viz.setSpeed(501 - +e.target.value)}
             style={{ width: "100%", accentColor: "#f472b6" }} />
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#64748b", marginTop: 2 }}>
-            <span>SLOW</span>
-            <span style={{ color: "#f472b6" }}>{viz.speed <= 80 ? "FAST" : viz.speed <= 200 ? "MED" : "SLOW"}</span>
-            <span>FAST</span>
+            <span>Slow</span>
+            <span style={{ color: "#ff375f", fontWeight: 600 }}>{viz.speed <= 80 ? "Fast" : viz.speed <= 200 ? "Medium" : "Slow"}</span>
+            <span>Fast</span>
           </div>
         </Sec>
         <button onClick={viz.generate} style={{

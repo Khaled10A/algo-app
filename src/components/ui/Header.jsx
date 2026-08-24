@@ -59,12 +59,12 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
   });
 
   const tabBtn = (active) => ({
-    padding: "5px 11px",
+    padding: "4px 10px",
     borderRadius: 999,
     border: "none",
     background: active ? p.accentTint : "transparent",
     color: active ? p.accentText : p.textSecondary,
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: active ? 600 : 400,
     cursor: "pointer",
     transition: `background ${MOTION.fast}, color ${MOTION.fast}`,
@@ -81,8 +81,8 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
         zIndex: 20,
         display: "flex",
         alignItems: "center",
-        gap: 18,
-        padding: "0 18px",
+        gap: 14,
+        padding: "0 16px",
         background: p.toolbar,
         backdropFilter: "blur(20px) saturate(180%)",
         WebkitBackdropFilter: "blur(20px) saturate(180%)",

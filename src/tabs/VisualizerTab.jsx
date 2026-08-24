@@ -61,6 +61,8 @@ function btnLabel(lbl) {
 
 // ── ENHANCED ARRAY VISUALIZER ─────────────────────────────────
 function EnhancedViz({ steps, currentStep, isDark }) {
+  const pf = getPalette(isDark ? "dark" : "light");
+  const textMute = pf.textMuted;
   if (!steps || steps.length === 0) return null;
   const step = steps[Math.min(currentStep, steps.length - 1)];
   const arr = step.arr;
@@ -166,7 +168,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
 
   return (
     <div>
-      <Label color="#4ade80">Sorting visualizer</Label>
+      <Label color="#30d158">Sorting visualizer</Label>
       {!hasVizAlgo ? (
         <Empty icon="🎬" text="Pick an algorithm from the sidebar" />
       ) : vizSteps.length === 0 ? (
@@ -232,7 +234,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
 
             {/* Speed presets */}
             <div style={{ display:"flex", gap:4, alignItems:"center" }}>
-              <span style={{ fontSize:9, color:textMute, marginRight:4, fontFamily:"monospace" }}>SPEED</span>
+              <span style={{ fontSize:11, fontWeight:600, color:textMute, marginRight:4 }}>Speed</span>
               {SPEEDS.map(({ label, name, val }) => (
                 <button key={name} onClick={() => setVizSpeed && setVizSpeed(val)} style={{
                   padding:"4px 10px", borderRadius:5, fontSize:10, cursor:"pointer",
@@ -240,7 +242,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
                   background: vizSpeed===val ? "rgba(48, 209, 88, 0.12)" : "transparent",
                   color: vizSpeed===val ? pf.green : textMute,
                   transition:"all 0.15s",
-                }} title={name}>{label} {name}</button>
+                }} title={name}>{name}</button>
               ))}
             </div>
           </div>
