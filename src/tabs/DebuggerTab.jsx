@@ -169,7 +169,7 @@ export function DebuggerTab({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>PATTERN</div>
+          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Pattern</div>
           <div style={{ display: "flex", gap: 3 }}>
             {pattern.split("").map((ch, i) =>
               charBox(ch, i, (highlightPat || []).includes(i), false)
@@ -254,7 +254,7 @@ export function DebuggerTab({ isDark }) {
   return (
     <div style={{ color: p.textPrimary }}>
       <div style={{ fontSize: 12, letterSpacing: 2, color: p.purple, marginBottom: 14, fontWeight: "bold" }}>
-        🐛 MEMORY DEBUGGER
+        Memory debugger
       </div>
 
       {/* CONTROLS ROW */}
@@ -264,7 +264,7 @@ export function DebuggerTab({ isDark }) {
         display: "flex", gap: 14, flexWrap: "wrap", alignItems: "flex-start",
       }}>
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>SORTING</div>
+          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Sorting</div>
           <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
             {SORTING_ALGOS.map((a) => (
               <button key={a.id} onClick={() => selectAlgo(a.id)} style={algoBtnStyle(a)}>{a.name}</button>
@@ -273,7 +273,7 @@ export function DebuggerTab({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>SEARCHING</div>
+          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Searching</div>
           <div style={{ display: "flex", gap: 5 }}>
             {ARRAY_SEARCH_ALGOS.map((a) => (
               <button key={a.id} onClick={() => selectAlgo(a.id)} style={algoBtnStyle(a)}>{a.name}</button>
@@ -282,7 +282,7 @@ export function DebuggerTab({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>STRING MATCHING</div>
+          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>String matching</div>
           <div style={{ display: "flex", gap: 5 }}>
             {STRING_MATCH_ALGOS.map((a) => (
               <button key={a.id} onClick={() => selectAlgo(a.id)} style={algoBtnStyle(a)}>{a.name}</button>
@@ -292,7 +292,7 @@ export function DebuggerTab({ isDark }) {
 
         {!isStringSearch ? (
           <div>
-            <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>ARRAY INPUT</div>
+            <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Array input</div>
             <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
               {[["auto", "🎲 Auto"], ["custom", "✏️ Custom"]].map(([v, l]) => (
                 <button key={v} onClick={() => setArrInputMode(v)}
@@ -312,7 +312,7 @@ export function DebuggerTab({ isDark }) {
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>YOUR ARRAY</div>
+                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>Your array</div>
                 <input value={customArrStr} onChange={(e) => setCustomArrStr(e.target.value)} aria-label="Custom array"
                   placeholder="e.g. 5,3,8,1,9,2,7"
                   style={{ background: p.codeBg, border: `1px solid ${p.border}`, borderRadius: 5,
@@ -325,9 +325,9 @@ export function DebuggerTab({ isDark }) {
             )}
             {isBinary && (
               <div style={{ marginTop: 8 }}>
-                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>TARGET</div>
+                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>Target</div>
                 <div style={{ display: "flex", gap: 4 }}>
-                  {[["present", "✓ In Array"], ["missing", "✗ Not In Array"]].map(([v, l]) => (
+                  {[["present", "In array"], ["missing", "Not in array"]].map(([v, l]) => (
                     <button key={v} onClick={() => setBinaryTargetMode(v)} aria-pressed={binaryTargetMode === v}
                       style={{ padding: "3px 10px", borderRadius: 5,
                         border: `1px solid ${binaryTargetMode === v ? accentColor : p.border}`,
@@ -342,7 +342,7 @@ export function DebuggerTab({ isDark }) {
         ) : (
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
             <div>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>TEXT INPUT</div>
+              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Text input</div>
               <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
                 {[["manual", "✏️ Type"], ["file", "📄 File"]].map(([v, l]) => (
                   <button key={v}
@@ -356,11 +356,11 @@ export function DebuggerTab({ isDark }) {
               </div>
               {debugTextMode === "file" ? (
                 <label style={{ cursor: "pointer" }}>
-                  <div style={{ border: `2px dashed ${debugFileName ? "#4ade80" : p.border}`, borderRadius: 7,
-                    padding: "8px 12px", textAlign: "center", background: debugFileName ? "rgba(74,222,128,0.05)" : "transparent",
+                  <div style={{ border: `2px dashed ${debugFileName ? p.green : p.borderStrong}`, borderRadius: 7,
+                    padding: "8px 12px", textAlign: "center", background: debugFileName ? p.accentTint : "transparent",
                     minWidth: 180, transition: "all 0.2s" }}>
-                    <div style={{ fontSize: 14 }}>{debugFileName ? "✅" : "📄"}</div>
-                    <div style={{ fontSize: 9, color: debugFileName ? "#4ade80" : p.textSecondary, fontFamily: "monospace", marginTop: 2 }}>
+                    <div style={{ fontSize: 14 }}>{debugFileName ? "✓" : "▲"}</div>
+                    <div style={{ fontSize: 9, color: debugFileName ? p.green : p.textSecondary, fontFamily: "monospace", marginTop: 2 }}>
                       {debugFileName ? debugFileName : "Click to upload .txt"}
                     </div>
                     {debugFileName && <div style={{ fontSize: 8, color: "#475569", marginTop: 1 }}>{textInput.length} chars</div>}
@@ -391,7 +391,7 @@ export function DebuggerTab({ isDark }) {
               )}
             </div>
             <div>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>PATTERN</div>
+              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Pattern</div>
               <input value={patInput} onChange={(e) => setPatInput(e.target.value)} aria-label="Pattern"
                 style={{ background: p.codeBg, border: `1px solid ${p.border}`, borderRadius: 5,
                   color: p.textPrimary, padding: "5px 10px", fontSize: 11,
@@ -402,7 +402,7 @@ export function DebuggerTab({ isDark }) {
 
         <div>
           <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>
-            SPEED: {playback.speed < 300 ? "Fast" : playback.speed < 700 ? "Medium" : "Slow"}
+            Speed: {playback.speed < 300 ? "Fast" : playback.speed < 700 ? "Medium" : "Slow"}
           </div>
           <input type="range" min={100} max={1000} aria-label="Playback speed"
             value={1100 - playback.speed}
@@ -415,7 +415,7 @@ export function DebuggerTab({ isDark }) {
             padding: "7px 16px", borderRadius: 6, border: "none",
             background: `linear-gradient(135deg,${accentColor},#818cf8)`,
             color: "#fff", fontSize: 10, cursor: "pointer", fontFamily: "monospace", fontWeight: "bold", letterSpacing: 1,
-          }}>⚡ GENERATE</button>
+          }}>GENERATE</button>
           {steps.length > 0 && <>
             <button onClick={playback.toggle} aria-label={playing ? "Pause" : "Play"} title={playing ? "Pause" : "Play"} style={{
               padding: "7px 14px", borderRadius: 6,
@@ -497,7 +497,7 @@ export function DebuggerTab({ isDark }) {
                   }}>{n + 1}</span>
                   <span style={{
                     fontSize: 12, fontFamily: "monospace", padding: "4px 12px",
-                    color: n === current.activeLine ? "#fff" : p.textSecondary,
+                    color: n === current.activeLine ? p.onAccent : p.textSecondary,
                     whiteSpace: "pre",
                   }}>{code}</span>
                   {n === current.activeLine && (
@@ -522,7 +522,7 @@ export function DebuggerTab({ isDark }) {
             </div>
 
             <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>VARIABLES</div>
+              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>Variables</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                 {Object.entries(current.vars || {}).filter(([, v]) => v !== undefined).map(([k, v]) => (
                   <div key={k} style={{ background: p.codeBg, borderRadius: 6, padding: "7px 10px", border: `1px solid ${p.border}` }}>
@@ -536,7 +536,7 @@ export function DebuggerTab({ isDark }) {
             </div>
 
             <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>MEMORY</div>
+              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>Memory</div>
               {Object.entries(current.memory || {}).map(([k, v]) => (
                 <div key={k} style={{ display: "flex", gap: 8, alignItems: "baseline", marginBottom: 5, fontFamily: "monospace" }}>
                   <span style={{ fontSize: 10, color: p.purple, width: 60, flexShrink: 0 }}>{k}</span>
@@ -551,7 +551,7 @@ export function DebuggerTab({ isDark }) {
             </div>
 
             <div style={{ background: p.surface, border: `1px solid ${p.border}`, borderRadius: 10, padding: "12px 16px" }}>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>CALL STACK</div>
+              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 10 }}>Call stack</div>
               {(current.callStack || []).map((line, i) => (
                 <div key={i} style={{
                   fontFamily: "monospace", fontSize: 10,

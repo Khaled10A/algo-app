@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { getPalette, FONT_SANS } from "../theme/tokens";
 
 export class ErrorBoundary extends Component {
   constructor(props) {

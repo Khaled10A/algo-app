@@ -1,5 +1,6 @@
 import { Sec, Chk, SInput, RunBtn, GhostBtn, BenchmarkError } from '../ui/SharedComponents';
 import { getBenchmarkable, getWithSteps, getByCategory } from '../../algorithms/registry';
+import { FONT_SANS } from '../../theme/tokens';
 import { INPUT_TYPES, INPUT_LABELS, TEXT_SCENARIOS, SCENARIO_LABELS } from '../../utils/constants';
 
 export function ConfigSidebar({
@@ -7,6 +8,7 @@ export function ConfigSidebar({
   subTab,
   isDark,
   border,
+  palette,
   sort,
   viz,
   search,
@@ -14,36 +16,36 @@ export function ConfigSidebar({
   pseudo,
 }) {
   return (
-    <div style={{ width: 280, borderRight: `1px solid ${border}`, padding: "18px 16px", overflowY: "auto", background: isDark ? "#020817" : "#ffffff", flexShrink: 0, display: "flex", flexDirection: "column" }}>
+    <div style={{ width: 280, borderRight: `1px solid ${border}`, padding: "20px 16px", overflowY: "auto", background: palette.sidebar, backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", flexShrink: 0, display: "flex", flexDirection: "column", fontFamily: FONT_SANS }}>
       {domain === "graphs" ? (
-        <Sec title="GRAPH ALGORITHMS">
+        <Sec title="Graph algorithms">
           <div style={{ fontSize: 10, color: "#64748b" }}>
             BFS &amp; DFS traversal debugging lives in the Debugger section.
           </div>
         </Sec>
       ) : domain === "sorting" ? (
-        <SortingPanel subTab={subTab} isDark={isDark} border={border} sort={sort} viz={viz} history={history} pseudo={pseudo} />
+        <SortingPanel subTab={subTab} isDark={isDark} border={border} palette={palette} sort={sort} viz={viz} history={history} pseudo={pseudo} />
       ) : (
-        <StringPanel subTab={subTab} isDark={isDark} border={border} search={search} history={history} pseudo={pseudo} />
+        <StringPanel subTab={subTab} isDark={isDark} border={border} palette={palette} search={search} history={history} pseudo={pseudo} />
       )}
     </div>
   );
 }
 
-function SortingPanel({ subTab, isDark, border, sort, viz, history, pseudo }) {
+function SortingPanel({ subTab, isDark, border, palette, sort, viz, history, pseudo }) {
   return (
     <>
       {subTab === "benchmark" && <>
-        <Sec title="ALGORITHMS">
+        <Sec title="Algorithms">
           {getBenchmarkable("sorting").map((a) => <Chk key={a.id} label={a.name} checked={sort.algos.includes(a.id)} onChange={() => sort.toggleAlgo(a.id)} />)}
         </Sec>
-        <Sec title="INPUT MODE">
+        <Sec title="Input mode">
           {[["random", "Random / Generated"], ["custom", "Custom Array"]].map(([v, l]) => (
             <Chk key={v} radio groupName="sort-input-mode" label={l} checked={sort.inputMode === v} onChange={() => sort.setInputMode(v)} />
           ))}
         </Sec>
         {sort.inputMode === "custom" ? (
-          <Sec title="YOUR ARRAY">
+          <Sec title="Your array">
             <textarea value={sort.customArrayStr} onChange={(e) => sort.setCustomArrayStr(e.target.value)} aria-label="Custom array"
               placeholder="e.g. 34,7,23,32,5,62" rows={3}
               style={{ width: "100%", background: isDark ? "#0f172a" : "#f1f5f9", border: `1px solid ${border}`, borderRadius: 6, padding: "7px 9px", color: isDark ? "#e2e8f0" : "#1e293b", fontSize: 12, fontFamily: "monospace", boxSizing: "border-box", resize: "vertical" }} />
@@ -53,15 +55,15 @@ function SortingPanel({ subTab, isDark, border, sort, viz, history, pseudo }) {
           </Sec>
         ) : (
           <>
-            <Sec title="INPUT TYPE">
+            <Sec title="Input type">
               {INPUT_TYPES.map((t) => <Chk key={t} label={INPUT_LABELS[t]} checked={sort.types.includes(t)} onChange={() => sort.toggleType(t)} />)}
             </Sec>
-            <Sec title="INPUT SIZES">
+            <Sec title="Input sizes">
               <SInput value={sort.sizesStr} onChange={(e) => sort.setSizesStr(e.target.value)} placeholder="50,100,150" hint="comma-separated" />
             </Sec>
           </>
         )}
-        <Sec title="METRIC">
+        <Sec title="Metric">
           {[["time", "Execution Time (ms)"], ["comparisons", "Comparisons"]].map(([v, l]) => (
             <Chk key={v} radio groupName="sort-metric" label={l} checked={sort.metric === v} onChange={() => sort.setMetric(v)} />
           ))}
@@ -108,26 +110,26 @@ function SortingPanel({ subTab, isDark, border, sort, viz, history, pseudo }) {
         )}
       </>}
 
-      {subTab === "history" && <HistorySection history={history} />}
+      {subTab === "history" && <HistorySection history={history} palette={palette} />}
       {subTab === "pseudocode" && <PseudoSection pseudo={pseudo} />}
     </>
   );
 }
 
-function StringPanel({ subTab, isDark, border, search, history, pseudo }) {
+function StringPanel({ subTab, isDark, border, palette, search, history, pseudo }) {
   return (
     <>
-      <Sec title="ALGORITHMS">
+      <Sec title="Algorithms">
         {getBenchmarkable("searching").map((a) => <Chk key={a.id} label={a.name} checked={search.algos.includes(a.id)} onChange={() => search.toggleAlgo(a.id)} />)}
       </Sec>
       {subTab === "benchmark" && <>
-        <Sec title="INPUT MODE">
+        <Sec title="Input mode">
           {[["generate", "Auto Generate"], ["file", "Upload File (.txt)"]].map(([v, l]) => (
             <Chk key={v} radio groupName="search-input-mode" label={l} checked={search.inputMode === v} onChange={() => search.setInputMode(v)} />
           ))}
         </Sec>
         {search.inputMode === "file" ? (
-          <Sec title="TEXT FILE">
+          <Sec title="Text file">
             <label style={{ display: "block", cursor: "pointer" }}>
               <div style={{
                 border: `2px dashed ${search.uploadedText ? "#4ade80" : isDark ? "#1e293b" : "#e2e8f0"}`,
@@ -146,23 +148,23 @@ function StringPanel({ subTab, isDark, border, search, history, pseudo }) {
             {search.uploadedText && <button onClick={search.removeFile} style={{
               width: "100%", marginTop: 5, padding: "5px", borderRadius: 5,
               border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.06)",
-              color: "#f87171", fontSize: 9, cursor: "pointer", fontFamily: "monospace"
-            }}>✕ Remove file</button>}
+              color: palette.red, fontSize: 12, fontWeight: 500, cursor: "pointer"
+            }}>Remove file</button>}
           </Sec>
         ) : (
           <>
-            <Sec title="SCENARIO">
+            <Sec title="Scenario">
               {TEXT_SCENARIOS.map((sc) => <Chk key={sc} label={SCENARIO_LABELS[sc]} checked={search.scenarios.includes(sc)} onChange={() => search.toggleScenario(sc)} />)}
             </Sec>
-            <Sec title="TEXT SIZES">
+            <Sec title="Text sizes">
               <SInput value={search.sizesStr} onChange={(e) => search.setSizesStr(e.target.value)} placeholder="300,500" hint="comma-separated" />
             </Sec>
           </>
         )}
-        <Sec title="PATTERN">
+        <Sec title="Pattern">
           <SInput value={search.pattern} onChange={(e) => search.setPattern(e.target.value)} placeholder="search pattern..." />
         </Sec>
-        <Sec title="METRIC">
+        <Sec title="Metric">
           {[["time", "Execution Time (ms)"], ["comparisons", "Comparisons"]].map(([v, l]) => (
             <Chk key={v} radio groupName="search-metric" label={l} checked={search.metric === v} onChange={() => search.setMetric(v)} />
           ))}
@@ -173,18 +175,18 @@ function StringPanel({ subTab, isDark, border, search, history, pseudo }) {
         {search.hasResults && <GhostBtn color="#38bdf8" onClick={search.exportXLSX} label="⬇ Export Excel (.xlsx)" />}
         {search.hasResults && <GhostBtn color="#fb923c" onClick={search.exportPNG} label="⬇ All Charts PNG" />}
       </>}
-      {subTab === "history" && <HistorySection history={history} />}
+      {subTab === "history" && <HistorySection history={history} palette={palette} />}
       {subTab === "pseudocode" && <PseudoSection pseudo={pseudo} />}
     </>
   );
 }
 
-function HistorySection({ history }) {
+function HistorySection({ history, palette }) {
   return (
-    <Sec title="HISTORY">
+    <Sec title="History">
       <div style={{ fontSize: 10, color: "#64748b" }}>{history.count} run{history.count !== 1 ? "s" : ""} stored (max 20)</div>
-      {history.count > 0 && <button onClick={history.clearAll} style={{ marginTop: 6, width: "100%", padding: "6px", borderRadius: 6, border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.06)", color: "#f87171", fontSize: 9, cursor: "pointer", fontFamily: "monospace", letterSpacing: 1 }}>🗑 CLEAR ALL</button>}
-      {history.selected > 0 && <button onClick={history.clearSelection} style={{ marginTop: 5, width: "100%", padding: "6px", borderRadius: 6, border: "1px solid rgba(167,139,250,0.3)", background: "rgba(167,139,250,0.06)", color: "#a78bfa", fontSize: 9, cursor: "pointer", fontFamily: "monospace", letterSpacing: 1 }}>✕ CLEAR SELECTION</button>}
+      {history.count > 0 && <button onClick={history.clearAll} style={{ marginTop: 6, width: "100%", padding: "7px", borderRadius: 7, border: `1px solid ${palette.btnBorder}`, background: "rgba(255, 59, 48, 0.07)", color: palette.red, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Clear All</button>}
+      {history.selected > 0 && <button onClick={history.clearSelection} style={{ marginTop: 5, width: "100%", padding: "7px", borderRadius: 7, border: `1px solid ${palette.btnBorder}`, background: "transparent", color: palette.textSecondary, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>Clear selection</button>}
     </Sec>
   );
 }
@@ -196,7 +198,7 @@ function PseudoSection({ pseudo }) {
     ...getByCategory("graphs"),
   ];
   return (
-    <Sec title="SELECT ALGORITHM">
+    <Sec title="Select algorithm">
       {options.map((a) => <Chk key={a.id} radio groupName="pseudo-algo" label={a.name} checked={pseudo.algo === a.id} onChange={() => pseudo.setAlgo(a.id)} />)}
     </Sec>
   );

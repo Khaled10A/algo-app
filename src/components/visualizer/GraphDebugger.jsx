@@ -71,13 +71,13 @@ export function GraphDebugger({ isDark }) {
   return (
     <div>
       <div style={{ fontSize:12, letterSpacing:2, color:accentColor, marginBottom:14, fontWeight:"bold" }}>
-        🕸️ GRAPH DEBUGGER
+        Graph debugger
       </div>
 
       {/* CONTROLS */}
       <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 16px", marginBottom:14, display:"flex", gap:14, flexWrap:"wrap", alignItems:"flex-end" }}>
         <div>
-          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>ALGORITHM</div>
+          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
             {["dfs","bfs"].map((id) => (
               <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{descriptors[id].name}</button>
@@ -86,7 +86,7 @@ export function GraphDebugger({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>START NODE</div>
+          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>Start node</div>
           <div style={{ display:"flex", gap:4 }}>
             {Object.keys(DEFAULT_GRAPH).map((n) => (
               <button key={n} onClick={() => setStart(n)} aria-pressed={startNode===n} style={btnStyle(startNode===n)}>{n}</button>
@@ -96,7 +96,7 @@ export function GraphDebugger({ isDark }) {
 
         <div>
           <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>
-            SPEED: {playback.speed<300?"Fast":playback.speed<700?"Medium":"Slow"}
+            Speed: {playback.speed<300?"Fast":playback.speed<700?"Medium":"Slow"}
           </div>
           <input type="range" min={100} max={1000} aria-label="Playback speed"
             value={1100-playback.speed}
@@ -109,12 +109,12 @@ export function GraphDebugger({ isDark }) {
             padding:"7px 16px", borderRadius:6, border:"none",
             background:`linear-gradient(135deg,${accentColor},#818cf8)`,
             color:"#fff", fontSize:10, cursor:"pointer", fontFamily:"monospace", fontWeight:"bold",
-          }}>⚡ GENERATE</button>
+          }}>GENERATE</button>
           {steps.length > 0 && <>
             <button onClick={playback.toggle} aria-label={playing?"Pause":"Play"} title={playing?"Pause":"Play"} style={{
               padding:"7px 12px", borderRadius:6,
               border:`1px solid ${playing?p.red:p.green}`,
-              background: playing?"rgba(248,113,113,0.1)":"rgba(74,222,128,0.1)",
+              background: playing?"rgba(255,59,48,0.10)":"rgba(48,209,88,0.12)",
               color: playing?p.red:p.green, fontSize:12, cursor:"pointer",
             }}>{playing?"⏸":"▶"}</button>
             <button onClick={playback.prev} aria-label="Previous step" title="Previous step" style={{ padding:"6px 10px", borderRadius:5, border:`1px solid ${border}`, background:"transparent", color:textMute, fontSize:13, cursor:"pointer" }}>◀</button>
@@ -150,18 +150,18 @@ export function GraphDebugger({ isDark }) {
           {/* LEFT — Graph + Visit Order */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
             <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>GRAPH</div>
+              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>Graph</div>
               <GraphSVG graph={DEFAULT_GRAPH} step={current} isDark={isDark} />
             </div>
 
             <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>VISIT ORDER</div>
+              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>Visit order</div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
                 {(current?.visitOrder || []).map((n, i) => (
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:4 }}>
                     <div style={{
                       width:28, height:28, borderRadius:"50%",
-                      background: n === current?.current ? accentColor : "#4ade80",
+                      background: n === current?.current ? accentColor : p.green,
                       display:"flex", alignItems:"center", justifyContent:"center",
                       fontSize:11, fontWeight:"bold", color:"#0f172a", fontFamily:"monospace",
                     }}>{n}</div>
@@ -239,7 +239,7 @@ export function GraphDebugger({ isDark }) {
             </div>
 
             <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
-              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>VARIABLES</div>
+              <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>Variables</div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
                 {Object.entries(current?.vars || {}).map(([k,v]) => (
                   <div key={k} style={{ background:codeBg, borderRadius:5, padding:"6px 10px", border:`1px solid ${border}` }}>

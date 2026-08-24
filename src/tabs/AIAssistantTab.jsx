@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { getAlgorithmForDisplay } from "../algorithms/registry";
+import { getPalette, FONT_SANS, MOTION } from "../theme/tokens";
 
 function algoName(id) {
   return getAlgorithmForDisplay(id).name;
@@ -177,7 +178,7 @@ function RecommendForm({ onSubmit, isDark, accentColor, border, textMute, cardBg
 
   const sel = (label, val, set, opts) => (
     <div>
-      <div style={{ fontSize: 8, color: textMute, letterSpacing: 2, marginBottom: 5 }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 600, color: textMute, marginBottom: 5 }}>{label}</div>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
         {opts.map(([v, l]) => (
           <button key={v} onClick={() => set(v)} style={{
@@ -193,7 +194,7 @@ function RecommendForm({ onSubmit, isDark, accentColor, border, textMute, cardBg
 
   return (
     <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
-      <div style={{ fontSize: 9, color: accentColor, letterSpacing: 2, fontWeight: "bold" }}>{L.title}</div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: textMain }}>{L.title}</div>
       {sel(L.task,     task,  setTask,  [["sorting", L.sorting], ["matching", L.matching]])}
       {sel(L.size,     size,  setSize,  [["small", L.small], ["medium", L.medium], ["large", L.large]])}
       {sel(L.order,    order, setOrder, [["random", L.random], ["nearly_sorted", L.nearly_sorted], ["sorted", L.sorted], ["reverse", L.reverse]])}
@@ -210,13 +211,14 @@ function RecommendForm({ onSubmit, isDark, accentColor, border, textMute, cardBg
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────────────────────
 export function AIAssistantTab({ isDark, sortResults, searchResults }) {
-  const bg          = isDark ? "#020817" : "#f8fafc";
-  const cardBg      = isDark ? "#0f172a" : "#ffffff";
-  const border      = isDark ? "#1e293b" : "#e2e8f0";
-  const textMain    = isDark ? "#e2e8f0" : "#1e293b";
-  const textMute    = isDark ? "#64748b" : "#94a3b8";
-  const codeBg      = isDark ? "#0a0f1e" : "#f1f5f9";
-  const accentColor = "#a78bfa";
+  const pf = getPalette(isDark ? "dark" : "light");
+  const bg          = pf.bg;
+  const cardBg      = pf.surface;
+  const border      = pf.border;
+  const textMain    = pf.textPrimary;
+  const textMute    = pf.textSecondary;
+  const codeBg      = pf.codeBg;
+  const accentColor = pf.accent;
 
   const [lang, setLang]       = useState("ar");
   const [messages, setMessages] = useState([{ role: "assistant", content: WELCOME_MESSAGES["ar"] }]);
@@ -302,24 +304,26 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
         {!isUser && (
           <div style={{
             width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-            background: "linear-gradient(135deg,#a78bfa,#38bdf8)",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13,
-          }}>🤖</div>
+            background: `linear-gradient(135deg, ${pf.accent}, ${pf.indigo})`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="7" width="16" height="12" rx="3" stroke="#fff" strokeWidth="1.8"/><circle cx="9.5" cy="13" r="1.4" fill="#fff"/><circle cx="14.5" cy="13" r="1.4" fill="#fff"/><path d="M12 7V4.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          </div>
         )}
         <div style={{
           maxWidth: "78%",
-          background: isUser ? `${accentColor}20` : cardBg,
-          border: `1px solid ${isUser ? accentColor + "40" : border}`,
+          background: isUser ? pf.accentTint : cardBg,
+          border: `1px solid ${isUser ? pf.accent + "55" : border}`,
           borderRadius: isUser
             ? (isRTL ? "14px 14px 14px 4px" : "14px 14px 4px 14px")
             : (isRTL ? "14px 14px 4px 14px" : "14px 14px 14px 4px"),
           padding: "10px 14px", fontSize: 12, lineHeight: 1.8,
-          color: textMain, fontFamily: "system-ui, sans-serif",
+          color: textMain, fontFamily: FONT_SANS,
           textAlign: isRTL ? "right" : "left",
         }}>
           {lines.map((line, li) => {
             const parts = line.split(/(\*\*[^*]+\*\*)/g).map((p, pi) =>
-              p.startsWith("**") ? <strong key={pi} style={{ color: accentColor }}>{p.slice(2, -2)}</strong> : p
+              p.startsWith("**") ? <strong key={pi} style={{ color: isUser ? p2OnAccent(accentColor) : accentColor }}>{p.slice(2, -2)}</strong> : p
             );
             return <div key={li} style={{ marginBottom: li < lines.length - 1 ? 4 : 0 }}>{parts}</div>;
           })}
@@ -327,14 +331,18 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
         {isUser && (
           <div style={{
             width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-            background: `${accentColor}30`, border: `1px solid ${accentColor}40`,
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13,
-          }}>👤</div>
+            background: pf.trackBg, border: `1px solid ${pf.borderStrong}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.6" stroke={pf.textSecondary} strokeWidth="1.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4S18.3 16.4 19.5 20" stroke={pf.textSecondary} strokeWidth="1.8" strokeLinecap="round"/></svg>
+          </div>
         )}
       </div>
     );
   }
 
+  function p2OnAccent() { return pf.onAccent; }
+  function p3Disabled(b) { return b; }
   const currentActions = QUICK_ACTIONS[lang] || QUICK_ACTIONS.en;
   const isRTL = lang === "ar";
 
@@ -343,8 +351,8 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
 
       {/* HEADER */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-        <div style={{ fontSize: 12, letterSpacing: 2, color: accentColor, fontWeight: "bold" }}>
-          🤖 AI ASSISTANT
+        <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: textMain }}>
+          AI Assistant
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
 
@@ -368,24 +376,24 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
           <button onClick={analyzeResults} style={{
             padding: "5px 12px", borderRadius: 6, fontSize: 9, cursor: "pointer",
             fontFamily: "monospace", letterSpacing: 1,
-            border: `1px solid ${sortResults || searchResults ? "#38bdf8" : border}`,
-            background: sortResults || searchResults ? "rgba(56,189,248,0.1)" : "transparent",
-            color: sortResults || searchResults ? "#38bdf8" : textMute,
-          }}>📊 {lang === "ar" ? "تحليل النتائج" : lang === "fr" ? "Analyser" : lang === "de" ? "Analysieren" : "ANALYZE"}</button>
+            border: `1px solid ${sortResults || searchResults ? pf.accent : border}`,
+            background: sortResults || searchResults ? pf.accentTint : "transparent",
+            color: sortResults || searchResults ? pf.accentText : textMute,
+          }}>{lang === "ar" ? "تحليل النتائج" : lang === "fr" ? "Analyser" : lang === "de" ? "Analysieren" : "Analyze results"}</button>
 
           <button onClick={() => setMode(mode === "recommend" ? "chat" : "recommend")} style={{
             padding: "5px 12px", borderRadius: 6, fontSize: 9, cursor: "pointer",
             fontFamily: "monospace", letterSpacing: 1,
-            border: `1px solid ${mode === "recommend" ? "#4ade80" : border}`,
-            background: mode === "recommend" ? "rgba(74,222,128,0.1)" : "transparent",
-            color: mode === "recommend" ? "#4ade80" : textMute,
-          }}>🎯 {lang === "ar" ? "توصية" : lang === "fr" ? "Recommander" : lang === "de" ? "Empfehlen" : "RECOMMEND"}</button>
+            border: `1px solid ${mode === "recommend" ? pf.green : border}`,
+            background: mode === "recommend" ? "rgba(48, 209, 88, 0.12)" : "transparent",
+            color: mode === "recommend" ? pf.green : textMute,
+          }}>{lang === "ar" ? "توصية" : lang === "fr" ? "Recommander" : lang === "de" ? "Empfehlen" : "Recommend"}</button>
 
           <button onClick={() => setMessages([{ role: "assistant", content: WELCOME_MESSAGES[lang] }])} style={{
             padding: "5px 12px", borderRadius: 6, fontSize: 9, cursor: "pointer",
             fontFamily: "monospace", letterSpacing: 1,
             border: `1px solid ${border}`, background: "transparent", color: textMute,
-          }}>🗑 {lang === "ar" ? "مسح" : lang === "fr" ? "Effacer" : lang === "de" ? "Löschen" : "CLEAR"}</button>
+          }}>{lang === "ar" ? "مسح" : lang === "fr" ? "Effacer" : lang === "de" ? "Löschen" : "Clear"}</button>
         </div>
       </div>
 
@@ -405,7 +413,7 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
             fontFamily: "monospace", border: `1px solid ${border}`,
             background: "transparent", color: textMute, transition: "all 0.15s",
           }}
-            onMouseEnter={e => { e.target.style.borderColor = accentColor; e.target.style.color = accentColor; }}
+            onMouseEnter={e => { e.target.style.borderColor = pf.accent; e.target.style.color = pf.accentText; }}
             onMouseLeave={e => { e.target.style.borderColor = border; e.target.style.color = textMute; }}
           >{label}</button>
         ))}
@@ -433,7 +441,7 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
               {[0, 1, 2].map(i => (
                 <div key={i} style={{
                   width: 7, height: 7, borderRadius: "50%",
-                  background: accentColor, opacity: 0.8,
+                  background: pf.accent, opacity: 0.8,
                   animation: `bounce 1.2s ${i * 0.2}s infinite`,
                 }} />
               ))}
@@ -454,14 +462,14 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
           style={{
             flex: 1, background: cardBg, border: `1px solid ${border}`,
             borderRadius: 8, padding: "10px 14px", color: textMain,
-            fontSize: 12, fontFamily: "system-ui, sans-serif", outline: "none",
+            fontSize: 12, fontFamily: FONT_SANS, outline: "none",
             opacity: loading ? 0.6 : 1, textAlign: isRTL ? "right" : "left",
             direction: isRTL ? "rtl" : "ltr",
           }}
         />
         <button onClick={() => send()} disabled={loading || !input.trim()} style={{
           padding: "10px 20px", borderRadius: 8, border: "none",
-          background: loading || !input.trim() ? border : `linear-gradient(135deg,${accentColor},#38bdf8)`,
+          background: loading || !input.trim() ? p3Disabled(border) : pf.accent,
           color: "#fff", fontSize: 13, cursor: loading || !input.trim() ? "default" : "pointer",
           transition: "all 0.2s",
         }}>➤</button>

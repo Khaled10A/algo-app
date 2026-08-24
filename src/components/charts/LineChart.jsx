@@ -11,18 +11,18 @@ export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
 
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
-      <text x={W / 2} y={14} textAnchor="middle" fontSize="10" fill="#94a3b8" fontFamily="monospace" fontWeight="bold">{title}</text>
+      <text x={W / 2} y={14} textAnchor="middle" fontSize="11" fill="var(--chart-label)" fontWeight="600">{title}</text>
       {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
         <g key={i}>
-          <line x1={PL} x2={W - PR} y1={yScale(maxV * t)} y2={yScale(maxV * t)} stroke="#1e293b" strokeWidth="1" strokeDasharray="3,3" />
-          <text x={PL - 4} y={yScale(maxV * t) + 3} fontSize="8" fill="#475569" textAnchor="end" fontFamily="monospace">{fmt(maxV * t)}</text>
+          <line x1={PL} x2={W - PR} y1={yScale(maxV * t)} y2={yScale(maxV * t)} stroke="var(--chart-grid)" strokeWidth="1" strokeDasharray="3,3" />
+          <text x={PL - 4} y={yScale(maxV * t) + 3} fontSize="10" fill="var(--chart-label)" textAnchor="end" fontFamily="monospace">{fmt(maxV * t)}</text>
         </g>
       ))}
-      <line x1={PL} x2={PL} y1={PT} y2={H - PB} stroke="#334155" strokeWidth="1" />
-      <line x1={PL} x2={W - PR} y1={H - PB} y2={H - PB} stroke="#334155" strokeWidth="1" />
-      {xs.map((x, i) => <text key={i} x={xScale(i)} y={H - PB + 12} fontSize="8" fill="#475569" textAnchor="middle" fontFamily="monospace">{x}</text>)}
-      {xTitle && <text x={W / 2} y={H - 4} textAnchor="middle" fontSize="8" fill="#475569" fontFamily="monospace">{xTitle}</text>}
-      {yTitle && <text x={9} y={H / 2} textAnchor="middle" fontSize="8" fill="#475569" fontFamily="monospace" transform={`rotate(-90,9,${H / 2})`}>{yTitle}</text>}
+      <line x1={PL} x2={PL} y1={PT} y2={H - PB} stroke="var(--chart-axis)" strokeWidth="1" />
+      <line x1={PL} x2={W - PR} y1={H - PB} y2={H - PB} stroke="var(--chart-axis)" strokeWidth="1" />
+      {xs.map((x, i) => <text key={i} x={xScale(i)} y={H - PB + 12} fontSize="10" fill="var(--chart-label)" textAnchor="middle" fontFamily="monospace">{x}</text>)}
+      {xTitle && <text x={W / 2} y={H - 4} textAnchor="middle" fontSize="10" fill="var(--chart-label)" fontFamily="monospace">{xTitle}</text>}
+      {yTitle && <text x={9} y={H / 2} textAnchor="middle" fontSize="10" fill="var(--chart-label)" fontFamily="monospace" transform={`rotate(-90,9,${H / 2})`}>{yTitle}</text>}
       {data.map((series, si) => {
         const pts = series.values.map((v, i) => `${xScale(i)},${yScale(v)}`).join(" ");
         return (
@@ -35,7 +35,7 @@ export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
       {labels && labels.map((l, i) => (
         <g key={i}>
           <rect x={PL + i * Math.floor((W - PL - PR) / labels.length)} y={H - 13} width="7" height="7" fill={colors[i % colors.length]} rx="1" />
-          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 10} y={H - 7} fontSize="8" fill="#94a3b8" fontFamily="monospace">{l}</text>
+          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 10} y={H - 7} fontSize="10" fill="var(--chart-label)">{l}</text>
         </g>
       ))}
     </svg>
@@ -55,20 +55,20 @@ export function BarChart({ data, colors, labels, title, xTitle, yTitle }) {
 
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
-      <text x={W / 2} y={14} textAnchor="middle" fontSize="10" fill="#94a3b8" fontFamily="monospace" fontWeight="bold">{title}</text>
+      <text x={W / 2} y={14} textAnchor="middle" fontSize="11" fill="var(--chart-label)" fontWeight="600">{title}</text>
       {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
         <g key={i}>
-          <line x1={PL} x2={W - PR} y1={yScale(maxV * t)} y2={yScale(maxV * t)} stroke="#1e293b" strokeWidth="1" strokeDasharray="3,3" />
-          <text x={PL - 4} y={yScale(maxV * t) + 3} fontSize="8" fill="#475569" textAnchor="end" fontFamily="monospace">{fmt(maxV * t)}</text>
+          <line x1={PL} x2={W - PR} y1={yScale(maxV * t)} y2={yScale(maxV * t)} stroke="var(--chart-grid)" strokeWidth="1" strokeDasharray="3,3" />
+          <text x={PL - 4} y={yScale(maxV * t) + 3} fontSize="10" fill="var(--chart-label)" textAnchor="end" fontFamily="monospace">{fmt(maxV * t)}</text>
         </g>
       ))}
-      <line x1={PL} x2={PL} y1={PT} y2={H - PB} stroke="#334155" strokeWidth="1" />
-      <line x1={PL} x2={W - PR} y1={H - PB} y2={H - PB} stroke="#334155" strokeWidth="1" />
+      <line x1={PL} x2={PL} y1={PT} y2={H - PB} stroke="var(--chart-axis)" strokeWidth="1" />
+      <line x1={PL} x2={W - PR} y1={H - PB} y2={H - PB} stroke="var(--chart-axis)" strokeWidth="1" />
       {data[0].xLabels.map((xl, gi) => {
         const gx = PL + gi * (groupW + 6) + groupW / 2;
-        return <text key={gi} x={gx} y={H - PB + 12} fontSize="8" fill="#475569" textAnchor="middle" fontFamily="monospace">{xl}</text>;
+        return <text key={gi} x={gx} y={H - PB + 12} fontSize="10" fill="var(--chart-label)" textAnchor="middle" fontFamily="monospace">{xl}</text>;
       })}
-      {xTitle && <text x={W / 2} y={H - 4} textAnchor="middle" fontSize="8" fill="#475569" fontFamily="monospace">{xTitle}</text>}
+      {xTitle && <text x={W / 2} y={H - 4} textAnchor="middle" fontSize="10" fill="var(--chart-label)" fontFamily="monospace">{xTitle}</text>}
       {data.map((series, si) =>
         series.values.map((v, gi) => {
           const gx = PL + gi * (groupW + 6) + si * (barW + 1);
@@ -79,7 +79,7 @@ export function BarChart({ data, colors, labels, title, xTitle, yTitle }) {
       {labels && labels.map((l, i) => (
         <g key={i}>
           <rect x={PL + i * Math.floor((W - PL - PR) / labels.length)} y={H - 13} width="7" height="7" fill={colors[i % colors.length]} rx="1" />
-          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 10} y={H - 7} fontSize="8" fill="#94a3b8" fontFamily="monospace">{l}</text>
+          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 10} y={H - 7} fontSize="10" fill="var(--chart-label)">{l}</text>
         </g>
       ))}
     </svg>
