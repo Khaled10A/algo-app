@@ -98,7 +98,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
       {secTitle("SORTING — CONCLUSION", "#38bdf8")}
       <p style={{ fontSize: 12, color: textPrimary, lineHeight: 1.8 }}>
         <strong style={{ color: "#4ade80" }}>{getAlgorithm(best.algo).name}</strong> is recommended for general-purpose sorting due to its consistent {getAlgorithm(best.algo).complexity.average} average-case performance.{" "}
-        {COMPLEXITY[best.algo]?.paradigm === "Divide & Conquer"
+        {getAlgorithm(best.algo).complexity.paradigm === "Divide & Conquer"
           ? "Its divide-and-conquer strategy efficiently reduces problem size at each step."
           : "Its incremental approach adapts well to partially sorted data."}
       </p>

@@ -237,7 +237,7 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
   }
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView?.({ behavior: "smooth" });
   }, [messages, loading]);
 
   async function send(text) {

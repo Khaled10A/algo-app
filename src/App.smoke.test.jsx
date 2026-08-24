@@ -43,6 +43,28 @@ describe("App shell", () => {
     expect(screen.getByText(/Step 1 \//i)).toBeTruthy();
   });
 
+  it("renders report, history, pseudocode, complexity and AI tabs after a run", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /RUN BENCHMARK/ }));
+    await waitFor(() => expect(screen.getByText(/SORTING RESULTS/i)).toBeTruthy(), { timeout: 5000 });
+
+    fireEvent.click(screen.getAllByRole("button", { name: "report" })[0]);
+    expect(screen.getByText(/AUTO-GENERATED REPORT/i)).toBeTruthy();
+
+    fireEvent.click(screen.getAllByRole("button", { name: "history" })[0]);
+    expect(screen.getByText(/RUN HISTORY/i)).toBeTruthy();
+
+    fireEvent.click(screen.getAllByRole("button", { name: "pseudocode" })[0]);
+    expect(screen.getByText(/PSEUDOCODE — INSERTION SORT/i)).toBeTruthy();
+    expect(screen.getByText(/InsertionSort\(A, n\)/)).toBeTruthy();
+
+    fireEvent.click(screen.getAllByRole("button", { name: "complexity" })[0]);
+    expect(screen.getByText("Paradigm")).toBeTruthy();
+
+    fireEvent.click(screen.getAllByRole("button", { name: "ai" })[0]);
+    expect(screen.getByText(/AI ASSISTANT/i)).toBeTruthy();
+  });
+
   it("persists theme choice to localStorage", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Toggle theme" }));
