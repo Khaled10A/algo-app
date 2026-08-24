@@ -1,10 +1,14 @@
 import { Label } from '../components/ui/SharedComponents';
-import { COLORS, TH, TD } from '../utils/constants';
+import { getAlgorithm } from '../algorithms/registry';
+import { tableStyles } from '../theme/tokens';
 
 export function HistoryTab({ history, compare, setCompare, isDark }) {
   const border = isDark ? "#1e293b" : "#e2e8f0";
   const cardBg = isDark ? "#0f172a" : "#f8fafc";
   const textMuted = isDark ? "#64748b" : "#94a3b8";
+  const ts = tableStyles(isDark ? "dark" : "light");
+  const algoName = (id) => { try { return getAlgorithm(id).name; } catch { return id; } };
+  const algoColor = (id) => { try { return getAlgorithm(id).color; } catch { return undefined; } };
 
   const toggleCompare = (run) => {
     setCompare(prev => {
@@ -37,8 +41,8 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
               <thead>
                 <tr>
-                  <th style={TH}>Metric</th>
-                  {compareRuns.map(r => <th key={r.id} style={{ ...TH, color: "#a78bfa" }}>{r.label}</th>)}
+                  <th style={ts.TH}>Metric</th>
+                  {compareRuns.map(r => <th key={r.id} style={{ ...ts.TH, color: "#a78bfa" }}>{r.label}</th>)}
                 </tr>
               </thead>
               <tbody>
@@ -51,12 +55,12 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
                   const maxV = Math.max(...rowVals, 1);
                   return (
                     <tr key={algo} style={{ background: ai % 2 === 0 ? (isDark ? "#0a0f1e" : "#f1f5f9") : (isDark ? "#0f172a" : "#f8fafc") }}>
-                      <td style={{ ...TD, color: COLORS[ai % COLORS.length], fontWeight: "bold" }}>{algo}</td>
+                      <td style={{ ...ts.TD, color: algoColor(algo), fontWeight: "bold" }}>{algoName(algo)}</td>
                       {rowVals.map((v, i) => (
-                        <td key={i} style={TD}>
+                        <td key={i} style={ts.TD}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <div style={{ flex: 1, background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 3, height: 6 }}>
-                              <div style={{ width: `${(v / maxV) * 100}%`, height: "100%", background: COLORS[ai % COLORS.length], borderRadius: 3 }} />
+                              <div style={{ width: `${(v / maxV) * 100}%`, height: "100%", background: algoColor(algo), borderRadius: 3 }} />
                             </div>
                             <span style={{ fontSize: 10, color: "#94a3b8", minWidth: 50, textAlign: "right" }}>
                               {compareRuns[i].metric === "time" ? v.toFixed(3) + "ms" : v.toLocaleString()}
@@ -76,9 +80,9 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
                   const maxV = Math.max(...rowVals, 1);
                   return (
                     <tr key={algo} style={{ background: ai % 2 === 0 ? (isDark ? "#0a0f1e" : "#f1f5f9") : (isDark ? "#0f172a" : "#f8fafc") }}>
-                      <td style={{ ...TD, color: searchColors[ai % 3], fontWeight: "bold" }}>{algo}</td>
+                      <td style={{ ...ts.TD, color: searchColors[ai % 3], fontWeight: "bold" }}>{algoName(algo)}</td>
                       {rowVals.map((v, i) => (
-                        <td key={i} style={TD}>
+                        <td key={i} style={ts.TD}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <div style={{ flex: 1, background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 3, height: 6 }}>
                               <div style={{ width: `${(v / maxV) * 100}%`, height: "100%", background: searchColors[ai % 3], borderRadius: 3 }} />
@@ -109,11 +113,11 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
           const isSelected = compare.includes(run.id);
           const mk = run.metric === "time" ? "time" : "comparisons";
           const algosData = run.kind === "sorting"
-            ? run.algos.map(a => ({ name: a, val: run.types.reduce((s, t) => s + (run.results[a]?.[t]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }))
-            : run.algos.map(a => ({ name: a, val: run.scenarios.reduce((s, sc) => s + (run.results[a]?.[sc]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }));
+            ? run.algos.map(a => ({ id: a, name: algoName(a), val: run.types.reduce((s, t) => s + (run.results[a]?.[t]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }))
+            : run.algos.map(a => ({ id: a, name: algoName(a), val: run.scenarios.reduce((s, sc) => s + (run.results[a]?.[sc]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }));
           const maxVal = Math.max(...algosData.map(d => d.val), 1);
           const worstName = algosData.reduce((a, b) => b.val > a.val ? b : a, algosData[0])?.name;
-          const clrs = run.kind === "sorting" ? COLORS : ["#f472b6", "#4ade80", "#fb923c"];
+          const clrs = run.algos.map((id) => algoColor(id));
 
           return (
             <div key={run.id} style={{
@@ -143,11 +147,11 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                 {algosData.map((d, i) => (
                   <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ width: 90, fontSize: 10, color: clrs[i % clrs.length], textAlign: "right", flexShrink: 0 }}>{d.name}</div>
+                    <div style={{ width: 90, fontSize: 10, color: clrs[i] || "#94a3b8", textAlign: "right", flexShrink: 0 }}>{d.name}</div>
                     <div style={{ flex: 1, background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 4, height: 8 }}>
                       <div style={{
                         width: `${(d.val / maxVal) * 100}%`, height: "100%",
-                        background: d.name === worstName ? "#ef4444" : clrs[i % clrs.length],
+                        background: d.name === worstName ? "#ef4444" : (clrs[i] || "#94a3b8"),
                         borderRadius: 4, transition: "width 0.4s",
                       }} />
                     </div>

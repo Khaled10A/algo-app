@@ -16,10 +16,11 @@ export function binarySearch(arr, target) {
   return { found: false, index: -1, comparisons };
 }
 
-export function binarySearchDebug(arr) {
-  // Use middle element as target for demo
+export function binarySearchDebug(arr, targetOverride) {
   const sorted = [...arr].sort((a, b) => a - b);
-  const target = sorted[Math.floor(sorted.length / 2)];
+  const target = targetOverride !== undefined && targetOverride !== null
+    ? targetOverride
+    : sorted[Math.floor(sorted.length / 2)];
   const steps = [];
 
   const snap = (activeLine, lo, hi, mid, vars, log) => steps.push({

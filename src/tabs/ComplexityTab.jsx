@@ -2,8 +2,10 @@ import { useState } from "react";
 import { LineChart } from '../components/charts/LineChart';
 import { Label } from '../components/ui/SharedComponents';
 import { useTheme } from '../components/ui/Sidebar';
-import { SORT_ALGOS, SEARCH_ALGOS, COMPLEXITY, COLORS, TH, TD, btnBase } from '../utils/constants';
+import { getBenchmarkable } from '../algorithms/registry';
 import { generateArray, generateText } from '../utils/generators';
+import { measure } from '../core/benchmark/engine';
+import { tableStyles, CHART_FALLBACK_COLORS } from '../theme/tokens';
 
 function ComparePanel({ tab, metric }) {
   const [result, setResult] = useState(null);
@@ -11,39 +13,44 @@ function ComparePanel({ tab, metric }) {
   const panelBg = th === "light" ? "#f1f5f9" : "#0f172a";
   const panelBorder = th === "light" ? "#e2e8f0" : "#1e293b";
   const trackBg = th === "light" ? "#e2e8f0" : "#1e293b";
+  const descriptors = getBenchmarkable(tab);
 
   function run() {
     if (tab === "sorting") {
       const arr = generateArray(100, "random");
-      const res = Object.entries(SORT_ALGOS).map(([name, fn]) => {
-        const t0 = performance.now(); const { comparisons } = fn(arr); const t1 = performance.now();
-        return { name, time: parseFloat((t1 - t0).toFixed(4)), comparisons };
-      }).sort((a, b) => a.time - b.time);
+      const res = descriptors
+        .map(({ name, color, run: fn }) => {
+          const { time, comparisons } = measure(fn, { setup: () => [arr], repeats: 1 });
+          return { name, color, time: parseFloat(time.toFixed(4)), comparisons };
+        })
+        .sort((a, b) => a.time - b.time);
       setResult(res);
     } else {
       const text = generateText(500, "test", "multiple");
-      const res = Object.entries(SEARCH_ALGOS).map(([name, fn]) => {
-        const t0 = performance.now(); const { comparisons } = fn(text, "test"); const t1 = performance.now();
-        return { name, time: parseFloat((t1 - t0).toFixed(4)), comparisons };
-      }).sort((a, b) => a.time - b.time);
+      const res = descriptors
+        .map(({ name, color, run: fn }) => {
+          const { time, comparisons } = measure(fn, { setup: () => [text, "test"], repeats: 1 });
+          return { name, color, time: parseFloat(time.toFixed(4)), comparisons };
+        })
+        .sort((a, b) => a.time - b.time);
       setResult(res);
     }
   }
 
   const mk = metric === "time" ? "time" : "comparisons";
-  const maxVal = result ? Math.max(...result.map(r => r[mk]), 1) : 1;
+  const maxVal = result ? Math.max(...result.map((r) => r[mk]), 1) : 1;
 
   return (
     <div style={{ background: panelBg, borderRadius: 10, border: `1px solid ${panelBorder}`, padding: "14px 18px" }}>
-      <button onClick={run} style={{ ...btnBase, marginBottom: 12, fontSize: 10, letterSpacing: 1 }}>▶ RUN SIDE-BY-SIDE (n=100)</button>
+      <button onClick={run} style={{ ...btnStyle(th), marginBottom: 12, fontSize: 10, letterSpacing: 1 }}>▶ RUN SIDE-BY-SIDE (n=100)</button>
       {result && result.map((r, i) => (
         <div key={r.name} style={{ marginBottom: 9 }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 3 }}>
-            <span style={{ color: COLORS[i % COLORS.length] }}>{r.name}</span>
+            <span style={{ color: r.color || CHART_FALLBACK_COLORS[i % CHART_FALLBACK_COLORS.length] }}>{r.name}</span>
             <span style={{ color: "#94a3b8", fontSize: 10 }}>{mk === "time" ? r.time + " ms" : r.comparisons.toLocaleString()}</span>
           </div>
           <div style={{ background: trackBg, borderRadius: 4, height: 7 }}>
-            <div style={{ width: `${(r[mk] / maxVal) * 100}%`, height: "100%", background: COLORS[i % COLORS.length], borderRadius: 4, transition: "width 0.4s" }} />
+            <div style={{ width: `${(r[mk] / maxVal) * 100}%`, height: "100%", background: r.color || CHART_FALLBACK_COLORS[i % CHART_FALLBACK_COLORS.length], borderRadius: 4, transition: "width 0.4s" }} />
           </div>
         </div>
       ))}
@@ -51,26 +58,42 @@ function ComparePanel({ tab, metric }) {
   );
 }
 
+function btnStyle(th) {
+  return {
+    background: th === "light" ? "#f1f5f9" : "#0f172a",
+    border: `1px solid ${th === "light" ? "#cbd5e1" : "#1e293b"}`,
+    borderRadius: 6,
+    color: th === "light" ? "#475569" : "#94a3b8",
+    fontSize: 11, cursor: "pointer", padding: "6px 12px", fontFamily: "monospace",
+  };
+}
+
 export function ComplexityTab({ tab, metric, isDark }) {
+  const ts = tableStyles(isDark ? "dark" : "light");
+  const rows = [
+    ...getBenchmarkable("sorting"),
+    ...getBenchmarkable("searching"),
+  ];
+
   return (
     <div>
       <Label color="#fb923c">COMPLEXITY REFERENCE</Label>
       <div style={{ overflowX: "auto", marginBottom: 24 }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
           <thead><tr style={{ background: isDark ? "#0f172a" : "#e2e8f0" }}>
-            {["Algorithm", "Paradigm", "Best", "Average", "Worst", "Space"].map(h => <th key={h} style={TH}>{h}</th>)}
+            {["Algorithm", "Paradigm", "Best", "Average", "Worst", "Space"].map((h) => <th key={h} style={ts.TH}>{h}</th>)}
           </tr></thead>
           <tbody>
-            {[...Object.keys(SORT_ALGOS), ...Object.keys(SEARCH_ALGOS)].map((algo, i) => {
-              const c = COMPLEXITY[algo];
+            {rows.map((d, i) => {
+              const c = d.complexity;
               return (
-                <tr key={algo} style={{ background: i % 2 === 0 ? (isDark ? "#0a0f1e" : "#f1f5f9") : (isDark ? "#0f172a" : "#f8fafc") }}>
-                  <td style={{ ...TD, color: COLORS[i % COLORS.length], fontWeight: "bold" }}>{algo}</td>
-                  <td style={{ ...TD, color: "#64748b", fontSize: 10 }}>{c.paradigm}</td>
-                  <td style={{ ...TD, color: "#4ade80" }}>{c.best}</td>
-                  <td style={{ ...TD, color: "#fb923c" }}>{c.average}</td>
-                  <td style={{ ...TD, color: "#f87171" }}>{c.worst}</td>
-                  <td style={{ ...TD, color: "#94a3b8" }}>{c.space}</td>
+                <tr key={d.id} style={{ background: i % 2 === 0 ? ts.rowEven : ts.rowOdd }}>
+                  <td style={{ ...ts.TD, color: d.color, fontWeight: "bold" }}>{d.name}</td>
+                  <td style={{ ...ts.TD, color: "#64748b", fontSize: 10 }}>{c.paradigm}</td>
+                  <td style={{ ...ts.TD, color: "#4ade80" }}>{c.best}</td>
+                  <td style={{ ...ts.TD, color: "#fb923c" }}>{c.average}</td>
+                  <td style={{ ...ts.TD, color: "#f87171" }}>{c.worst}</td>
+                  <td style={{ ...ts.TD, color: "#94a3b8" }}>{c.space}</td>
                 </tr>
               );
             })}

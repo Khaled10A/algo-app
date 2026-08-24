@@ -3,7 +3,9 @@ import { LineChart, BarChart } from '../components/charts/LineChart';
 import { Label, Empty, ChartBox, FullscreenChart } from '../components/ui/SharedComponents';
 import { useTheme } from '../components/ui/Sidebar';
 import { exportSVGasPNG } from '../utils/exportUtils';
-import { COLORS, COMPLEXITY, INPUT_LABELS, SCENARIO_LABELS, TH, TD } from '../utils/constants';
+import { getAlgorithm } from '../algorithms/registry';
+import { INPUT_LABELS, SCENARIO_LABELS } from '../utils/constants';
+import { tableStyles } from '../theme/tokens';
 
 export function SortResults({ results, metric, lineRef: externalLineRef, barRef: externalBarRef }) {
   const { results: data, sizes, algos, types } = results;
@@ -14,6 +16,9 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
   const barRef = externalBarRef || internalBarRef;
   const [fsChart, setFsChart] = useState(null);
   const th = useTheme();
+  const ts = tableStyles(th);
+  const meta = algos.map((id) => getAlgorithm(id));
+  const algoColors = meta.map((d) => d.color);
 
   const algoTotals = algos.map(algo => ({
     algo,
@@ -33,9 +38,6 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
     xLabels: sizes.map(String),
     values: sizes.map((_, si) => data[algo][types[0]][si][mk]),
   }));
-
-  const rowEven = th === "light" ? "#f1f5f9" : "#0a0f1e";
-  const rowOdd = th === "light" ? "#f8fafc" : "#0f172a";
 
   return (
     <div>
@@ -62,13 +64,13 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
         <ChartBox ref={lineRef} title="Line Chart — Avg vs Size"
           onExport={() => exportSVGasPNG(lineRef.current, "sort_line_chart.png")}
-          onFullscreen={() => setFsChart({ title: "Line Chart — Avg vs Size", node: <LineChart data={lineData} colors={COLORS} labels={algos} title={`Avg ${ml} vs n`} xTitle="Input Size (n)" yTitle={ml} fullscreen /> })}>
-          <LineChart data={lineData} colors={COLORS} labels={algos} title={`Avg ${ml} vs n`} xTitle="Input Size (n)" yTitle={ml} />
+          onFullscreen={() => setFsChart({ title: "Line Chart — Avg vs Size", node: <LineChart data={lineData} colors={algoColors} labels={meta.map(d => d.name)} title={`Avg ${ml} vs n`} xTitle="Input Size (n)" yTitle={ml} fullscreen /> })}>
+          <LineChart data={lineData} colors={algoColors} labels={meta.map(d => d.name)} title={`Avg ${ml} vs n`} xTitle="Input Size (n)" yTitle={ml} />
         </ChartBox>
         <ChartBox ref={barRef} title={`Bar Chart — ${INPUT_LABELS[types[0]]}`}
           onExport={() => exportSVGasPNG(barRef.current, "sort_bar_chart.png")}
-          onFullscreen={() => setFsChart({ title: `Bar Chart — ${INPUT_LABELS[types[0]]}`, node: <BarChart data={barData} colors={COLORS} labels={algos} title={`${ml} — ${INPUT_LABELS[types[0]]}`} xTitle="Input Size (n)" yTitle={ml} fullscreen /> })}>
-          <BarChart data={barData} colors={COLORS} labels={algos} title={`${ml} — ${INPUT_LABELS[types[0]]}`} xTitle="Input Size (n)" yTitle={ml} />
+          onFullscreen={() => setFsChart({ title: `Bar Chart — ${INPUT_LABELS[types[0]]}`, node: <BarChart data={barData} colors={algoColors} labels={meta.map(d => d.name)} title={`${ml} — ${INPUT_LABELS[types[0]]}`} xTitle="Input Size (n)" yTitle={ml} fullscreen /> })}>
+          <BarChart data={barData} colors={algoColors} labels={meta.map(d => d.name)} title={`${ml} — ${INPUT_LABELS[types[0]]}`} xTitle="Input Size (n)" yTitle={ml} />
         </ChartBox>
       </div>
 
@@ -76,36 +78,38 @@ export function SortResults({ results, metric, lineRef: externalLineRef, barRef:
         <div key={type} style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 9, letterSpacing: 2, color: "#94a3b8", marginBottom: 6 }}>📋 {INPUT_LABELS[type].toUpperCase()}</div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-            <thead><tr style={{ background: rowOdd }}>
-              <th style={TH}>Algorithm</th>
-              {sizes.map(n => <th key={n} style={TH}>n = {n}</th>)}
-              <th style={{ ...TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
-              <th style={{ ...TH, color: "#fb923c" }}>Theoretical Formula</th>
+            <thead><tr style={{ background: ts.rowOdd }}>
+              <th style={ts.TH}>Algorithm</th>
+              {sizes.map(n => <th key={n} style={ts.TH}>n = {n}</th>)}
+              <th style={{ ...ts.TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
+              <th style={{ ...ts.TH, color: "#fb923c" }}>Theoretical Formula</th>
             </tr></thead>
             <tbody>{algos.map((algo, ai) => {
               const isWorst = algo === worstAlgo;
               const isBest = algo === bestAlgo;
-              const rowBg = isWorst ? "rgba(239,68,68,0.06)" : isBest ? "rgba(74,222,128,0.06)" : (ai % 2 === 0 ? rowEven : rowOdd);
-              const nameColor = isWorst ? "#f87171" : isBest ? "#4ade80" : COLORS[ai % COLORS.length];
+              const rowBg = isWorst ? "rgba(239,68,68,0.06)" : isBest ? "rgba(74,222,128,0.06)" : (ai % 2 === 0 ? ts.rowEven : ts.rowOdd);
+              const dsc = meta[ai];
+              const displayName = dsc.name;
+              const nameColor = isWorst ? "#f87171" : isBest ? "#4ade80" : dsc.color;
               return (
                 <tr key={algo} style={{ background: rowBg }}>
-                  <td style={{ ...TD, fontWeight: "bold", display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ color: nameColor }}>{algo}</span>
+                  <td style={{ ...ts.TD, fontWeight: "bold", display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: nameColor }}>{displayName}</span>
                     {isWorst && <span style={{ fontSize: 9, background: "rgba(239,68,68,0.2)", color: "#f87171", borderRadius: 4, padding: "1px 5px", letterSpacing: 1 }}>WORST</span>}
                     {isBest && <span style={{ fontSize: 9, background: "rgba(74,222,128,0.2)", color: "#4ade80", borderRadius: 4, padding: "1px 5px", letterSpacing: 1 }}>BEST</span>}
                   </td>
                   {data[algo][type].map((row, si) => (
-                    <td key={si} style={{ ...TD, color: isWorst ? "#fca5a5" : "#94a3b8" }}>
+                    <td key={si} style={{ ...ts.TD, color: isWorst ? "#fca5a5" : "#94a3b8" }}>
                       {mk === "time" ? row.time.toFixed(4) + " ms" : row.comparisons.toLocaleString()}
                     </td>
                   ))}
-                  <td style={{ ...TD, color: "#a78bfa", fontFamily: "monospace", fontSize: 10 }}>
+                  <td style={{ ...ts.TD, color: "#a78bfa", fontFamily: "monospace", fontSize: 10 }}>
                     {data[algo][type][data[algo][type].length - 1].comparisons.toLocaleString()}
                   </td>
-                  <td style={{ ...TD, fontSize: 10 }}>
+                  <td style={{ ...ts.TD, fontSize: 10 }}>
                     {(() => {
                       const n = sizes[sizes.length - 1];
-                      const c = COMPLEXITY[algo];
+                      const c = getAlgorithm(algo).complexity;
                       if (!c) return "-";
                       const theoretical = c.worst.includes("n²") ? Math.round(n*n)
                         : c.worst.includes("n log n") ? Math.round(n * Math.log2(n))
@@ -137,7 +141,6 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
   const internalBarRef = useRef();
   const [fsChart, setFsChart] = useState(null);
   const th = useTheme();
-  const searchColors = ["#f472b6", "#4ade80", "#fb923c"];
   const lineRef = externalLineRef || internalLineRef;
   const barRef = externalBarRef || internalBarRef;
 
@@ -150,9 +153,9 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
     const cardBg = isDark ? "#0f172a" : "#ffffff";
     const textMute = isDark ? "#64748b" : "#94a3b8";
 
-    const rows = algos.map((algo, i) => {
+    const rows = algos.map((algo) => {
       const r = data[algo]["file"][0];
-      return { algo, time: r.time, comparisons: r.comparisons, matches: r.matches?.length || 0, color: searchColors[i % 3] };
+      return { algo, name: getAlgorithm(algo).name, time: r.time, comparisons: r.comparisons, matches: r.matches?.length || 0, color: getAlgorithm(algo).color };
     }).sort((a, b) => a[mk] - b[mk]);
 
     return (
@@ -179,7 +182,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
             <tbody>
               {rows.map((r, i) => (
                 <tr key={r.algo} style={{ background: i % 2 === 0 ? (isDark ? "#0a0f1e" : "#f8fafc") : (isDark ? "#0f172a" : "#ffffff") }}>
-                  <td style={{ padding: "9px 14px", color: r.color, fontWeight: "bold", fontFamily: "monospace" }}>{r.algo}</td>
+                  <td style={{ padding: "9px 14px", color: r.color, fontWeight: "bold", fontFamily: "monospace" }}>{r.name}</td>
                   <td style={{ padding: "9px 14px", color: isDark ? "#94a3b8" : "#475569" }}>{r.time.toFixed(4)} ms</td>
                   <td style={{ padding: "9px 14px", color: isDark ? "#94a3b8" : "#475569" }}>{r.comparisons.toLocaleString()}</td>
                   <td style={{ padding: "9px 14px" }}>
@@ -205,7 +208,7 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
             return (
               <div key={r.algo} style={{ marginBottom: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4 }}>
-                  <span style={{ color: r.color, fontFamily: "monospace" }}>{r.algo}</span>
+                  <span style={{ color: r.color, fontFamily: "monospace" }}>{r.name}</span>
                   <span style={{ color: textMute, fontSize: 10 }}>{mk === "time" ? r.time.toFixed(4) + " ms" : r.comparisons.toLocaleString()}</span>
                 </div>
                 <div style={{ background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 4, height: 8 }}>
@@ -243,8 +246,8 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
     values: sizes.map((_, si) => data[algo][scenarios[0]][si][mk]),
   }));
 
-  const rowEven = th === "light" ? "#f1f5f9" : "#0a0f1e";
-  const rowOdd = th === "light" ? "#f8fafc" : "#0f172a";
+  const searchMeta = algos.map((id) => getAlgorithm(id));
+  const searchColors = searchMeta.map((d) => d.color);
 
   return (
     <div>
@@ -285,26 +288,26 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
         <div key={sc} style={{ marginBottom: 16 }}>
           <div style={{ fontSize: 9, letterSpacing: 2, color: "#94a3b8", marginBottom: 6 }}>🔍 {SCENARIO_LABELS[sc].toUpperCase()}</div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-            <thead><tr style={{ background: rowOdd }}>
-              <th style={TH}>Algorithm</th>
-              {sizes.map(n => <th key={n} style={TH}>n = {n}</th>)}
-              <th style={{ ...TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
-              <th style={{ ...TH, color: "#fb923c" }}>Theoretical Formula</th>
+            <thead><tr style={{ background: ts.rowOdd }}>
+              <th style={ts.TH}>Algorithm</th>
+              {sizes.map(n => <th key={n} style={ts.TH}>n = {n}</th>)}
+              <th style={{ ...ts.TH, color: "#a78bfa" }}>Basic Ops (n={sizes[sizes.length-1]})</th>
+              <th style={{ ...ts.TH, color: "#fb923c" }}>Theoretical Formula</th>
             </tr></thead>
             <tbody>{algos.map((algo, ai) => {
               const isWorst = algo === worstAlgo;
               const isBest = algo === bestAlgo;
-              const rowBg = isWorst ? "rgba(239,68,68,0.06)" : isBest ? "rgba(74,222,128,0.06)" : (ai % 2 === 0 ? rowEven : rowOdd);
+              const rowBg = isWorst ? "rgba(239,68,68,0.06)" : isBest ? "rgba(74,222,128,0.06)" : (ai % 2 === 0 ? ts.rowEven : ts.rowOdd);
               const nameColor = isWorst ? "#f87171" : isBest ? "#4ade80" : searchColors[ai % 3];
               return (
                 <tr key={algo} style={{ background: rowBg }}>
-                  <td style={{ ...TD, fontWeight: "bold", display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ color: nameColor }}>{algo}</span>
+                  <td style={{ ...ts.TD, fontWeight: "bold", display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: nameColor }}>{searchMeta[ai].name}</span>
                     {isWorst && <span style={{ fontSize: 9, background: "rgba(239,68,68,0.2)", color: "#f87171", borderRadius: 4, padding: "1px 5px", letterSpacing: 1 }}>WORST</span>}
                     {isBest && <span style={{ fontSize: 9, background: "rgba(74,222,128,0.2)", color: "#4ade80", borderRadius: 4, padding: "1px 5px", letterSpacing: 1 }}>BEST</span>}
                   </td>
                   {data[algo][sc].map((row, si) => (
-                    <td key={si} style={{ ...TD, color: isWorst ? "#fca5a5" : "#94a3b8" }}>
+                    <td key={si} style={{ ...ts.TD, color: isWorst ? "#fca5a5" : "#94a3b8" }}>
                       {mk === "time" ? row.time.toFixed(4) + " ms" : row.comparisons.toLocaleString()}
                     </td>
                   ))}

@@ -1,6 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { Label, Empty } from '../components/ui/SharedComponents';
-import { btnBase } from '../utils/constants';
+
+function btnBase(isDark) {
+  return {
+    background: isDark ? "#0f172a" : "#f1f5f9",
+    border: `1px solid ${isDark ? "#1e293b" : "#cbd5e1"}`,
+    borderRadius: 6,
+    color: isDark ? "#94a3b8" : "#475569",
+    fontSize: 11, cursor: "pointer", padding: "6px 12px", fontFamily: "monospace",
+  };
+}
 
 // ── AUDIO ────────────────────────────────────────────────────
 function playSwapSound(val, maxVal) {
@@ -55,6 +64,11 @@ const SPEEDS = [
   { label: "🏃", name: "Fast",    val: 120 },
   { label: "⚡", name: "Instant", val: 30  },
 ];
+
+const BTN_LABELS = { "⏮": "First step", "◀": "Previous step", "▶": "Next step", "⏭": "Last step" };
+function btnLabel(lbl) {
+  return BTN_LABELS[lbl] || lbl;
+}
 
 // ── ENHANCED ARRAY VISUALIZER ─────────────────────────────────
 function EnhancedViz({ steps, currentStep, isDark }) {
@@ -210,7 +224,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, vizStep, setVizStep, pauseViz
               {[["⏮",()=>setVizStep(0)],["◀",()=>setVizStep(s=>Math.max(0,s-1))],
                 ["▶",()=>setVizStep(s=>Math.min(vizSteps.length-1,s+1))],["⏭",()=>setVizStep(vizSteps.length-1)]
               ].map(([lbl,fn]) => (
-                <button key={lbl} onClick={fn} style={{ ...btnBase, fontSize:14, padding:"5px 12px" }}>{lbl}</button>
+                <button key={lbl} onClick={fn} style={{ ...btnBase(isDark), fontSize:14, padding:"5px 12px" }} aria-label={btnLabel(lbl)}>{lbl}</button>
               ))}
             </div>
 

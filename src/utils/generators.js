@@ -14,6 +14,14 @@ export function generateArray(size, type) {
 
 export function generateText(size, pattern, scenario) {
   const chars = "abcdefghijklmnopqrstuvwxyz ";
+  if (scenario === "nomatch") {
+    const patternChars = new Set(String(pattern || "").split(""));
+    const allowed = chars.split("").filter((c) => !patternChars.has(c));
+    if (allowed.length > 0) {
+      return Array.from({ length: size }, () => allowed[Math.floor(Math.random() * allowed.length)]).join("");
+    }
+    return "\u0002".repeat(size);
+  }
   let text = Array.from({ length: size }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
   if (scenario === "start") text = pattern + text.slice(pattern.length);
   else if (scenario === "end") text = text.slice(0, size - pattern.length) + pattern;
