@@ -107,7 +107,7 @@ export function SInput({ value, onChange, placeholder, hint, label }) {
           width: "100%",
           background: p.inputBg,
           border: `1px solid ${p.borderStrong}`,
-          borderRadius: 6,
+          borderRadius: 7,
           padding: "7px 10px",
           color: p.textPrimary,
           fontSize: 13,
@@ -241,16 +241,17 @@ export function Empty({ icon, text }) {
   const p = getPalette(th);
   return (
     <div
+      className="panel-in"
       style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         height: "55vh",
-        gap: 12,
+        gap: 10,
       }}
     >
-      <div style={{ fontSize: 40, opacity: 0.5 }} aria-hidden="true">
+      <div style={{ fontSize: 30, opacity: 0.45 }} aria-hidden="true">
         {icon}
       </div>
       <div style={{ fontSize: 13, color: p.textSecondary }}>{text}</div>
@@ -264,7 +265,7 @@ export const ChartBox = forwardRef(({ title, children, onExport, onFullscreen },
   return (
     <div
       ref={ref}
-      className="surface-card"
+      className="surface-card hoverable-card"
       style={{
         borderRadius: 12,
         padding: "14px 16px",
@@ -385,6 +386,7 @@ export function BenchmarkError({ message }) {
   return (
     <div
       role="alert"
+      className="popover-in"
       style={{
         marginTop: 8,
         padding: "9px 11px",

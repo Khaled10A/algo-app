@@ -17,7 +17,7 @@ export function ReportTab({ sortResults, searchResults, sortMetric, searchMetric
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "55vh", gap: 12, opacity: 0.5 }}>
         <div style={{ fontSize: 40 }} aria-hidden="true">📝</div>
-        <div style={{ fontSize: 11, color: "#475569", letterSpacing: 2 }}>RUN A BENCHMARK FIRST TO GENERATE REPORT</div>
+        <div style={{ fontSize: 13, color: pf.textSecondary }}>Run a benchmark first to generate a report</div>
       </div>
     );
   }

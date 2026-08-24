@@ -39,7 +39,7 @@ export function ConfigSidebar({
         </div>
       )}
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 26px" }}>
+      <div key={domain} className="panel-in" style={{ flex: 1, overflowY: "auto", padding: "16px 16px 26px" }}>
         {domain === "graphs" ? (
           <Sec title="Graph algorithms">
             <div style={{ fontSize: 12, color: palette.textSecondary }}>

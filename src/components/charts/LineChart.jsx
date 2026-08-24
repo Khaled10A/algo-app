@@ -1,6 +1,6 @@
 export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
   if (!data || data.length === 0) return null;
-  const W = 440, H = 216, PL = 58, PR = 16, PT = 28, PB = 48;
+  const W = 440, H = 248, PL = 58, PR = 16, PT = 30, PB = 44;
   const allVals = data.flatMap(d => d.values);
   const maxV = Math.max(...allVals, 1);
   const xs = data[0].xLabels;
@@ -21,7 +21,7 @@ export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
       <line x1={PL} x2={PL} y1={PT} y2={H - PB} stroke="var(--chart-axis)" strokeWidth="1" />
       <line x1={PL} x2={W - PR} y1={H - PB} y2={H - PB} stroke="var(--chart-axis)" strokeWidth="1" />
       {xs.map((x, i) => <text key={i} x={xScale(i)} y={H - PB + 12} fontSize="10" fill="var(--chart-label)" textAnchor="middle" fontFamily="monospace">{x}</text>)}
-      {xTitle && <text x={W / 2} y={H - 4} textAnchor="middle" fontSize="10" fill="var(--chart-label)" fontFamily="monospace">{xTitle}</text>}
+      {xTitle && <text x={W / 2} y={H - 21} textAnchor="middle" fontSize="10" fill="var(--chart-label)">{xTitle}</text>}
       {yTitle && <text x={9} y={H / 2} textAnchor="middle" fontSize="10" fill="var(--chart-label)" fontFamily="monospace" transform={`rotate(-90,9,${H / 2})`}>{yTitle}</text>}
       {data.map((series, si) => {
         const pts = series.values.map((v, i) => `${xScale(i)},${yScale(v)}`).join(" ");
@@ -34,8 +34,8 @@ export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
       })}
       {labels && labels.map((l, i) => (
         <g key={i}>
-          <rect x={PL + i * Math.floor((W - PL - PR) / labels.length)} y={H - 13} width="7" height="7" fill={colors[i % colors.length]} rx="1" />
-          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 10} y={H - 7} fontSize="10" fill="var(--chart-label)">{l}</text>
+          <rect x={PL + i * Math.floor((W - PL - PR) / labels.length)} y={H - 14} width="7" height="7" fill={colors[i % colors.length]} rx="1.5" />
+          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 11} y={H - 8} fontSize="10" fill="var(--chart-label)">{l}</text>
         </g>
       ))}
     </svg>
@@ -44,7 +44,7 @@ export function LineChart({ data, colors, labels, title, xTitle, yTitle }) {
 
 export function BarChart({ data, colors, labels, title, xTitle, yTitle }) {
   if (!data || data.length === 0) return null;
-  const W = 440, H = 216, PL = 58, PR = 16, PT = 28, PB = 48;
+  const W = 440, H = 248, PL = 58, PR = 16, PT = 30, PB = 44;
   const groupCount = data[0].values.length;
   const barW = Math.max(6, Math.floor((W - PL - PR) / (groupCount * data.length + groupCount + 2)));
   const groupW = barW * data.length + 4;
@@ -68,7 +68,7 @@ export function BarChart({ data, colors, labels, title, xTitle, yTitle }) {
         const gx = PL + gi * (groupW + 6) + groupW / 2;
         return <text key={gi} x={gx} y={H - PB + 12} fontSize="10" fill="var(--chart-label)" textAnchor="middle" fontFamily="monospace">{xl}</text>;
       })}
-      {xTitle && <text x={W / 2} y={H - 4} textAnchor="middle" fontSize="10" fill="var(--chart-label)" fontFamily="monospace">{xTitle}</text>}
+      {xTitle && <text x={W / 2} y={H - 21} textAnchor="middle" fontSize="10" fill="var(--chart-label)">{xTitle}</text>}
       {data.map((series, si) =>
         series.values.map((v, gi) => {
           const gx = PL + gi * (groupW + 6) + si * (barW + 1);
@@ -78,8 +78,8 @@ export function BarChart({ data, colors, labels, title, xTitle, yTitle }) {
       )}
       {labels && labels.map((l, i) => (
         <g key={i}>
-          <rect x={PL + i * Math.floor((W - PL - PR) / labels.length)} y={H - 13} width="7" height="7" fill={colors[i % colors.length]} rx="1" />
-          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 10} y={H - 7} fontSize="10" fill="var(--chart-label)">{l}</text>
+          <rect x={PL + i * Math.floor((W - PL - PR) / labels.length)} y={H - 14} width="7" height="7" fill={colors[i % colors.length]} rx="1.5" />
+          <text x={PL + i * Math.floor((W - PL - PR) / labels.length) + 11} y={H - 8} fontSize="10" fill="var(--chart-label)">{l}</text>
         </g>
       ))}
     </svg>

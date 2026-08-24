@@ -99,14 +99,14 @@ function EnhancedViz({ steps, currentStep, isDark }) {
                 height: `${Math.max((v / maxVal) * 100, 4)}px`,
                 background: getBarColor(v, maxVal, isHi),
                 borderRadius: "3px 3px 0 0",
-                transition: "height 0.22s cubic-bezier(0.22, 1, 0.36, 1), background 0.18s ease, box-shadow 0.18s ease",
-                boxShadow: isHi ? `0 0 14px ${getBarColor(v, maxVal, true)}55, 0 0 3px ${getBarColor(v, maxVal, true)}66` : "none",
+                transition: "height 0.18s cubic-bezier(0.22, 1, 0.36, 1), background 0.16s ease, box-shadow 0.16s ease",
+                boxShadow: isHi ? `0 0 10px ${getBarColor(v, maxVal, true)}3d, inset 0 1px 0 rgba(255,255,255,0.25)` : "inset 0 1px 0 rgba(255,255,255,0.18)",
                 transform: isHi ? "scaleY(1.05)" : "scaleY(1)",
                 transformOrigin: "bottom",
               }}/>
               {/* Index label */}
               <div style={{
-                fontSize: 8, color: isHi ? pf.pink : pf.textFaint,
+                fontSize: 9.5, color: isHi ? pf.pink : pf.textFaint,
                 fontFamily:"monospace", marginTop:2,
               }}>{i}</div>
             </div>
@@ -235,7 +235,7 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
               {[["⏮",playback.reset],["◀",playback.prev],
                 ["▶",playback.next],["⏭",playback.goToEnd]
               ].map(([lbl,fn]) => (
-                <button key={lbl} onClick={fn} style={{ ...btnBase(isDark), fontSize:14, padding:"5px 12px" }} aria-label={btnLabel(lbl)}>{lbl}</button>
+                <button key={lbl} onClick={fn} className="icon-btn" style={{ fontSize:14, padding:"5px 11px", color: pf.textSecondary }} aria-label={btnLabel(lbl)}>{lbl}</button>
               ))}
             </div>
 

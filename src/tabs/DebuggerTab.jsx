@@ -148,7 +148,7 @@ export function DebuggerTab({ isDark }) {
             fontSize: 11, fontFamily: "monospace", fontWeight: isHighlighted ? "bold" : "normal",
             transition: "all 0.15s",
           }}>{ch}</div>
-          <div style={{ fontSize: 8, color: p.textSecondary, fontFamily: "monospace" }}>{idx}</div>
+          <div style={{ fontSize: 9.5, color: p.textFaint, fontFamily: "monospace" }}>{idx}</div>
         </div>
       );
     };
@@ -160,7 +160,7 @@ export function DebuggerTab({ isDark }) {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>TEXT</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Text</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
             {text.split("").map((ch, i) =>
               charBox(ch, i, (highlightText || []).includes(i), matchSet.has(i))
@@ -169,7 +169,7 @@ export function DebuggerTab({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Pattern</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Pattern</div>
           <div style={{ display: "flex", gap: 3 }}>
             {pattern.split("").map((ch, i) =>
               charBox(ch, i, (highlightPat || []).includes(i), false)
@@ -179,7 +179,7 @@ export function DebuggerTab({ isDark }) {
 
         {lpsTable && lpsTable.length > 0 && (
           <div>
-            <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>LPS TABLE</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>LPS table</div>
             <div style={{ display: "flex", gap: 3 }}>
               {pattern.split("").map((ch, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
@@ -202,7 +202,7 @@ export function DebuggerTab({ isDark }) {
 
         {shiftTable && Object.keys(shiftTable).length > 0 && (
           <div>
-            <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>SHIFT TABLE</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Shift table</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
               {Object.entries(shiftTable).map(([ch, val]) => (
                 <div key={ch} style={{
@@ -247,14 +247,12 @@ export function DebuggerTab({ isDark }) {
   };
 
   const stepBtn = {
-    padding: "6px 10px", borderRadius: 7, border: "none",
-    background: "transparent", color: p.textSecondary, fontSize: 13, cursor: "pointer",
-    transition: `background ${MOTION.fast}`,
+    padding: "6px 10px", fontSize: 13,
   };
 
   return (
     <div style={{ color: p.textPrimary }}>
-      <div style={{ fontSize: 12, letterSpacing: 2, color: p.purple, marginBottom: 14, fontWeight: "bold" }}>
+      <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: p.purple, marginBottom: 14 }}>
         Memory debugger
       </div>
 
@@ -267,7 +265,7 @@ export function DebuggerTab({ isDark }) {
         }}
       >
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Sorting</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Sorting</div>
           <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
             {SORTING_ALGOS.map((a) => (
               <button key={a.id} onClick={() => selectAlgo(a.id)} style={algoBtnStyle(a)}>{a.name}</button>
@@ -276,7 +274,7 @@ export function DebuggerTab({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Searching</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Searching</div>
           <div style={{ display: "flex", gap: 5 }}>
             {ARRAY_SEARCH_ALGOS.map((a) => (
               <button key={a.id} onClick={() => selectAlgo(a.id)} style={algoBtnStyle(a)}>{a.name}</button>
@@ -285,7 +283,7 @@ export function DebuggerTab({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>String matching</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>String matching</div>
           <div style={{ display: "flex", gap: 5 }}>
             {STRING_MATCH_ALGOS.map((a) => (
               <button key={a.id} onClick={() => selectAlgo(a.id)} style={algoBtnStyle(a)}>{a.name}</button>
@@ -295,7 +293,7 @@ export function DebuggerTab({ isDark }) {
 
         {!isStringSearch ? (
           <div>
-            <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Array input</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Array input</div>
             <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
               {[["auto", "🎲 Auto"], ["custom", "✏️ Custom"]].map(([v, l]) => (
                 <button key={v} onClick={() => setArrInputMode(v)}
@@ -308,14 +306,14 @@ export function DebuggerTab({ isDark }) {
             </div>
             {arrInputMode === "auto" ? (
               <div>
-                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>SIZE: {arrSize}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 4 }}>SIZE: {arrSize}</div>
                 <input type="range" min={4} max={16} value={arrSize} aria-label="Array size"
                   onChange={(e) => setArrSize(+e.target.value)}
                   style={{ accentColor, width: 100 }} />
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>Your array</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 4 }}>Your array</div>
                 <input value={customArrStr} onChange={(e) => setCustomArrStr(e.target.value)} aria-label="Custom array"
                   placeholder="e.g. 5,3,8,1,9,2,7"
                   style={{ background: p.codeBg, border: `1px solid ${p.border}`, borderRadius: 5,
@@ -328,7 +326,7 @@ export function DebuggerTab({ isDark }) {
             )}
             {isBinary && (
               <div style={{ marginTop: 8 }}>
-                <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 4 }}>Target</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 4 }}>Target</div>
                 <div style={{ display: "flex", gap: 4 }}>
                   {[["present", "In array"], ["missing", "Not in array"]].map(([v, l]) => (
                     <button key={v} onClick={() => setBinaryTargetMode(v)} aria-pressed={binaryTargetMode === v}
@@ -345,7 +343,7 @@ export function DebuggerTab({ isDark }) {
         ) : (
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
             <div>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Text input</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Text input</div>
               <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
                 {[["manual", "✏️ Type"], ["file", "📄 File"]].map(([v, l]) => (
                   <button key={v}
@@ -366,7 +364,7 @@ export function DebuggerTab({ isDark }) {
                     <div style={{ fontSize: 9, color: debugFileName ? p.green : p.textSecondary, fontFamily: "monospace", marginTop: 2 }}>
                       {debugFileName ? debugFileName : "Click to upload .txt"}
                     </div>
-                    {debugFileName && <div style={{ fontSize: 8, color: "#475569", marginTop: 1 }}>{textInput.length} chars</div>}
+                    {debugFileName && <div style={{ fontSize: 10, color: p.textSecondary, marginTop: 1 }}>{textInput.length} chars</div>}
                   </div>
                   <input type="file" accept=".txt" style={{ display: "none" }} aria-label="Upload text file" onChange={(e) => {
                     const file = e.target.files[0];
@@ -394,7 +392,7 @@ export function DebuggerTab({ isDark }) {
               )}
             </div>
             <div>
-              <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>Pattern</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>Pattern</div>
               <input value={patInput} onChange={(e) => setPatInput(e.target.value)} aria-label="Pattern"
                 style={{ background: p.codeBg, border: `1px solid ${p.border}`, borderRadius: 5,
                   color: p.textPrimary, padding: "5px 10px", fontSize: 11,
@@ -404,7 +402,7 @@ export function DebuggerTab({ isDark }) {
         )}
 
         <div>
-          <div style={{ fontSize: 8, color: p.textSecondary, letterSpacing: 2, marginBottom: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: p.textSecondary, marginBottom: 6 }}>
             Speed: {playback.speed < 300 ? "Fast" : playback.speed < 700 ? "Medium" : "Slow"}
           </div>
           <input type="range" min={100} max={1000} aria-label="Playback speed"
@@ -430,12 +428,8 @@ export function DebuggerTab({ isDark }) {
               color: playing ? p.red : p.green,
               fontSize: 13, cursor: "pointer",
             }}>{playing ? "⏸" : "▶"}</button>
-            <button onClick={playback.prev} aria-label="Previous step" title="Previous step" style={stepBtn}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,0.14)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>◀</button>
-            <button onClick={playback.next} aria-label="Next step" title="Next step" style={stepBtn}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,0.14)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>▶</button>
+            <button onClick={playback.prev} aria-label="Previous step" title="Previous step" className="icon-btn" style={stepBtn}>◀</button>
+            <button onClick={playback.next} aria-label="Next step" title="Next step" className="icon-btn" style={stepBtn}>▶</button>
             <button onClick={playback.reset} aria-label="First step" title="First step" style={stepBtn}>⏮</button>
             <button onClick={playback.goToEnd} aria-label="Last step" title="Last step" style={stepBtn}>⏭</button>
           </>}
@@ -443,8 +437,8 @@ export function DebuggerTab({ isDark }) {
       </div>
 
       {inputNotice && (
-        <div role="status" style={{
-          marginBottom: 12, padding: "8px 12px", borderRadius: 6, fontSize: 10,
+        <div role="status" className="popover-in" style={{
+          marginBottom: 12, padding: "8px 12px", borderRadius: 8, fontSize: 11,
           fontFamily: "monospace", lineHeight: 1.5,
           background: isDark ? "rgba(251,191,36,0.08)" : "rgba(217,119,6,0.08)",
           border: `1px solid ${isDark ? "rgba(251,191,36,0.4)" : "rgba(180,83,9,0.45)"}`,
@@ -485,7 +479,7 @@ export function DebuggerTab({ isDark }) {
               display: "flex", justifyContent: "space-between", alignItems: "center",
               borderBottom: `1px solid ${p.border}`
             }}>
-              <span style={{ fontSize: 9, color: accentColor, letterSpacing: 2, fontFamily: "monospace" }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: accentColor, fontFamily: "monospace" }}>
                 {descriptor.name.replace(/ /g, "_").toLowerCase()}
               </span>
               <span style={{ fontSize: 9, color: p.textSecondary, fontFamily: "monospace" }}>
@@ -536,7 +530,7 @@ export function DebuggerTab({ isDark }) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                 {Object.entries(current.vars || {}).filter(([, v]) => v !== undefined).map(([k, v]) => (
                   <div key={k} style={{ background: p.codeBg, borderRadius: 6, padding: "7px 10px", border: `1px solid ${p.border}` }}>
-                    <div style={{ fontSize: 8, color: p.textSecondary, fontFamily: "monospace", marginBottom: 2 }}>{k}</div>
+                    <div style={{ fontSize: 10, color: p.textSecondary, fontFamily: "monospace", marginBottom: 2 }}>{k}</div>
                     <div style={{ fontSize: 13, color: accentColor, fontFamily: "monospace", fontWeight: "bold" }}>
                       {String(v)}
                     </div>
@@ -580,8 +574,8 @@ export function DebuggerTab({ isDark }) {
           justifyContent: "center", height: "40vh", gap: 12, opacity: 0.35,
         }}>
           <div style={{ fontSize: 42 }}>🐛</div>
-          <div style={{ fontSize: 11, color: p.textSecondary, letterSpacing: 2 }}>
-            SELECT AN ALGORITHM AND CLICK GENERATE
+          <div style={{ fontSize: 12 }}>
+            Select an algorithm and click Generate
           </div>
         </div>
       )}

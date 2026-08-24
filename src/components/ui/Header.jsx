@@ -119,10 +119,10 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
           </svg>
         </div>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em", color: p.textStrong, lineHeight: 1.2 }}>
+          <div className="toolbar-brand-name" style={{ fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em", color: p.textStrong, lineHeight: 1.2 }}>
             ALGO BENCHMARK
           </div>
-          <div style={{ fontSize: 10, color: p.textSecondary, lineHeight: 1.2 }}>
+          <div className="toolbar-tagline" style={{ fontSize: 10, color: p.textSecondary, lineHeight: 1.2 }}>
             Design &amp; Analysis of Algorithms
           </div>
         </div>

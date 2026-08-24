@@ -38,7 +38,7 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
 
       {compareRuns.length >= 2 && (
         <div style={{ background: pf.accentTint, border: `1px solid ${pf.accent}40`, borderRadius: 10, padding: "14px 18px", marginBottom: 20 }}>
-          <div style={{ fontSize: 9, color: pf.accentText, letterSpacing: 2, marginBottom: 12 }}>COMPARING {compareRuns.length} RUNS</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: pf.accentText, marginBottom: 12 }}>Comparing {compareRuns.length} runs</div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
               <thead>

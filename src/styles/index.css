@@ -373,3 +373,77 @@ body[data-theme="light"] .editor-surface {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Polish layer ─────────────────────────────────────────────── */
+body {
+  transition: background 0.3s var(--ease-out);
+}
+
+/* Material sheen: a faint top-light on every glass surface */
+.glass-toolbar,
+.glass-sidebar,
+.glass-floating,
+.glass-modal,
+.glass-thin {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 34%);
+}
+
+body[data-theme="light"] .glass-toolbar,
+body[data-theme="light"] .glass-sidebar,
+body[data-theme="light"] .glass-floating,
+body[data-theme="light"] .glass-modal,
+body[data-theme="light"] .glass-thin {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 42%);
+}
+
+/* Icon button: shared hover/press for symbol-only controls */
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.icon-btn:hover {
+  background: rgba(127, 127, 127, 0.16);
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+/* Charts: quiet hover affordance */
+.hoverable-card {
+  transition: box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.hoverable-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.20),
+    0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+body[data-theme="light"] .hoverable-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 10px 28px rgba(0, 0, 0, 0.09);
+}
+
+/* Toolbar tagline hides on narrow desktops */
+@media (max-width: 1180px) {
+  .toolbar-tagline {
+    display: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .toolbar-brand-name {
+    font-size: 12px !important;
+  }
+}

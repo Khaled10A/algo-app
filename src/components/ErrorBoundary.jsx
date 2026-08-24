@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component {
           }}
         >
           <div style={{ fontSize: 40 }}>⚠️</div>
-          <div style={{ fontSize: 14, letterSpacing: 2 }}>SOMETHING WENT WRONG</div>
+          <div style={{ fontSize: 15, fontWeight: 700 }}>Something went wrong</div>
           <div style={{ fontSize: 11, color: "#64748b", maxWidth: 480, textAlign: "center", wordBreak: "break-word" }}>
             {String(this.state.error?.message || this.state.error)}
           </div>

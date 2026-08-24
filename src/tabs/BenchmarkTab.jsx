@@ -164,9 +164,9 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
 
         {/* File info card */}
         <div style={{ background: "rgba(255, 55, 95, 0.06)", border: "1px solid rgba(255, 55, 95, 0.25)", borderRadius: 10, padding: "12px 16px", marginBottom: 16, display: "flex", gap: 16, flexWrap: "wrap" }}>
-          <div><div style={{ fontSize: 8, color: "#e8386d", letterSpacing: 2, marginBottom: 3 }}>FILE</div><div style={{ fontSize: 12, color: pf.textPrimary }}>📄 {fileName}</div></div>
-          <div><div style={{ fontSize: 8, color: "#e8386d", letterSpacing: 2, marginBottom: 3 }}>TEXT LENGTH</div><div style={{ fontSize: 12, color: pf.textPrimary }}>{fileLength.toLocaleString()} chars</div></div>
-          <div><div style={{ fontSize: 8, color: "#e8386d", letterSpacing: 2, marginBottom: 3 }}>PATTERN</div><div style={{ fontSize: 12, color: "#b25000", fontFamily: "inherit" }}>"{pattern}"</div></div>
+          <div><div style={{ fontSize: 11, fontWeight: 600, color: "#e8386d", marginBottom: 3 }}>File</div><div style={{ fontSize: 12, color: pf.textPrimary }}>{fileName}</div></div>
+          <div><div style={{ fontSize: 11, fontWeight: 600, color: "#e8386d", marginBottom: 3 }}>Text length</div><div style={{ fontSize: 12, color: pf.textPrimary }}>{fileLength.toLocaleString()} chars</div></div>
+          <div><div style={{ fontSize: 11, fontWeight: 600, color: "#e8386d", marginBottom: 3 }}>PATTERN</div><div style={{ fontSize: 12, color: "#b25000", fontFamily: "inherit" }}>"{pattern}"</div></div>
         </div>
 
         {/* Results table */}
