@@ -17,7 +17,7 @@ import { DebuggerTab } from './tabs/DebuggerTab';
 import { AIAssistantTab } from './tabs/AIAssistantTab';
 
 import { generateArray } from './utils/generators';
-import { exportCSV, exportXLSX, exportSVGasPNG, exportAllChartsPNG } from './utils/exportUtils';
+import { exportCSV, exportXLSX, exportAllChartsPNG } from './utils/exportUtils';
 import { getDomain, getAlgorithm } from './algorithms/registry';
 import { INPUT_LABELS, SCENARIO_LABELS } from './utils/constants';
 import { getPalette } from './theme/tokens';
@@ -69,9 +69,13 @@ export default function App() {
   // VISUALIZER
   const [vizAlgo, setVizAlgo] = usePersistentState("viz:algo", "bubble-sort");
   const [vizSize, setVizSize] = usePersistentState("viz:size", 16);
-  const [vizSpeed, setVizSpeed] = usePersistentState("viz:speed", 80);
+  const [storedVizSpeed, setStoredVizSpeed] = usePersistentState("viz:speed", 80);
   const [vizSteps, setVizSteps] = useState([]);
-  const vizPlayback = usePlayback({ length: vizSteps.length, initialSpeed: 80 });
+  const vizPlayback = usePlayback({ length: vizSteps.length, initialSpeed: storedVizSpeed });
+  function setVizSpeed(ms) {
+    vizPlayback.setSpeed(ms);
+    setStoredVizSpeed(ms);
+  }
 
   // PSEUDOCODE
   const [pseudoAlgo, setPseudoAlgo] = usePersistentState("pseudo:algo", "insertion-sort");
@@ -355,16 +359,16 @@ export default function App() {
               <AIAssistantTab isDark={isDark} sortResults={sortResults} searchResults={searchResults} />
             )}
 
-            <div style={{ marginTop: "auto", textAlign: "center", position: "fixed", bottom: 14, left: 0, width: 230 }}>
+            <div style={{ marginTop: "auto", textAlign: "center", position: "fixed", bottom: 14, left: 0, width: 230, pointerEvents: "none" }}>
               <div style={{ borderTop: `1px solid ${p.border}`, paddingTop: 10, marginTop: 16 }}>
                 <a href="https://www.instagram.com/_10qrv?igsh=dmUzbnFtd3AydWVk"
                   target="_blank" rel="noopener noreferrer"
                   style={{ fontSize: 10, color: "#334155", textDecoration: "none",
                     fontFamily: "monospace", letterSpacing: 1, display: "block",
-                    transition: "color 0.2s" }}
+                    transition: "color 0.2s", pointerEvents: "auto" }}
                   onMouseEnter={(e) => e.currentTarget.style.color = "#a78bfa"}
                   onMouseLeave={(e) => e.currentTarget.style.color = "#334155"}
-                >© Khaled Alnajjar</a>
+                  >© Khaled Alnajjar</a>
               </div>
             </div>
           </main>
