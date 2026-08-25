@@ -5,6 +5,8 @@ import { mergeSort, mergeSortDebug, MERGE_SORT_CODE_LINES } from './mergeSort';
 import { quickSort, quickSortDebug, QUICK_SORT_CODE_LINES } from './quickSort';
 import { heapSort, HEAP_SORT_CODE_LINES } from './heapSort';
 import { heapSortDebug } from './heapSortDebug';
+import { radixSortEvents, RADIX_SORT_CODE_LINES } from './radixSort';
+import { radixSortDebug } from './radixSortDebug';
 import { countingSort, countingSortEvents, COUNTING_SORT_CODE_LINES } from './countingSort';
 import { countingSortDebug } from './countingSortDebug';
 
@@ -208,6 +210,52 @@ Merge(A, lo, mid, hi):
 
   return output   ← sorted (stable)`,
     codeLines: COUNTING_SORT_CODE_LINES,
+  },
+  {
+    id: "radix-sort",
+    name: "Radix Sort",
+    category: "sorting",
+    color: "#be185d",
+    complexity: {
+      best: "O(d(n + k))",
+      average: "O(d(n + k))",
+      worst: "O(d(n + k))",
+      space: "O(n + k)",
+      paradigm: "Non-comparison / Digit-by-digit",
+    },
+    run: (arr) => {
+      const { sorted } = radixSortEvents(arr);
+      return { sorted, comparisons: 0 };
+    },
+    steps: (arr) => radixSortDebug(arr),
+    debug: (arr) => radixSortDebug(arr),
+    pseudocode: `RadixSort(array):
+  n = length(array)
+  min = min(array)
+  offset negatives by |min| so all ≥ 0
+  max = max(offset array)
+  totalPasses = number of decimal digits in max
+
+  for pass = 0 .. totalPasses-1:
+    place = 10^pass
+    count[0..9] = 0
+
+    for i = 0 .. n-1:
+      digit = floor(offset[i] / place) % 10
+      count[digit]++
+
+    for d = 1 .. 9:
+      count[d] += count[d-1]
+
+    output = [0] × n
+    for i = n-1 down to 0:
+      digit = floor(offset[i] / place) % 10
+      output[--count[digit]] = offset[i]
+
+    copy output → offset array
+
+  return offset array with offset subtracted  ← sorted`,
+    codeLines: RADIX_SORT_CODE_LINES,
   },
   {
     id: "quick-sort",

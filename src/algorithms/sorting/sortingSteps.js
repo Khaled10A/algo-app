@@ -20,6 +20,9 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
   let countArray = null;
   let countIndex = null;
   let output = null;
+  let currentPass = null;
+  let totalPassesVal = null;
+  let currentPlace = null;
 
   const steps = [];
 
@@ -154,7 +157,6 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
         output = [...event.output];
         array = [...event.output];
         highlight = [event.outputIndex];
-        sortedFrom = event.outputIndex;
         Object.assign(vars, {
           "input index": String(event.inputIndex),
           value: String(event.value),
@@ -167,13 +169,43 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
         log = `Place ${event.value} at output[${event.outputIndex}]`;
         break;
       }
+      case "digit-pass-start": {
+        currentPass = event.pass;
+        totalPassesVal = event.totalPasses;
+        currentPlace = event.place;
+        Object.assign(vars, {
+          pass: `${event.pass} / ${event.totalPasses}`,
+          place: String(event.place),
+          phase: "counting by digit",
+        });
+        Object.assign(memory, { "count array": "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]" });
+        callStack.push(`  └ digit pass ${event.pass} (place ${event.place})`);
+        log = `Digit pass ${event.pass} of ${event.totalPasses} — sorting by place ${event.place}`;
+        break;
+      }
+      case "digit-pass-complete": {
+        currentPass = event.pass;
+        totalPassesVal = event.totalPasses;
+        Object.assign(vars, {
+          pass: `${event.pass} / ${event.totalPasses}`,
+          phase: "pass complete",
+        });
+        Object.assign(memory, { array: `[${array.join(", ")}]` });
+        callStack.push(`  └ digit pass ${event.pass} done`);
+        log = `Digit pass ${event.pass} complete — array re-ordered by place ${event.place}`;
+        break;
+      }
       case "complete": {
         complete = true;
+        if (event.array) array = [...event.array];
         sortedFrom = event.sortedFrom ?? 0;
-        Object.assign(vars, { comparisons: String(event.comparisons) });
+        Object.assign(vars, {
+          comparisons: String(event.comparisons ?? 0),
+          passes: event.passes !== undefined ? String(event.passes) : undefined,
+        });
         Object.assign(memory, { array: `[${array.join(", ")}]` });
         callStack.push("  └ sorted");
-        log = `Done — ${array.length} elements sorted, ${event.comparisons} comparisons`;
+        log = `Done — ${array.length} elements sorted, ${event.comparisons ?? 0} comparisons`;
         break;
       }
       default:
@@ -194,6 +226,8 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
       countArray: countArray ? [...countArray] : undefined,
       countIndex,
       output: output ? [...output] : undefined,
+      pass: currentPass !== null && totalPassesVal !== null ? `${currentPass} / ${totalPassesVal}` : undefined,
+      place: currentPlace,
       complete,
     });
   };
