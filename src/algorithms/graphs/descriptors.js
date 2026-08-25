@@ -1,6 +1,24 @@
 import { bfsDebug } from './bfs';
 import { dfsDebug } from './dfs';
 import { dijkstraDebug } from './dijkstraDebug';
+import { bellmanFordDebug } from './bellmanFordDebug';
+
+export const GRAPH_BELLMAN_FORD_CODE_LINES = [
+  { n: 0, code: "function bellmanFord(graph, start) {" },
+  { n: 1, code: "  dist[v] = ∞ ∀v;  dist[start] = 0;  prev = ∅" },
+  { n: 2, code: "  edges = all (u → v, w) in graph" },
+  { n: 3, code: "  for pass = 1 .. V-1:" },
+  { n: 4, code: "    changed = 0" },
+  { n: 5, code: "    for each (u → v, w) in edges:" },
+  { n: 6, code: "      if dist[u] = ∞: skip edge" },
+  { n: 7, code: "      cand = dist[u] + w" },
+  { n: 8, code: "      if cand < dist[v]:" },
+  { n: 9, code: "        dist[v] = cand;  prev[v] = u;  changed++" },
+  { n: 10, code: "    if changed = 0: stop early" },
+  { n: 11, code: "  for each (u → v, w):  ← negative-cycle check" },
+  { n: 12, code: "    if dist[u] + w < dist[v]: negative cycle" },
+  { n: 13, code: "}  ← done" },
+];
 
 export const GRAPH_DIJKSTRA_CODE_LINES = [
   { n: 0, code: "function dijkstra(graph, start) {" },
@@ -99,6 +117,40 @@ export const graphDescriptors = [
         prev[v] = u;  PQ.push((v, cand))
   ← shortest-path tree complete`,
     codeLines: GRAPH_DIJKSTRA_CODE_LINES,
+  },
+  {
+    id: "bellman-ford",
+    name: "Bellman-Ford",
+    category: "graphs",
+    color: "#bf5af2",
+    complexity: {
+      best: "O(V · E)",
+      average: "O(V · E)",
+      worst: "O(V · E) — plus O(V · E) cycle check",
+      space: "O(V)",
+      paradigm: "Dynamic Programming / Shortest Paths",
+    },
+    run: null,
+    steps: null,
+    debug: (graph, start) => bellmanFordDebug(graph, start),
+    pseudocode: `BellmanFord(graph, start):
+  dist[v] = ∞ for all v;  dist[start] = 0
+  prev[v] = ∅
+  edges = all edges (u → v, w)
+  repeat V-1 times:
+    changed = 0
+    for each edge (u → v, w):
+      if dist[u] = ∞: skip edge
+      cand = dist[u] + w
+      if cand < dist[v]:
+        dist[v] = cand
+        prev[v] = u;  changed++
+    if changed = 0: stop early
+  for each edge (u → v, w):
+    if dist[u] + w < dist[v]:
+      report reachable negative cycle
+  ← done`,
+    codeLines: GRAPH_BELLMAN_FORD_CODE_LINES,
   },
   {
     id: "bfs",

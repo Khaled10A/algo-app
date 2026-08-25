@@ -88,6 +88,7 @@ export function dijkstra(graph, start) {
           weight,
           oldDistance,
           newDistance: candidate,
+          enqueue: true,
         });
       } else {
         emit("skip-edge", { from: node, to, reason: "no-improvement" });

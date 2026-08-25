@@ -170,6 +170,61 @@ describe("Algo App", () => {
     cy.contains(/Default example graph restored/i).should("exist");
   });
 
+  it("bellman-ford: negative weight improves path, then triggers negative-cycle detection; Dijkstra rejects it", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Bellman-Ford").click();
+    cy.contains("button", "Clear").click();
+
+    cy.contains("button", "Add node").click().click().click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("B");
+    cy.get('input[aria-label="Edge weight"]').clear().type("4");
+    cy.contains("button", "Add edge").click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("5");
+    cy.contains("button", "Add edge").click();
+    cy.get('select[aria-label="Edge source"]').select("B");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("1");
+    cy.contains("button", "Add edge").click();
+    cy.contains(/Edge B — C added/i).should("exist");
+
+    cy.contains("button", "GENERATE").click();
+    cy.get('button[aria-label="Last step"]').click();
+    cy.contains("Distances").scrollIntoView().should("be.visible");
+    cy.get("svg").should("contain.text", "4");
+
+    cy.contains("button", "Update weight").scrollIntoView().should("be.visible");
+    cy.get('select[aria-label="Edge source"]').select("B");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("1");
+    cy.contains("button", "Update weight").click();
+    cy.contains(/weight set to 1/i).should("exist");
+
+    cy.contains("button", "GENERATE").click();
+    cy.get('button[aria-label="Last step"]').click();
+    cy.contains("Distances").scrollIntoView().should("be.visible");
+    cy.get("svg").should("contain.text", "5");
+
+    cy.get('input[aria-label="Edge weight"]').clear().type("-1");
+    cy.contains("button", "Update weight").click();
+    cy.contains(/weight set to -1/i).should("exist");
+
+    cy.contains("button", "GENERATE").click();
+    cy.get('button[aria-label="Last step"]').click();
+    cy.get('[role="alert"]').should("contain.text", "Negative cycle");
+
+    cy.contains("button", "Dijkstra").click();
+    cy.contains("button", "GENERATE").click();
+    cy.get('[role="status"]').should("contain.text", "negative weights");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("be.visible");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()

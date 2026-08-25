@@ -16,6 +16,7 @@ const GRAPH_DESCRIPTORS = {
   dfs: getAlgorithm("dfs"),
   bfs: getAlgorithm("bfs"),
   dijkstra: getAlgorithm("dijkstra"),
+  "bellman-ford": getAlgorithm("bellman-ford"),
 };
 
 const BASE_POSITIONS = {
@@ -259,7 +260,7 @@ export function GraphDebugger({ isDark }) {
         <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
-            {["dfs","bfs","dijkstra"].map((id) => (
+            {["dfs","bfs","dijkstra","bellman-ford"].map((id) => (
               <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{GRAPH_DESCRIPTORS[id].name}</button>
             ))}
           </div>
@@ -307,6 +308,23 @@ export function GraphDebugger({ isDark }) {
           </>}
         </div>
       </div>
+
+      {algoId === "bellman-ford" && current && !current.complete && current.pass > 0 && (
+        <div style={{ fontSize: 11, color: textMute, marginBottom: 8, fontFamily: "monospace" }}>
+          Pass {current.pass} / {current.totalPasses}
+        </div>
+      )}
+
+      {current?.negativeCycle && (
+        <div role="alert" className="popover-in" style={{
+          marginBottom: 10, padding: "9px 12px", borderRadius: 8, fontSize: 12,
+          background: "rgba(255, 59, 48, 0.09)",
+          boxShadow: `inset 0 0 0 1px ${p.red}55`,
+          color: p.red,
+        }}>
+          ⚠ Negative cycle detected via {current.negativeCycleEdge?.join(" → ")} — shortest distances are not well-defined for affected nodes.
+        </div>
+      )}
 
       {/* GRAPH EDITOR */}
       <div className="glass-floating" style={{ borderRadius:14, padding:"12px 16px", marginBottom:10, display:"flex", gap:16, flexWrap:"wrap", alignItems:"flex-end" }}>
@@ -393,7 +411,7 @@ export function GraphDebugger({ isDark }) {
                 positions={positions}
                 step={current}
                 isDark={isDark}
-                stackLabel={algoId === "dijkstra" ? "In queue" : "In Stack"}
+                stackLabel={algoId === "dijkstra" ? "In queue" : algoId === "bellman-ford" ? "Updated" : "In Stack"}
                 mode={mode}
                 sourceNode={startNode}
                 selectedNode={mode === "add-edge" ? pendingFrom : null}
@@ -458,7 +476,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
+            {algoId !== "bellman-ford" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
               <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>
                 {algoId === "dfs" ? "Call stack" : algoId === "dijkstra" ? "Priority queue" : "Queue"}
               </div>
@@ -495,7 +513,27 @@ export function GraphDebugger({ isDark }) {
                   ))}
                 </div>
               )}
-            </div>
+            </div>}
+
+            {algoId === "bellman-ford" && current && (
+              <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Updated this pass</div>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                  {(current.updatedPass || []).length === 0
+                    ? <span style={{ fontSize:10, color:textMute }}>No updates in this pass</span>
+                    : (current.updatedPass || []).map((n, i) => (
+                    <div key={i} style={{
+                      background: i===0 ? `${accentColor}20` : codeBg,
+                      border:`1px solid ${i===0?accentColor:border}`,
+                      borderRadius:5, padding:"4px 10px", fontSize:11,
+                      fontFamily:"monospace", color: i===0?accentColor:textMute,
+                    }}>
+                      {n}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
               <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Variables</div>
@@ -509,7 +547,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId === "dijkstra" && current?.distances && (
+            {algoId !== "dfs" && current?.distances && (
               <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
                 <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Distances</div>
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
