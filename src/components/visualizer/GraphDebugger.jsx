@@ -1,17 +1,24 @@
 import { useState } from "react";
 import { getAlgorithm } from "../../algorithms/registry";
+import { normalizeGraph, isWeightedGraph, edgeKey } from "../../algorithms/graphs/graph";
 import { playTone, playVictory } from "../../utils/audio";
 import { usePlayback } from "../../hooks/usePlayback";
 import { getPalette } from "../../theme/tokens";
 
 const DEFAULT_GRAPH = {
-  A: ["B", "D"],
-  B: ["A", "C", "E"],
-  C: ["B", "F"],
-  D: ["A", "E", "G"],
-  E: ["B", "D", "F"],
-  F: ["C", "E"],
-  G: ["D"],
+  A: [["B", 4], ["D", 2]],
+  B: [["A", 4], ["C", 5], ["E", 10]],
+  C: [["B", 5], ["F", 3]],
+  D: [["A", 2], ["E", 7]],
+  E: [["B", 10], ["D", 7], ["F", 4]],
+  F: [["C", 3], ["E", 4]],
+  G: [["D", 3]],
+};
+
+const GRAPH_DESCRIPTORS = {
+  dfs: getAlgorithm("dfs"),
+  bfs: getAlgorithm("bfs"),
+  dijkstra: getAlgorithm("dijkstra"),
 };
 
 const NODE_POS = {
@@ -39,11 +46,7 @@ export function GraphDebugger({ isDark }) {
   const playback = usePlayback({ length: steps.length, initialSpeed: 600, onFinish: playVictory });
   const { index: step, playing } = playback;
 
-  const descriptors = {
-    dfs: getAlgorithm("dfs"),
-    bfs: getAlgorithm("bfs"),
-  };
-  const descriptor = descriptors[algoId];
+  const descriptor = GRAPH_DESCRIPTORS[algoId];
   const current   = steps[step] || null;
   const codeLines = descriptor.codeLines;
   const accentColor = descriptor.color;
@@ -79,8 +82,8 @@ export function GraphDebugger({ isDark }) {
         <div>
           <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
-            {["dfs","bfs"].map((id) => (
-              <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{descriptors[id].name}</button>
+            {["dfs","bfs","dijkstra"].map((id) => (
+              <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{GRAPH_DESCRIPTORS[id].name}</button>
             ))}
           </div>
         </div>
@@ -118,8 +121,10 @@ export function GraphDebugger({ isDark }) {
               background: playing?"rgba(255,59,48,0.10)":"rgba(48,209,88,0.12)",
               color: playing?p.red:p.green, fontSize:12, cursor:"pointer",
             }}>{playing?"⏸":"▶"}</button>
+            <button onClick={playback.reset} aria-label="First step" title="First step" style={{ padding:"6px 10px", borderRadius:5, border:`1px solid ${border}`, background:"transparent", color:textMute, fontSize:13, cursor:"pointer" }}>⏮</button>
             <button onClick={playback.prev} aria-label="Previous step" title="Previous step" style={{ padding:"6px 10px", borderRadius:5, border:`1px solid ${border}`, background:"transparent", color:textMute, fontSize:13, cursor:"pointer" }}>◀</button>
             <button onClick={playback.next} aria-label="Next step" title="Next step" style={{ padding:"6px 10px", borderRadius:5, border:`1px solid ${border}`, background:"transparent", color:textMute, fontSize:13, cursor:"pointer" }}>▶</button>
+            <button onClick={playback.goToEnd} aria-label="Last step" title="Last step" style={{ padding:"6px 10px", borderRadius:5, border:`1px solid ${border}`, background:"transparent", color:textMute, fontSize:13, cursor:"pointer" }}>⏭</button>
           </>}
         </div>
       </div>
@@ -152,7 +157,7 @@ export function GraphDebugger({ isDark }) {
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
             <div className="surface-card" style={{ borderRadius:12, padding:"14px" }}>
               <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Graph</div>
-              <GraphSVG graph={DEFAULT_GRAPH} step={current} isDark={isDark} />
+              <GraphSVG graph={DEFAULT_GRAPH} step={current} isDark={isDark} stackLabel={algoId === "dijkstra" ? "In queue" : "In Stack"} />
             </div>
 
             <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
@@ -202,7 +207,7 @@ export function GraphDebugger({ isDark }) {
 
             <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
               <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>
-                {algoId === "dfs" ? "CALL STACK" : "QUEUE"}
+                {algoId === "dfs" ? "Call stack" : algoId === "dijkstra" ? "Priority queue" : "Queue"}
               </div>
               {algoId === "dfs" ? (
                 <div style={{ display:"flex", flexDirection:"column-reverse", gap:4 }}>
@@ -232,7 +237,7 @@ export function GraphDebugger({ isDark }) {
                       borderRadius:5, padding:"4px 10px", fontSize:11,
                       fontFamily:"monospace", color: i===0?accentColor:textMute,
                     }}>
-                      {n}{i===0&&<span style={{ fontSize:8, marginLeft:4 }}>FRONT</span>}
+                      {n}{i===0&&<span style={{ fontSize:8, marginLeft:4 }}>{algoId === "dijkstra" ? "MIN" : "FRONT"}</span>}
                     </div>
                   ))}
                 </div>
@@ -244,12 +249,31 @@ export function GraphDebugger({ isDark }) {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
                 {Object.entries(current?.vars || {}).map(([k,v]) => (
                   <div key={k} style={{ background:codeBg, borderRadius:5, padding:"6px 10px", border:`1px solid ${border}` }}>
-                    <div style={{ fontSize:8, color:textMute, fontFamily:"monospace", marginBottom:1 }}>{k}</div>
+                    <div style={{ fontSize:10, color:textMute, fontFamily:"monospace", marginBottom:1 }}>{k}</div>
                     <div style={{ fontSize:12, color:accentColor, fontFamily:"monospace", fontWeight:"bold" }}>{String(v)}</div>
                   </div>
                 ))}
               </div>
             </div>
+
+            {algoId === "dijkstra" && current?.distances && (
+              <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Distances</div>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                  {Object.entries(current.distances).map(([node, d]) => (
+                    <div key={node} style={{
+                      background:codeBg, borderRadius:5, padding:"4px 10px", border:`1px solid ${border}`,
+                      fontFamily:"monospace", fontSize:11, display:"flex", gap:6,
+                    }}>
+                      <span style={{ color:textMute }}>{node}</span>
+                      <span style={{ color: !Number.isFinite(d) ? p.red : accentColor, fontWeight: Number.isFinite(d) ? 700 : 400 }}>
+                        {Number.isFinite(d) ? String(d) : "∞"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -257,64 +281,114 @@ export function GraphDebugger({ isDark }) {
   );
 }
 
-function GraphSVG({ graph, step, isDark }) {
+function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
   if (!step) return null;
-  const { visited, current, callStack } = step;
-  const border   = isDark ? "#1e293b" : "#e2e8f0";
-  const nodeBg   = isDark ? "#0f172a" : "#f1f5f9";
-  const textCol  = isDark ? "#e2e8f0" : "#1e293b";
+  const {
+    visited, current, callStack, heap, distances, previous,
+    currentEdge, relaxedEdge, complete,
+  } = step;
+  const p = getPalette(isDark ? "dark" : "light");
+
+  const { adjacency } = normalizeGraph(graph);
+  const weighted = isWeightedGraph(graph);
 
   const edges = [];
-  Object.entries(graph).forEach(([node, neighbors]) => {
-    neighbors.forEach(nb => {
-      if (node < nb) {
-        const a = NODE_POS[node], b = NODE_POS[nb];
-        if (a && b) edges.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y, key: `${node}-${nb}` });
-      }
+  const seen = new Set();
+  Object.entries(adjacency).forEach(([node, nbs]) => {
+    nbs.forEach(({ to, weight }) => {
+      const key = edgeKey(node, to);
+      if (seen.has(key)) return;
+      seen.add(key);
+      const a = NODE_POS[node], b = NODE_POS[to];
+      if (a && b) edges.push({ key, from: node, to, weight, a, b });
     });
   });
 
+  const treeKeys = new Set();
+  if (complete && previous) {
+    Object.entries(previous).forEach(([child, from]) => {
+      if (from) treeKeys.add(edgeKey(from, child));
+    });
+  }
+
+  const edgeStyle = (e) => {
+    const key = edgeKey(e.from, e.to);
+    const isCurrent = currentEdge && edgeKey(currentEdge[0], currentEdge[1]) === key;
+    const isRelaxed = relaxedEdge && edgeKey(relaxedEdge[0], relaxedEdge[1]) === key;
+    const isTree = complete && treeKeys.has(key);
+    if (isCurrent) return { stroke: p.accent, strokeWidth: 3.2 };
+    if (isRelaxed) return { stroke: p.green, strokeWidth: 3 };
+    if (isTree) return { stroke: p.green, strokeWidth: 2.5, opacity: 0.9 };
+    return { stroke: isDark ? "#3a3a3e" : "#c8c8cd", strokeWidth: 2 };
+  };
+
   return (
-    <svg viewBox="0 0 400 310" style={{ width:"100%", maxWidth:420 }} role="img" aria-label="Graph traversal visualization">
-      {edges.map(e => (
-        <line key={e.key} x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2}
-          stroke={isDark ? "#334155" : "#cbd5e1"} strokeWidth="2" />
-      ))}
+    <svg viewBox="0 0 400 330" style={{ width:"100%", maxWidth:420 }} role="img" aria-label="Graph algorithm visualization">
+      {edges.map(e => {
+        const style = edgeStyle(e);
+        return (
+          <g key={e.key}>
+            <line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y}
+              stroke={style.stroke} strokeWidth={style.strokeWidth} opacity={style.opacity ?? 1}
+              strokeLinecap="round" style={{ transition: "stroke 0.2s, stroke-width 0.2s" }} />
+            {weighted && (
+              <text
+                x={(e.a.x + e.b.x) / 2} y={(e.a.y + e.b.y) / 2 - 5}
+                textAnchor="middle" fontSize={9} fontFamily="monospace"
+                fill={p.textSecondary}
+              >
+                {e.weight}
+              </text>
+            )}
+          </g>
+        );
+      })}
 
       {Object.entries(NODE_POS).map(([node, pos]) => {
         const isCurrent  = node === current;
         const isVisited  = visited?.has(node);
-        const isInStack  = callStack?.includes(node);
+        const isInQueue  = heap?.includes(node);
+        const isInStack  = isInQueue || callStack?.includes(node);
 
-        const fill = isCurrent  ? "#38bdf8"
-                   : isInStack  ? "#a78bfa"
-                   : isVisited  ? "#4ade80"
-                   : (isDark ? "#1e293b" : "#e2e8f0");
+        const fill = isCurrent  ? p.accent
+                   : isInStack  ? p.purple
+                   : isVisited  ? p.green
+                   : (isDark ? "#2c2c30" : "#e8e8ed");
 
-        const stroke = isCurrent ? "#38bdf8"
-                     : isInStack ? "#a78bfa"
-                     : isVisited ? "#4ade80"
-                     : (isDark ? "#475569" : "#94a3b8");
+        const stroke = isCurrent ? p.accent
+                     : isInStack ? p.purple
+                     : isVisited ? p.green
+                     : (isDark ? "#55555c" : "#9a9aa2");
+
+        const dist = distances ? distances[node] : undefined;
+        const distLabel = dist === undefined || !Number.isFinite(dist) ? "∞" : String(dist);
 
         return (
           <g key={node}>
             <circle cx={pos.x} cy={pos.y} r={22}
               fill={fill} stroke={stroke} strokeWidth={isCurrent ? 3 : 1.5}
-              style={{ filter: isCurrent ? "drop-shadow(0 0 8px #38bdf8)" : "none", transition:"all 0.2s" }}
+              style={{ filter: isCurrent ? `drop-shadow(0 0 8px ${p.accent})` : "none", transition:"all 0.2s" }}
             />
             <text x={pos.x} y={pos.y + 5} textAnchor="middle"
               fontSize={14} fontWeight="bold" fontFamily="monospace"
-              fill={isCurrent || isVisited || isInStack ? "#0f172a" : (isDark ? "#94a3b8" : "#475569")}>
+              fill={isCurrent || isVisited || isInStack ? "#0f172a" : (isDark ? "#9a9aa2" : "#55555c")}>
               {node}
             </text>
+            {distances && (
+              <text x={pos.x} y={pos.y + 38} textAnchor="middle"
+                fontSize={10.5} fontWeight="bold" fontFamily="monospace"
+                fill={isCurrent ? p.accent : distLabel === "∞" ? p.red : p.textSecondary}>
+                {distLabel}
+              </text>
+            )}
           </g>
         );
       })}
 
-      {[["#38bdf8","Current"],["#a78bfa","In Stack"],["#4ade80","Visited"],].map(([c,l], i) => (
+      {[[p.accent,"Current"],[p.purple,stackLabel],[p.green,"Visited"],].map(([c,l], i) => (
         <g key={l}>
-          <circle cx={20 + i*100} cy={295} r={7} fill={c}/>
-          <text x={32 + i*100} y={299} fontSize={9} fill={isDark?"#94a3b8":"#64748b"} fontFamily="monospace">{l}</text>
+          <circle cx={20 + i*100} cy={316} r={7} fill={c}/>
+          <text x={32 + i*100} y={320} fontSize={9} fill={p.textSecondary} fontFamily="monospace">{l}</text>
         </g>
       ))}
     </svg>

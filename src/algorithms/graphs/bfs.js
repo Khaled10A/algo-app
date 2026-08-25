@@ -1,8 +1,11 @@
+import { normalizeGraph } from "./graph";
+
 /**
  * BFS — Breadth First Search  
  * Time: O(V + E) | Space: O(V)
  */
 export function bfsDebug(graph, start) {
+  const { adjacency } = normalizeGraph(graph);
   const steps = [];
   const visited = new Set();
   const queue = [];
@@ -27,7 +30,7 @@ export function bfsDebug(graph, start) {
     visitOrder.push(node);
     snap(2, node, { node, queue: `[${queue.join(",")}]` }, `Dequeue ${node}`);
 
-    for (const neighbor of (graph[node] || [])) {
+    for (const { to: neighbor } of adjacency[node]) {
       snap(4, node, { node, v: neighbor }, `Check neighbor ${neighbor}`);
       if (!visited.has(neighbor)) {
         visited.add(neighbor);

@@ -80,6 +80,19 @@ describe("Algo App", () => {
     cy.contains(/Unknown algorithm/i).should("be.visible");
   });
 
+  it("steps through Dijkstra with distances, priority queue and unreachable badge", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Dijkstra").click();
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("be.visible");
+    cy.contains("Priority queue").scrollIntoView().should("be.visible");
+    cy.contains("Distances").scrollIntoView().should("be.visible");
+    cy.get('button[aria-label="Last step"]').click();
+    cy.get("svg").should("contain.text", "∞");
+    cy.contains("Visit order").scrollIntoView().should("exist");
+    cy.contains("span", /Done —/).should("exist");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()

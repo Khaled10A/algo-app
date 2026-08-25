@@ -310,7 +310,7 @@ body[data-theme="light"] .editor-surface {
 
 /* ── Motion primitives ────────────────────────────────────────── */
 .panel-in {
-  animation: panelIn 0.3s var(--ease-out) both;
+  animation: panelIn 0.3s var(--ease-out) backwards;
 }
 
 @keyframes panelIn {
@@ -325,7 +325,7 @@ body[data-theme="light"] .editor-surface {
 }
 
 .popover-in {
-  animation: popoverIn 0.22s var(--ease-spring) both;
+  animation: popoverIn 0.22s var(--ease-spring) backwards;
 }
 
 @keyframes popoverIn {

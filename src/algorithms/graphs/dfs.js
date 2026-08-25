@@ -1,8 +1,11 @@
+import { normalizeGraph } from "./graph";
+
 /**
  * DFS — Depth First Search
  * Time: O(V + E) | Space: O(V)
  */
 export function dfsDebug(graph, start) {
+  const { adjacency } = normalizeGraph(graph);
   const steps = [];
   const visited = new Set();
   const callStack = [];
@@ -24,7 +27,7 @@ export function dfsDebug(graph, start) {
     visitOrder.push(node);
     snap(2, node, { u: node, seen: [...visited].join(",") }, `Visit ${node}`);
 
-    for (const neighbor of (graph[node] || [])) {
+    for (const { to: neighbor } of adjacency[node]) {
       snap(4, node, { u: node, v: neighbor }, `Check neighbor ${neighbor}`);
       if (!visited.has(neighbor)) {
         snap(5, node, { u: node, v: neighbor }, `${neighbor} not visited → go deeper`);

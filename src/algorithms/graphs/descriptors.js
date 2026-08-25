@@ -1,5 +1,22 @@
 import { bfsDebug } from './bfs';
 import { dfsDebug } from './dfs';
+import { dijkstraDebug } from './dijkstraDebug';
+
+export const GRAPH_DIJKSTRA_CODE_LINES = [
+  { n: 0, code: "function dijkstra(graph, start) {" },
+  { n: 1, code: "  dist[v] = ∞ ∀v;  dist[start] = 0;  prev = ∅" },
+  { n: 2, code: "  PQ = MinHeap;  PQ.push((start, 0))" },
+  { n: 3, code: "  while PQ not empty:" },
+  { n: 4, code: "    (u, d) = PQ.pop()" },
+  { n: 5, code: "    if u visited: continue   ← stale entry" },
+  { n: 6, code: "    visit u;  mark u visited" },
+  { n: 7, code: "    for each edge (u → v, w):" },
+  { n: 8, code: "      if v visited: skip edge" },
+  { n: 9, code: "      cand = d + w" },
+  { n: 10, code: "      if cand < dist[v]:" },
+  { n: 11, code: "        dist[v] = cand;  prev[v] = u;  PQ.push((v, cand))" },
+  { n: 12, code: "}  ← shortest-path tree complete" },
+];
 
 export const GRAPH_BFS_CODE_LINES = [
   { n: 0, code: "function bfs(graph, start) {" },
@@ -50,6 +67,38 @@ export const graphDescriptors = [
        visit(v)
    pop u from callStack`,
     codeLines: GRAPH_DFS_CODE_LINES,
+  },
+  {
+    id: "dijkstra",
+    name: "Dijkstra",
+    category: "graphs",
+    color: "#30d158",
+    complexity: {
+      best: "O((V + E) log V)",
+      average: "O((V + E) log V)",
+      worst: "O((V + E) log V)",
+      space: "O(V + E)",
+      paradigm: "Greedy / Shortest Paths",
+    },
+    run: null,
+    steps: null,
+    debug: (graph, start) => dijkstraDebug(graph, start),
+    pseudocode: `Dijkstra(graph, start):
+  dist[v] = ∞ for all v;  dist[start] = 0
+  prev[v] = ∅;  visited = ∅
+  PQ = MinHeap;  PQ.push((start, 0))
+  while PQ is not empty:
+    (u, d) = PQ.pop()
+    if u is visited: continue        (stale entry)
+    visit u;  mark u visited
+    for each edge (u → v, w):
+      if v is visited: skip edge
+      cand = d + w
+      if cand < dist[v]:
+        dist[v] = cand
+        prev[v] = u;  PQ.push((v, cand))
+  ← shortest-path tree complete`,
+    codeLines: GRAPH_DIJKSTRA_CODE_LINES,
   },
   {
     id: "bfs",

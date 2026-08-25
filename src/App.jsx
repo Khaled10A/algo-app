@@ -272,7 +272,7 @@ export default function App() {
 
   return (
     <ThemeCtx.Provider value={theme}>
-      <div style={{ height: "100vh", width: "100%", color: p.textPrimary, fontFamily: FONT_SANS, overflow: "hidden", position: "relative", boxSizing: "border-box" }}>
+      <div style={{ height: "100vh", width: "100%", color: p.textPrimary, fontFamily: FONT_SANS, overflow: "hidden", display: "flex", flexDirection: "column", position: "relative", boxSizing: "border-box" }}>
         <Header
           tab={domain.id}
           setTab={switchTab}
