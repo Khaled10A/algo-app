@@ -311,6 +311,43 @@ describe("Algo App", () => {
     cy.contains(/Default example graph restored/i).should("exist");
   });
 
+  it("kruskal: no start node, sorted candidates, cycle rejection, total, restore", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Kruskal").click();
+
+    cy.contains("Start node").should("not.exist");
+
+    cy.contains("button", "Clear").click();
+    cy.contains("button", "Add node").click().click().click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("B");
+    cy.get('input[aria-label="Edge weight"]').clear().type("1");
+    cy.contains("button", "Add edge").click();
+    cy.get('select[aria-label="Edge source"]').select("B");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("2");
+    cy.contains("button", "Add edge").click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("4");
+    cy.contains("button", "Add edge").click();
+
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("exist");
+    cy.contains("Sorted edge candidates").scrollIntoView().should("be.visible");
+
+    cy.get('button[aria-label="Last step"]').click();
+    cy.contains(/Minimum spanning tree complete/i).should("exist");
+    cy.contains("Sorted edge candidates").parent().should("contain.text", "✕");
+    cy.contains("Sorted edge candidates").parent().should("contain.text", "✓");
+    cy.contains("MST edges").scrollIntoView().should("exist");
+    cy.contains("MST total").should("exist");
+    cy.get("svg").should("contain.text", "C");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()

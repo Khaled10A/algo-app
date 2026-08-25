@@ -115,8 +115,10 @@ export function projectMstEvents(events, { lineMap, label = "algorithm" }) {
         totalWeight += event.weight;
         candidateEdge = null;
         rejectedEdge = null;
+        visited.add(event.from);
         visited.add(event.to);
-        visitOrder.push(event.to);
+        if (!visitOrder.includes(event.from)) visitOrder.push(event.from);
+        if (!visitOrder.includes(event.to)) visitOrder.push(event.to);
         current = event.to;
         Object.assign(vars, {
           edge: `${event.from} — ${event.to}`,

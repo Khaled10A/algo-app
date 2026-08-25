@@ -20,6 +20,7 @@ const GRAPH_DESCRIPTORS = {
   "bellman-ford": getAlgorithm("bellman-ford"),
   "floyd-warshall": getAlgorithm("floyd-warshall"),
   prim: getAlgorithm("prim"),
+  kruskal: getAlgorithm("kruskal"),
 };
 
 const BASE_POSITIONS = {
@@ -125,7 +126,7 @@ export function GraphDebugger({ isDark }) {
       setNoticeMsg("The graph is empty — add a node first.", "error");
       return;
     }
-    if (algoId === "floyd-warshall") {
+    if (algoId === "floyd-warshall" || algoId === "kruskal") {
       setStartNode("");
     }
     try {
@@ -266,13 +267,13 @@ export function GraphDebugger({ isDark }) {
         <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
-            {["dfs","bfs","dijkstra","bellman-ford","floyd-warshall","prim"].map((id) => (
+            {["dfs","bfs","dijkstra","bellman-ford","floyd-warshall","prim","kruskal"].map((id) => (
               <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{GRAPH_DESCRIPTORS[id].name}</button>
             ))}
           </div>
         </div>
 
-        {algoId !== "floyd-warshall" && <div>
+        {algoId !== "floyd-warshall" && algoId !== "kruskal" && <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>
             {algoId === "prim" ? "Start node (MST origin)" : "Start node"}
           </div>
@@ -336,16 +337,25 @@ export function GraphDebugger({ isDark }) {
         </div>
       )}
 
-      {algoId === "prim" && current?.complete && (
+      {(algoId === "prim" || algoId === "kruskal") && current?.complete && (
         <div role="status" className="popover-in" style={{
           marginBottom: 10, padding: "9px 12px", borderRadius: 8, fontSize: 12,
           background: current.connected ? "rgba(48, 209, 88, 0.09)" : "rgba(255, 159, 10, 0.10)",
           boxShadow: `inset 0 0 0 1px ${current.connected ? p.green : p.orange}55`,
           color: current.connected ? p.green : p.orange,
         }}>
-          {current.connected
-            ? `Minimum spanning tree complete — ${current.mstEdges?.length ?? 0} edges, total weight ${current.totalWeight}.`
-            : `Minimum spanning forest — ${current.treeCount} trees, total weight ${current.totalWeight}.`}
+          {(current.connected ? "Minimum spanning tree" : "Minimum spanning forest") + " complete — " + (current.mstEdges?.length ?? 0) + " edges, total weight " + current.totalWeight + "."}
+        </div>
+      )}
+
+      {algoId === "kruskal" && current?.complete && !current.connected && (
+        <div role="status" className="popover-in" style={{
+          marginBottom: 10, padding: "9px 12px", borderRadius: 8, fontSize: 12,
+          background: "rgba(255, 159, 10, 0.10)",
+          boxShadow: `inset 0 0 0 1px ${p.orange}66`,
+          color: p.orange,
+        }}>
+          Graph is disconnected — the result is a minimum spanning FOREST ({current.treeCount} trees).
         </div>
       )}
 
@@ -463,7 +473,7 @@ export function GraphDebugger({ isDark }) {
                 isDark={isDark}
                 stackLabel={algoId === "dijkstra" ? "In queue" : algoId === "bellman-ford" ? "Updated" : algoId === "prim" ? null : "In Stack"}
                 mode={mode}
-                sourceNode={algoId === "floyd-warshall" ? null : startNode}
+                sourceNode={algoId === "floyd-warshall" || algoId === "kruskal" ? null : startNode}
                 fwStep={algoId === "floyd-warshall" ? current : null}
                 selectedNode={mode === "add-edge" ? pendingFrom : null}
                 selectedEdge={mode === "select" ? selectedEdge : null}
@@ -527,7 +537,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId !== "bellman-ford" && algoId !== "floyd-warshall" && algoId !== "prim" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
+            {algoId !== "bellman-ford" && algoId !== "floyd-warshall" && algoId !== "prim" && algoId !== "kruskal" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
               <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>
                 {algoId === "dfs" ? "Call stack" : algoId === "dijkstra" ? "Priority queue" : "Queue"}
               </div>
@@ -608,6 +618,34 @@ export function GraphDebugger({ isDark }) {
               </div>
             )}
 
+            {algoId === "kruskal" && current && (
+              <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>
+                  Sorted edge candidates
+                </div>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                  {(current.frontier || []).length === 0 && (current.mstEdges || []).length === 0
+                    ? <span style={{ fontSize:10, color:textMute }}>No edges</span>
+                    : [
+                        ...(current.mstEdges || []).map((e) => ({ ...e, state: "mst" })),
+                        ...(current.frontier || []).map((e) => ({ ...e, state: "pending" })),
+                        ...(current.rejectedEdge ? [{ from: current.rejectedEdge[0], to: current.rejectedEdge[1], state: "rejected" }] : []),
+                      ].sort((a, b) => a.weight - b.weight || (a.from < b.from ? -1 : 1)).map((e, i) => (
+                    <div key={i} style={{
+                      background: e.state === "mst" ? "rgba(48, 209, 88, 0.12)" : e.state === "rejected" ? "rgba(255, 59, 48, 0.08)" : codeBg,
+                      border:`1px solid ${e.state === "mst" ? p.green : e.state === "rejected" ? p.red : border}`,
+                      borderRadius:5, padding:"4px 10px", fontSize:11,
+                      fontFamily:"monospace",
+                      color: e.state === "mst" ? p.green : e.state === "rejected" ? p.red : textMute,
+                      textDecoration: e.state === "rejected" ? "line-through" : "none",
+                    }}>
+                      {e.from}—{e.to} · {e.weight}{e.state === "mst" ? " ✓" : e.state === "rejected" ? " ✕" : ""}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {algoId === "prim" && current && (
               <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
                 <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8, display:"flex", justifyContent:"space-between" }}>
@@ -643,7 +681,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId !== "dfs" && algoId !== "floyd-warshall" && algoId !== "prim" && current?.distances && (
+            {algoId !== "dfs" && algoId !== "floyd-warshall" && algoId !== "prim" && algoId !== "kruskal" && current?.distances && (
               <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
                 <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Distances</div>
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>

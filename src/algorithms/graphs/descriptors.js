@@ -4,6 +4,20 @@ import { dijkstraDebug } from './dijkstraDebug';
 import { bellmanFordDebug } from './bellmanFordDebug';
 import { floydWarshallDebug } from './floydWarshallDebug';
 import { primDebug } from './primDebug';
+import { kruskalDebug } from './kruskalDebug';
+
+export const GRAPH_KRUSKAL_CODE_LINES = [
+  { n: 0, code: "function kruskal(graph) {" },
+  { n: 1, code: "  edges = unique undirected (u, v, w)" },
+  { n: 2, code: "  sort edges by (w, u, v)" },
+  { n: 3, code: "  DSU = Union-Find over nodes" },
+  { n: 4, code: "  MST = ∅;  total = 0" },
+  { n: 5, code: "  for each (u, v, w) in sorted edges:" },
+  { n: 6, code: "    if find(u) = find(v): reject  ← cycle" },
+  { n: 7, code: "    union(u, v)" },
+  { n: 8, code: "    MST += (u, v, w);  total += w" },
+  { n: 9, code: "}  ← MST (or forest) complete" },
+];
 
 export const GRAPH_PRIM_CODE_LINES = [
   { n: 0, code: "function prim(graph, start) {" },
@@ -249,6 +263,37 @@ export const graphDescriptors = [
     (minimum spanning FOREST)
   ← complete`,
     codeLines: GRAPH_PRIM_CODE_LINES,
+  },
+  {
+    id: "kruskal",
+    name: "Kruskal",
+    category: "graphs",
+    color: "#b25000",
+    complexity: {
+      best: "O(E log E)",
+      average: "O(E log E)",
+      worst: "O(E log E) — sorting dominates",
+      space: "O(V + E)",
+      paradigm: "Greedy / Minimum Spanning Tree",
+    },
+    run: null,
+    steps: null,
+    debug: (graph) => kruskalDebug(graph),
+    pseudocode: `Kruskal(graph):
+  edges = unique undirected edges (u, v, w)
+  sort edges by (w, u, v)
+  DSU = Union-Find;  makeSet(v) for all v
+  MST = ∅;  total = 0
+
+  for each (u, v, w) in sorted edges:
+    if find(u) = find(v):
+      reject edge  (creates a cycle)
+    else:
+      union(u, v)
+      MST += (u, v, w);  total += w
+
+  ← MST (or minimum spanning forest) complete`,
+    codeLines: GRAPH_KRUSKAL_CODE_LINES,
   },
   {
     id: "bfs",
