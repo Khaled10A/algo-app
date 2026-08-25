@@ -12,7 +12,7 @@ npm install
 cp .env.example .env
 ```
 
-Set `VITE_GROQ_KEY` in `.env` if you want to use the AI Assistant tab.
+The AI Assistant calls `/api/assistant`, which needs `GROQ_API_KEY` as a server-side environment variable (see README — never prefix it with `VITE_`).
 
 ### 3. Run the app
 

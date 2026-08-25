@@ -1,10 +1,16 @@
 import { Label } from '../components/ui/SharedComponents';
-import { COLORS, TH, TD } from '../utils/constants';
+import { getAlgorithmForDisplay } from '../algorithms/registry';
+import { tableStyles } from '../theme/tokens';
+import { getPalette } from '../theme/tokens';
 
 export function HistoryTab({ history, compare, setCompare, isDark }) {
-  const border = isDark ? "#1e293b" : "#e2e8f0";
-  const cardBg = isDark ? "#0f172a" : "#f8fafc";
-  const textMuted = isDark ? "#64748b" : "#94a3b8";
+  const pf = getPalette(isDark ? "dark" : "light");
+  const border = pf.border;
+  const cardBg = pf.surface;
+  const textMuted = pf.textSecondary;
+  const ts = tableStyles(isDark ? "dark" : "light");
+  const algoName = (id) => getAlgorithmForDisplay(id).name;
+  const algoColor = (id) => getAlgorithmForDisplay(id).color;
 
   const toggleCompare = (run) => {
     setCompare(prev => {
@@ -21,24 +27,24 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "55vh", gap: 12, opacity: 0.3 }}>
         <div style={{ fontSize: 42 }}>📜</div>
-        <div style={{ fontSize: 11, color: "#475569", letterSpacing: 2 }}>NO RUNS YET — EXECUTE A BENCHMARK</div>
+        <div style={{ fontSize: 11, color: pf.textSecondary }}>NO RUNS YET — EXECUTE A BENCHMARK</div>
       </div>
     );
   }
 
   return (
     <div>
-      <Label color="#a78bfa">RUN HISTORY</Label>
+      <Label>Run history</Label>
 
       {compareRuns.length >= 2 && (
-        <div style={{ background: "rgba(167,139,250,0.06)", border: "1px solid rgba(167,139,250,0.25)", borderRadius: 10, padding: "14px 18px", marginBottom: 20 }}>
-          <div style={{ fontSize: 9, color: "#a78bfa", letterSpacing: 2, marginBottom: 12 }}>COMPARING {compareRuns.length} RUNS</div>
+        <div style={{ background: pf.accentTint, border: `1px solid ${pf.accent}40`, borderRadius: 10, padding: "14px 18px", marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: pf.accentText, marginBottom: 12 }}>Comparing {compareRuns.length} runs</div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
               <thead>
                 <tr>
-                  <th style={TH}>Metric</th>
-                  {compareRuns.map(r => <th key={r.id} style={{ ...TH, color: "#a78bfa" }}>{r.label}</th>)}
+                  <th style={ts.TH}>Metric</th>
+                  {compareRuns.map(r => <th key={r.id} style={{ ...ts.TH, color: pf.accentText }}>{r.label}</th>)}
                 </tr>
               </thead>
               <tbody>
@@ -51,14 +57,14 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
                   const maxV = Math.max(...rowVals, 1);
                   return (
                     <tr key={algo} style={{ background: ai % 2 === 0 ? (isDark ? "#0a0f1e" : "#f1f5f9") : (isDark ? "#0f172a" : "#f8fafc") }}>
-                      <td style={{ ...TD, color: COLORS[ai % COLORS.length], fontWeight: "bold" }}>{algo}</td>
+                      <td style={{ ...ts.TD, color: algoColor(algo), fontWeight: "bold" }}>{algoName(algo)}</td>
                       {rowVals.map((v, i) => (
-                        <td key={i} style={TD}>
+                        <td key={i} style={ts.TD}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <div style={{ flex: 1, background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 3, height: 6 }}>
-                              <div style={{ width: `${(v / maxV) * 100}%`, height: "100%", background: COLORS[ai % COLORS.length], borderRadius: 3 }} />
+                            <div style={{ flex: 1, background: pf.trackBg, borderRadius: 3, height: 6 }}>
+                              <div style={{ width: `${(v / maxV) * 100}%`, height: "100%", background: algoColor(algo), borderRadius: 3 }} />
                             </div>
-                            <span style={{ fontSize: 10, color: "#94a3b8", minWidth: 50, textAlign: "right" }}>
+                            <span style={{ fontSize: 10, color: pf.textSecondary, minWidth: 50, textAlign: "right" }}>
                               {compareRuns[i].metric === "time" ? v.toFixed(3) + "ms" : v.toLocaleString()}
                             </span>
                           </div>
@@ -76,14 +82,14 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
                   const maxV = Math.max(...rowVals, 1);
                   return (
                     <tr key={algo} style={{ background: ai % 2 === 0 ? (isDark ? "#0a0f1e" : "#f1f5f9") : (isDark ? "#0f172a" : "#f8fafc") }}>
-                      <td style={{ ...TD, color: searchColors[ai % 3], fontWeight: "bold" }}>{algo}</td>
+                      <td style={{ ...ts.TD, color: searchColors[ai % 3], fontWeight: "bold" }}>{algoName(algo)}</td>
                       {rowVals.map((v, i) => (
-                        <td key={i} style={TD}>
+                        <td key={i} style={ts.TD}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <div style={{ flex: 1, background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 3, height: 6 }}>
+                            <div style={{ flex: 1, background: pf.trackBg, borderRadius: 3, height: 6 }}>
                               <div style={{ width: `${(v / maxV) * 100}%`, height: "100%", background: searchColors[ai % 3], borderRadius: 3 }} />
                             </div>
-                            <span style={{ fontSize: 10, color: "#94a3b8", minWidth: 50, textAlign: "right" }}>
+                            <span style={{ fontSize: 10, color: pf.textSecondary, minWidth: 50, textAlign: "right" }}>
                               {compareRuns[i].metric === "time" ? v.toFixed(3) + "ms" : v.toLocaleString()}
                             </span>
                           </div>
@@ -99,7 +105,7 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
       )}
 
       {compare.length > 0 && compare.length < 2 && (
-        <div style={{ background: "rgba(167,139,250,0.04)", border: "1px dashed rgba(167,139,250,0.3)", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 10, color: "#a78bfa", textAlign: "center" }}>
+        <div style={{ background: "rgba(167,139,250,0.04)", border: `1px dashed ${pf.accent}55`, borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 10, color: pf.accentText, textAlign: "center" }}>
           Select {2 - compare.length} more run{compare.length === 0 ? "s" : ""} to compare (max 4)
         </div>
       )}
@@ -109,17 +115,19 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
           const isSelected = compare.includes(run.id);
           const mk = run.metric === "time" ? "time" : "comparisons";
           const algosData = run.kind === "sorting"
-            ? run.algos.map(a => ({ name: a, val: run.types.reduce((s, t) => s + (run.results[a]?.[t]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }))
-            : run.algos.map(a => ({ name: a, val: run.scenarios.reduce((s, sc) => s + (run.results[a]?.[sc]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }));
+            ? run.algos.map(a => ({ id: a, name: algoName(a), val: run.types.reduce((s, t) => s + (run.results[a]?.[t]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }))
+            : run.algos.map(a => ({ id: a, name: algoName(a), val: run.scenarios.reduce((s, sc) => s + (run.results[a]?.[sc]?.reduce((s2, r) => s2 + (r[mk] || 0), 0) || 0), 0) }));
           const maxVal = Math.max(...algosData.map(d => d.val), 1);
           const worstName = algosData.reduce((a, b) => b.val > a.val ? b : a, algosData[0])?.name;
-          const clrs = run.kind === "sorting" ? COLORS : ["#f472b6", "#4ade80", "#fb923c"];
+          const clrs = run.algos.map((id) => algoColor(id));
 
           return (
             <div key={run.id} style={{
-              background: isSelected ? (isDark ? "rgba(167,139,250,0.07)" : "rgba(167,139,250,0.05)") : cardBg,
-              border: `1px solid ${isSelected ? "rgba(167,139,250,0.4)" : border}`,
-              borderRadius: 10, padding: "14px 16px", transition: "border-color 0.15s",
+              background: isSelected ? pf.accentTint : cardBg,
+              boxShadow: isSelected
+                ? `0 0 0 1.5px ${pf.accent}, ${pf.shadowFloat}`
+                : "0 0 0 1px rgba(127,127,127,0.14)",
+              borderRadius: 12, padding: "14px 16px", transition: "box-shadow 0.2s",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                 <div>
@@ -130,12 +138,12 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  {worstName && <span style={{ fontSize: 9, background: "rgba(239,68,68,0.15)", color: "#f87171", borderRadius: 4, padding: "2px 6px" }}>⚠ {worstName}</span>}
+                  {worstName && <span style={{ fontSize: 9, background: "rgba(255, 59, 48, 0.10)", color: "#d70015", borderRadius: 4, padding: "2px 6px" }}>⚠ {worstName}</span>}
                 <button onClick={() => toggleCompare(run)} style={{
                   fontSize: 9, padding: "4px 10px", borderRadius: 5, cursor: "pointer",
                   fontFamily: "monospace", letterSpacing: 1,
                   border: isSelected ? "1px solid #a78bfa" : `1px solid ${border}`,
-                  background: isSelected ? "rgba(167,139,250,0.15)" : "transparent",
+                  background: "transparent",
                   color: isSelected ? "#a78bfa" : textMuted,
                 }}>{isSelected ? "✓ SELECTED" : "+ COMPARE"}</button>
                 </div>
@@ -143,15 +151,15 @@ export function HistoryTab({ history, compare, setCompare, isDark }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                 {algosData.map((d, i) => (
                   <div key={d.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ width: 90, fontSize: 10, color: clrs[i % clrs.length], textAlign: "right", flexShrink: 0 }}>{d.name}</div>
-                    <div style={{ flex: 1, background: isDark ? "#1e293b" : "#e2e8f0", borderRadius: 4, height: 8 }}>
+                    <div style={{ width: 90, fontSize: 10, color: clrs[i] || pf.textSecondary, textAlign: "right", flexShrink: 0 }}>{d.name}</div>
+                    <div style={{ flex: 1, background: pf.trackBg, borderRadius: 4, height: 8 }}>
                       <div style={{
                         width: `${(d.val / maxVal) * 100}%`, height: "100%",
-                        background: d.name === worstName ? "#ef4444" : clrs[i % clrs.length],
+                        background: d.name === worstName ? pf.redStrong : (clrs[i] || pf.textFaint),
                         borderRadius: 4, transition: "width 0.4s",
                       }} />
                     </div>
-                    <div style={{ width: 70, fontSize: 10, color: "#94a3b8", textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ width: 70, fontSize: 10, color: pf.textSecondary, textAlign: "right", flexShrink: 0 }}>
                       {mk === "time" ? d.val.toFixed(3) + "ms" : d.val.toLocaleString()}
                     </div>
                   </div>
