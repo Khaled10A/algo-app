@@ -3,6 +3,20 @@ import { dfsDebug } from './dfs';
 import { dijkstraDebug } from './dijkstraDebug';
 import { bellmanFordDebug } from './bellmanFordDebug';
 import { floydWarshallDebug } from './floydWarshallDebug';
+import { primDebug } from './primDebug';
+
+export const GRAPH_PRIM_CODE_LINES = [
+  { n: 0, code: "function prim(graph, start) {" },
+  { n: 1, code: "  visited = {start};  MST = ∅;  total = 0" },
+  { n: 2, code: "  frontier = MinHeap;  push edges of start" },
+  { n: 3, code: "  while frontier not empty:" },
+  { n: 4, code: "    (u, v, w) = frontier.pop()   ← min edge" },
+  { n: 5, code: "    if v visited: skip edge" },
+  { n: 6, code: "    visit v;  MST += (u, v, w);  total += w" },
+  { n: 7, code: "    push edges of v into frontier" },
+  { n: 8, code: "  if unvisited remain: grow forest from next node" },
+  { n: 9, code: "}  ← MST / forest complete" },
+];
 
 export const GRAPH_FLOYD_WARSHALL_CODE_LINES = [
   { n: 0, code: "function floydWarshall(graph) {" },
@@ -202,6 +216,39 @@ export const graphDescriptors = [
       report negative cycle through i
   ← all-pairs matrix complete`,
     codeLines: GRAPH_FLOYD_WARSHALL_CODE_LINES,
+  },
+  {
+    id: "prim",
+    name: "Prim",
+    category: "graphs",
+    color: "#0e7490",
+    complexity: {
+      best: "O(E log V)",
+      average: "O(E log V)",
+      worst: "O(E log V)",
+      space: "O(E + V)",
+      paradigm: "Greedy / Minimum Spanning Tree",
+    },
+    run: null,
+    steps: null,
+    debug: (graph, start) => primDebug(graph, start),
+    pseudocode: `Prim(graph, start):
+  visited = {start};  MST = ∅;  total = 0
+  frontier = MinHeap
+  push every edge of start into frontier
+
+  while frontier is not empty:
+    (u, v, w) = frontier.pop()      (minimum edge)
+    if v is visited: skip edge
+    visit v
+    MST += (u, v, w);  total += w
+    push edges of v into frontier
+
+  if unvisited nodes remain:
+    grow a new tree from the next node
+    (minimum spanning FOREST)
+  ← complete`,
+    codeLines: GRAPH_PRIM_CODE_LINES,
   },
   {
     id: "bfs",

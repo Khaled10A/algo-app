@@ -19,6 +19,7 @@ const GRAPH_DESCRIPTORS = {
   dijkstra: getAlgorithm("dijkstra"),
   "bellman-ford": getAlgorithm("bellman-ford"),
   "floyd-warshall": getAlgorithm("floyd-warshall"),
+  prim: getAlgorithm("prim"),
 };
 
 const BASE_POSITIONS = {
@@ -265,14 +266,16 @@ export function GraphDebugger({ isDark }) {
         <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
-            {["dfs","bfs","dijkstra","bellman-ford","floyd-warshall"].map((id) => (
+            {["dfs","bfs","dijkstra","bellman-ford","floyd-warshall","prim"].map((id) => (
               <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{GRAPH_DESCRIPTORS[id].name}</button>
             ))}
           </div>
         </div>
 
         {algoId !== "floyd-warshall" && <div>
-          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Start node</div>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>
+            {algoId === "prim" ? "Start node (MST origin)" : "Start node"}
+          </div>
           <div style={{ display:"flex", gap:4, flexWrap:"wrap", maxWidth:320 }}>
             {nodeIds.map((n) => (
               <button key={n} onClick={() => { setStartNode(n); setNoticeMsg(`Source node: ${n}`, "ok"); }}
@@ -330,6 +333,30 @@ export function GraphDebugger({ isDark }) {
           ⚠ {algoId === "floyd-warshall"
             ? `Negative cycle detected through ${(current.negativeCycleNodes || []).join(", ")} — shortest distances are not well-defined.`
             : `Negative cycle detected via ${current.negativeCycleEdge?.join(" → ")} — shortest distances are not well-defined for affected nodes.`}
+        </div>
+      )}
+
+      {algoId === "prim" && current?.complete && (
+        <div role="status" className="popover-in" style={{
+          marginBottom: 10, padding: "9px 12px", borderRadius: 8, fontSize: 12,
+          background: current.connected ? "rgba(48, 209, 88, 0.09)" : "rgba(255, 159, 10, 0.10)",
+          boxShadow: `inset 0 0 0 1px ${current.connected ? p.green : p.orange}55`,
+          color: current.connected ? p.green : p.orange,
+        }}>
+          {current.connected
+            ? `Minimum spanning tree complete — ${current.mstEdges?.length ?? 0} edges, total weight ${current.totalWeight}.`
+            : `Minimum spanning forest — ${current.treeCount} trees, total weight ${current.totalWeight}.`}
+        </div>
+      )}
+
+      {algoId === "prim" && current && !current.complete && current.treeCount > 1 && (
+        <div role="status" className="popover-in" style={{
+          marginBottom: 10, padding: "9px 12px", borderRadius: 8, fontSize: 12,
+          background: "rgba(255, 159, 10, 0.10)",
+          boxShadow: `inset 0 0 0 1px ${p.orange}66`,
+          color: p.orange,
+        }}>
+          Graph is disconnected — growing tree {current.treeCount}. The result is a minimum spanning FOREST.
         </div>
       )}
 
@@ -434,7 +461,7 @@ export function GraphDebugger({ isDark }) {
                 positions={positions}
                 step={current}
                 isDark={isDark}
-                stackLabel={algoId === "dijkstra" ? "In queue" : algoId === "bellman-ford" ? "Updated" : "In Stack"}
+                stackLabel={algoId === "dijkstra" ? "In queue" : algoId === "bellman-ford" ? "Updated" : algoId === "prim" ? null : "In Stack"}
                 mode={mode}
                 sourceNode={algoId === "floyd-warshall" ? null : startNode}
                 fwStep={algoId === "floyd-warshall" ? current : null}
@@ -500,7 +527,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId !== "bellman-ford" && algoId !== "floyd-warshall" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
+            {algoId !== "bellman-ford" && algoId !== "floyd-warshall" && algoId !== "prim" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
               <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>
                 {algoId === "dfs" ? "Call stack" : algoId === "dijkstra" ? "Priority queue" : "Queue"}
               </div>
@@ -559,6 +586,51 @@ export function GraphDebugger({ isDark }) {
               </div>
             )}
 
+            {algoId === "prim" && current && (
+              <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>
+                  Frontier (min-heap){current.totalWeight != null && current.complete === false && current.totalWeight >= 0 && ""}
+                </div>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                  {(current.frontier || []).length === 0
+                    ? <span style={{ fontSize:10, color:textMute }}>Empty</span>
+                    : (current.frontier || []).map((e, i) => (
+                    <div key={i} style={{
+                      background: i===0 ? `${accentColor}20` : codeBg,
+                      border:`1px solid ${i===0?accentColor:border}`,
+                      borderRadius:5, padding:"4px 10px", fontSize:11,
+                      fontFamily:"monospace", color: i===0?accentColor:textMute,
+                    }}>
+                      {e.from}—{e.to} · {e.weight}{i===0&&<span style={{ fontSize:8, marginLeft:4 }}>MIN</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {algoId === "prim" && current && (
+              <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8, display:"flex", justifyContent:"space-between" }}>
+                  <span>MST edges</span>
+                  <span style={{ color:p.green }}>total {current.totalWeight}</span>
+                </div>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                  {(current.mstEdges || []).length === 0
+                    ? <span style={{ fontSize:10, color:textMute }}>None selected yet</span>
+                    : (current.mstEdges || []).map((e, i) => (
+                    <div key={i} style={{
+                      background:codeBg, borderRadius:5, padding:"4px 10px",
+                      border:`1px solid ${p.green}55`, fontFamily:"monospace", fontSize:11,
+                      color:p.green, display:"flex", gap:6,
+                    }}>
+                      <span style={{ color:textMute }}>{e.from}—{e.to}</span>
+                      <span>{e.weight}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
               <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Variables</div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
@@ -571,7 +643,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId !== "dfs" && algoId !== "floyd-warshall" && current?.distances && (
+            {algoId !== "dfs" && algoId !== "floyd-warshall" && algoId !== "prim" && current?.distances && (
               <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
                 <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Distances</div>
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
@@ -606,6 +678,7 @@ function GraphSVG({
   const {
     visited, current, callStack, heap, distances, previous,
     currentEdge, relaxedEdge, complete,
+    mstEdges = null, candidateEdge = null, rejectedEdge = null,
   } = step || {};
 
   const { adjacency } = normalizeGraph(graph);
@@ -641,6 +714,15 @@ function GraphSVG({
     if (isCurrent) return { stroke: p.accent, strokeWidth: 3.2 };
     if (isRelaxed) return { stroke: p.green, strokeWidth: 3 };
     if (isTree) return { stroke: p.green, strokeWidth: 2.5, opacity: 0.9 };
+    if (mstEdges) {
+      const key = edgeKey(e.from, e.to);
+      const isCandidate = candidateEdge && edgeKey(candidateEdge[0], candidateEdge[1]) === key;
+      const isRejected = rejectedEdge && edgeKey(rejectedEdge[0], rejectedEdge[1]) === key;
+      const inMst = mstEdges.some((m) => edgeKey(m.from, m.to) === key);
+      if (inMst) return { stroke: p.green, strokeWidth: 3.2 };
+      if (isCandidate) return { stroke: p.accent, strokeWidth: 3.2 };
+      if (isRejected) return { stroke: p.textFaint, strokeWidth: 1.5, opacity: 0.5, dash: true };
+    }
     if (fwStep && fwStep.pair) {
       const { i, j, kNode } = fwStep;
       const ik = edgeKey(i, kNode) === key;
@@ -684,6 +766,7 @@ function GraphSVG({
             <line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y}
               stroke={style.stroke} strokeWidth={style.strokeWidth} opacity={style.opacity ?? 1}
               strokeLinecap="round" pointerEvents="none"
+              strokeDasharray={style.dash ? "4 3" : undefined}
               style={{ transition: "stroke 0.2s, stroke-width 0.2s" }} />
             {weighted && (
               <text
@@ -764,7 +847,7 @@ function GraphSVG({
         );
       })}
 
-      {[[p.accent,"Current"],[p.purple,stackLabel],[p.green,"Visited"],].map(([c,l], i) => (
+      {[[p.accent,"Current"],[p.purple,stackLabel],[p.green,"Visited"],].filter(([ , l]) => Boolean(l)).map(([c,l], i) => (
         <g key={l}>
           <circle cx={20 + i*100} cy={316} r={7} fill={c}/>
           <text x={32 + i*100} y={320} fontSize={9} fill={p.textSecondary} fontFamily="monospace">{l}</text>

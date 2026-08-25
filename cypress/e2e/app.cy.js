@@ -272,6 +272,45 @@ describe("Algo App", () => {
     cy.contains(/Step 1 \//i).should("be.visible");
   });
 
+  it("prim: MST origin label, edge selection, total weight, complete, restore", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Prim").click();
+
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("exist");
+    cy.contains("Frontier (min-heap)").should("exist");
+    cy.contains("MST edges").should("exist");
+
+    cy.get('button[aria-label="Last step"]').click();
+    cy.contains(/Minimum spanning forest/i).should("exist");
+    cy.contains("MST total").should("exist");
+    cy.get("svg").should("contain.text", "G");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+  });
+
+  it("prim: disconnected graph grows a spanning forest with a notice", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Prim").click();
+    cy.contains("button", "Clear").click();
+
+    cy.contains("button", "Add node").click().click().click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("B");
+    cy.get('input[aria-label="Edge weight"]').clear().type("2");
+    cy.contains("button", "Add edge").click();
+
+    cy.contains("button", "GENERATE").click();
+    cy.get('button[aria-label="Last step"]').click();
+    cy.get('[role="status"]').should("contain.text", "forest");
+    cy.contains(/minimum spanning FOREST/i).should("exist");
+    cy.get("svg").should("contain.text", "C");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()
