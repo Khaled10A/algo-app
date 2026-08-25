@@ -251,6 +251,7 @@ export default function App() {
 
   const vizControls = {
     algo: vizAlgo,
+    setAlgo: setVizAlgo,
     size: vizSize,
     speed: vizPlayback.speed,
     playing: vizPlayback.playing,

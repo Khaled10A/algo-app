@@ -38,9 +38,9 @@ describe("registry integrity", () => {
       expect(d.codeLines.length).toBeGreaterThan(0);
       expect(typeof d.pseudocode).toBe("string");
     }
-    expect(getBenchmarkable("sorting")).toHaveLength(5);
+    expect(getBenchmarkable("sorting")).toHaveLength(6);
     expect(getBenchmarkable("searching")).toHaveLength(3);
-    expect(getWithDebug(["sorting"])).toHaveLength(5);
+    expect(getWithDebug(["sorting"])).toHaveLength(6);
   });
 
   it("getAlgorithm throws for unknown ids", () => {

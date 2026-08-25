@@ -84,20 +84,23 @@ function EnhancedViz({ steps, currentStep, isDark }) {
         {arr.map((v, i) => {
           const isHi = hi.includes(i);
           const changed = prevArr[i] !== v;
+          const sortedFrom = step.sortedFrom;
+          const isSorted = sortedFrom != null && i >= sortedFrom;
+          const isBoundary = step.boundary != null && i === step.boundary;
           return (
-            <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0 }}>
+            <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0, borderLeft: isBoundary ? `2px dashed ${pf.accent}` : "none" }}>
               {/* Value label on top */}
-              <div style={{
+              <div data-testid="bar-value" style={{
                 fontSize: barW > 20 ? 9 : 7,
-                color: isHi ? pf.pink : textMute,
+                color: isSorted ? pf.green : isHi ? pf.pink : textMute,
                 marginBottom: 2, fontFamily:"monospace",
-                fontWeight: isHi ? "bold" : "normal",
+                fontWeight: isHi || isSorted ? "bold" : "normal",
               }}>{v}</div>
               {/* Bar */}
               <div style={{
                 width: barW,
                 height: `${Math.max((v / maxVal) * 100, 4)}px`,
-                background: getBarColor(v, maxVal, isHi),
+                background: isSorted ? pf.green : getBarColor(v, maxVal, isHi),
                 borderRadius: "3px 3px 0 0",
                 transition: "height 0.18s cubic-bezier(0.22, 1, 0.36, 1), background 0.16s ease, box-shadow 0.16s ease",
                 boxShadow: isHi ? `0 0 10px ${getBarColor(v, maxVal, true)}3d, inset 0 1px 0 rgba(255,255,255,0.25)` : "inset 0 1px 0 rgba(255,255,255,0.18)",

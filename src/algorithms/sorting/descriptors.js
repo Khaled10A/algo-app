@@ -3,6 +3,8 @@ import { bubbleSort, bubbleSortSteps, bubbleSortDebug } from './bubbleSort';
 import { selectionSort, selectionSortSteps, selectionSortDebug } from './selectionSort';
 import { mergeSort, mergeSortDebug, MERGE_SORT_CODE_LINES } from './mergeSort';
 import { quickSort, quickSortDebug, QUICK_SORT_CODE_LINES } from './quickSort';
+import { heapSort, HEAP_SORT_CODE_LINES } from './heapSort';
+import { heapSortDebug } from './heapSortDebug';
 
 export const INSERTION_SORT_CODE_LINES = [
   { n: 0, code: "function insertionSort(arr) {" },
@@ -136,6 +138,39 @@ Merge(A, lo, mid, hi):
     else: A[k++] = R[j++]
   copy remaining`,
     codeLines: MERGE_SORT_CODE_LINES,
+  },
+  {
+    id: "heap-sort",
+    name: "Heap Sort",
+    category: "sorting",
+    color: "#0e7490",
+    complexity: {
+      best: "O(n log n)",
+      average: "O(n log n)",
+      worst: "O(n log n)",
+      space: "O(1)",
+      paradigm: "Heap / Selection",
+    },
+    run: (arr) => heapSort(arr),
+    steps: (arr) => heapSortDebug(arr),
+    debug: (arr) => heapSortDebug(arr),
+    pseudocode: `HeapSort(array):
+  n = length(array)
+
+  build max heap:
+    for i = parent(n-1) down to 0:
+      siftDown(i, n)
+      (siftDown compares the parent with its
+       larger child and swaps while the child
+       is bigger, within the heap boundary)
+
+  for end = n-1 down to 1:
+    swap array[0] ↔ array[end]   (extract max)
+    heap boundary shrinks to end
+    siftDown(0, end)
+
+  ← array sorted`,
+    codeLines: HEAP_SORT_CODE_LINES,
   },
   {
     id: "quick-sort",

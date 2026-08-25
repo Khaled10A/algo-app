@@ -348,6 +348,32 @@ describe("Algo App", () => {
     cy.contains(/Default example graph restored/i).should("exist");
   });
 
+  it("heap sort: select, generate, step, heap boundary, sorted region, replay", () => {
+    cy.contains("button", "Sorting").click();
+    cy.contains("button", "visualizer").click();
+    cy.contains("label", "Heap Sort").click();
+
+    cy.contains("button", /Generate array/i).click();
+    cy.contains("OPS DONE").should("be.visible");
+    cy.get('[data-testid="bar-value"]').should("have.length", 16);
+
+    cy.get('button[aria-label="Next step"]').click().click().click();
+    cy.get('[data-testid="bar-value"]').then(($vals) => {
+      expect($vals.length).to.be.greaterThan(2);
+    });
+
+    cy.get('button[aria-label="Last step"]').click();
+    cy.get('[data-testid="bar-value"]').then(($vals) => {
+      const values = [...$vals].map((el) => Number(el.textContent));
+      expect(values).to.deep.equal([...values].sort((a, b) => a - b));
+    });
+
+    cy.contains("button", /Generate array/i).click();
+    cy.contains("OPS DONE").should("be.visible");
+    cy.get('[data-testid="bar-value"]').should("have.length", 16);
+    cy.contains("HEAP SORT").should("be.visible");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()
