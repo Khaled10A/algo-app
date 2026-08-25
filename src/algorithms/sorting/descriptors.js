@@ -5,6 +5,8 @@ import { mergeSort, mergeSortDebug, MERGE_SORT_CODE_LINES } from './mergeSort';
 import { quickSort, quickSortDebug, QUICK_SORT_CODE_LINES } from './quickSort';
 import { heapSort, HEAP_SORT_CODE_LINES } from './heapSort';
 import { heapSortDebug } from './heapSortDebug';
+import { countingSort, countingSortEvents, COUNTING_SORT_CODE_LINES } from './countingSort';
+import { countingSortDebug } from './countingSortDebug';
 
 export const INSERTION_SORT_CODE_LINES = [
   { n: 0, code: "function insertionSort(arr) {" },
@@ -171,6 +173,41 @@ Merge(A, lo, mid, hi):
 
   ← array sorted`,
     codeLines: HEAP_SORT_CODE_LINES,
+  },
+  {
+    id: "counting-sort",
+    name: "Counting Sort",
+    category: "sorting",
+    color: "#9333ea",
+    complexity: {
+      best: "O(n + k)",
+      average: "O(n + k)",
+      worst: "O(n + k)",
+      space: "O(n + k)",
+      paradigm: "Non-comparison / Counting",
+    },
+    run: (arr) => countingSort(arr),
+    steps: (arr) => countingSortDebug(arr),
+    debug: (arr) => countingSortDebug(arr),
+    pseudocode: `CountingSort(array):
+  n = length(array)
+  min = min(array);  max = max(array)
+  range = max - min + 1
+  count = [0] × range
+
+  for i = 0 .. n-1:
+    count[array[i] - min]++
+
+  for ci = 1 .. range-1:
+    count[ci] += count[ci-1]     (prefix sums)
+
+  output = [0] × n
+  for i = n-1 down to 0:         (stable placement)
+    count[array[i] - min]--
+    output[count[array[i] - min]] = array[i]
+
+  return output   ← sorted (stable)`,
+    codeLines: COUNTING_SORT_CODE_LINES,
   },
   {
     id: "quick-sort",

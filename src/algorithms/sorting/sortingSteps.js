@@ -17,6 +17,9 @@
  */
 export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
   let array = [];
+  let countArray = null;
+  let countIndex = null;
+  let output = null;
 
   const steps = [];
 
@@ -101,6 +104,69 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
         log = `Extract max ${event.value} — swap root ↔ index ${y}, shrink heap`;
         break;
       }
+      case "count-update": {
+        countArray = [...event.countArray];
+        countIndex = event.countIndex;
+        highlight = [event.inputIndex];
+        Object.assign(vars, {
+          "input index": String(event.inputIndex),
+          value: String(event.value),
+          "count slot": String(event.countIndex),
+          "count": String(event.count),
+        });
+        Object.assign(memory, {
+          "count array": `[${countArray.join(", ")}]`,
+          array: `[${array.join(", ")}]`,
+        });
+        callStack.push(`  └ count a[${event.inputIndex}] → slot ${event.countIndex}`);
+        log = `Count a[${event.inputIndex}]=${event.value} → slot ${event.countIndex} (now ${event.count})`;
+        break;
+      }
+      case "count-complete": {
+        countArray = [...event.countArray];
+        Object.assign(vars, { phase: "frequency counted" });
+        Object.assign(memory, { "count array": `[${countArray.join(", ")}]` });
+        callStack.push(`  └ frequency count complete`);
+        log = `Frequency count complete: [${countArray.join(", ")}]`;
+        break;
+      }
+      case "prefix-update": {
+        countArray = [...event.countArray];
+        countIndex = event.countIndex;
+        Object.assign(vars, {
+          "count slot": String(event.countIndex),
+          cumulative: String(event.cumulative),
+        });
+        Object.assign(memory, { "count array": `[${countArray.join(", ")}]` });
+        callStack.push(`  └ prefix sum slot ${event.countIndex}`);
+        log = `Prefix sum: slot ${event.countIndex} → ${event.cumulative}`;
+        break;
+      }
+      case "prefix-complete": {
+        countArray = [...event.countArray];
+        Object.assign(vars, { phase: "prefix sums ready" });
+        Object.assign(memory, { "count array": `[${countArray.join(", ")}]` });
+        callStack.push(`  └ prefix sums complete`);
+        log = `Prefix sums ready — count array now holds output positions`;
+        break;
+      }
+      case "place-element": {
+        output = [...event.output];
+        array = [...event.output];
+        highlight = [event.outputIndex];
+        sortedFrom = event.outputIndex;
+        Object.assign(vars, {
+          "input index": String(event.inputIndex),
+          value: String(event.value),
+          "output index": String(event.outputIndex),
+        });
+        Object.assign(memory, {
+          output: `[${event.output.map((v) => (v === null ? "·" : v)).join(", ")}]`,
+        });
+        callStack.push(`  └ place ${event.value} at output[${event.outputIndex}]`);
+        log = `Place ${event.value} at output[${event.outputIndex}]`;
+        break;
+      }
       case "complete": {
         complete = true;
         sortedFrom = event.sortedFrom ?? 0;
@@ -125,6 +191,9 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
       boundary,
       sortedFrom,
       phase,
+      countArray: countArray ? [...countArray] : undefined,
+      countIndex,
+      output: output ? [...output] : undefined,
       complete,
     });
   };
