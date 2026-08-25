@@ -93,6 +93,83 @@ describe("Algo App", () => {
     cy.contains("span", /Done —/).should("exist");
   });
 
+  it("graph playground: edit graph, run Dijkstra on it, reset and restore", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Dijkstra").click();
+
+    cy.contains("button", "Clear").click();
+    cy.contains(/Graph cleared/i).should("exist");
+    cy.contains("Empty graph — add a node to begin").should("be.visible");
+
+    cy.contains("button", "Add node").click();
+    cy.contains(/Node A added/i).should("exist");
+    cy.contains("button", "Add node").click();
+    cy.contains(/Node B added/i).should("exist");
+
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("B");
+    cy.get('input[aria-label="Edge weight"]').clear().type("7");
+    cy.contains("button", "Add edge").click();
+    cy.contains(/Edge A — B added/i).should("exist");
+
+    cy.contains("button", "Add node").click();
+    cy.contains(/Node C added/i).should("exist");
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("1");
+    cy.contains("button", "Add edge").click();
+
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("be.visible");
+    cy.contains("Distances").scrollIntoView().should("be.visible");
+    cy.get("svg").should("contain.text", "∞");
+
+    cy.get('button[aria-label="Last step"]').click();
+    cy.contains("Distances").scrollIntoView().should("be.visible");
+    cy.get("svg").should("contain.text", "0");
+
+    cy.contains("button", "Update weight").scrollIntoView().should("be.visible");
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("B");
+    cy.get('input[aria-label="Edge weight"]').clear().type("-5");
+    cy.contains("button", "Update weight").click();
+    cy.contains(/weight set to -5/i).should("exist");
+
+    cy.contains("button", "GENERATE").click();
+    cy.get('[role="status"]').should("contain.text", "negative weights");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("be.visible");
+    cy.get("svg").should("contain.text", "∞");
+  });
+
+  it("graph playground: canvas placement and delete mode work", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Dijkstra").click();
+    cy.contains("button", "Clear").click();
+
+    cy.contains("button", "Place node").click();
+    cy.get('svg[aria-label="Graph playground"]').click(200, 160);
+    cy.contains(/Node A added/i).should("exist");
+    cy.get('svg[aria-label="Graph playground"]').click(300, 160);
+    cy.contains(/Node B added/i).should("exist");
+
+    cy.contains("button", "Connect").click();
+    cy.get('svg[aria-label="Graph playground"] circle[r="22"]').eq(0).click();
+    cy.get('svg[aria-label="Graph playground"] circle[r="22"]').eq(1).click();
+    cy.contains(/Edge A — B added/i).should("exist");
+
+    cy.contains("button", "Delete").click();
+    cy.get('svg[aria-label="Graph playground"] circle[r="22"]').eq(0).click();
+    cy.contains(/Node A removed/i).should("exist");
+    cy.get('svg[aria-label="Graph playground"]').should("not.contain.text", "A");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()

@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { getAlgorithm } from "../../algorithms/registry";
-import { normalizeGraph, isWeightedGraph, edgeKey } from "../../algorithms/graphs/graph";
-import { playTone, playVictory } from "../../utils/audio";
+import {
+  normalizeGraph, isWeightedGraph, edgeKey,
+  createDefaultGraph, createEmptyGraph,
+  addNode, removeNode, addEdge, removeEdge, setEdgeWeight,
+  nextNodeId,
+} from "../../algorithms/graphs/graph";
+import { playVictory } from "../../utils/audio";
 import { usePlayback } from "../../hooks/usePlayback";
-import { getPalette } from "../../theme/tokens";
+import { getPalette, MOTION } from "../../theme/tokens";
 
-const DEFAULT_GRAPH = {
-  A: [["B", 4], ["D", 2]],
-  B: [["A", 4], ["C", 5], ["E", 10]],
-  C: [["B", 5], ["F", 3]],
-  D: [["A", 2], ["E", 7]],
-  E: [["B", 10], ["D", 7], ["F", 4]],
-  F: [["C", 3], ["E", 4]],
-  G: [["D", 3]],
-};
+const DEFAULT_GRAPH = createDefaultGraph();
 
 const GRAPH_DESCRIPTORS = {
   dfs: getAlgorithm("dfs"),
@@ -21,7 +18,7 @@ const GRAPH_DESCRIPTORS = {
   dijkstra: getAlgorithm("dijkstra"),
 };
 
-const NODE_POS = {
+const BASE_POSITIONS = {
   A: { x: 80,  y: 60  },
   B: { x: 200, y: 60  },
   C: { x: 320, y: 60  },
@@ -30,6 +27,41 @@ const NODE_POS = {
   F: { x: 320, y: 160 },
   G: { x: 80,  y: 260 },
 };
+
+const MODES = [
+  { id: "select", label: "Select", hint: "Click a node to set the source, click an edge to edit it" },
+  { id: "add-node", label: "Place node", hint: "Click the canvas to place a new node" },
+  { id: "add-edge", label: "Connect", hint: "Click two nodes to connect them" },
+  { id: "delete", label: "Delete", hint: "Click a node or an edge to remove it" },
+];
+
+function positionsFor(graph) {
+  const positions = {};
+  for (const id of Object.keys(graph)) {
+    positions[id] = BASE_POSITIONS[id] || null;
+  }
+  return positions;
+}
+
+function ensurePositions(graph, positions) {
+  const next = { ...positions };
+  for (const id of Object.keys(graph)) {
+    if (!next[id]) next[id] = freeSpot(next);
+  }
+  return next;
+}
+
+function freeSpot(positions) {
+  const taken = Object.values(positions);
+  for (let y = 60; y <= 260; y += 66) {
+    for (let x = 60; x <= 340; x += 70) {
+      if (!taken.some((pt) => Math.abs(pt.x - x) < 45 && Math.abs(pt.y - y) < 45)) {
+        return { x, y };
+      }
+    }
+  }
+  return { x: 200 + (taken.length % 3) * 30, y: 60 };
+}
 
 export function GraphDebugger({ isDark }) {
   const p = getPalette(isDark ? "dark" : "light");
@@ -40,7 +72,16 @@ export function GraphDebugger({ isDark }) {
   const textMute = p.textSecondary;
 
   const [algoId, setAlgoId] = useState("dfs");
-  const [startNode, setStart] = useState("A");
+  const [graph, setGraph] = useState(() => createDefaultGraph());
+  const [positions, setPositions] = useState(() => positionsFor(createDefaultGraph()));
+  const [mode, setMode] = useState("select");
+  const [startNode, setStartNode] = useState("A");
+  const [pendingFrom, setPendingFrom] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null);
+  const [edgeFrom, setEdgeFrom] = useState("A");
+  const [edgeTo, setEdgeTo] = useState("B");
+  const [weightInput, setWeightInput] = useState("1");
+  const [notice, setNotice] = useState(null);
   const [steps, setSteps] = useState([]);
 
   const playback = usePlayback({ length: steps.length, initialSpeed: 600, onFinish: playVictory });
@@ -50,26 +91,162 @@ export function GraphDebugger({ isDark }) {
   const current   = steps[step] || null;
   const codeLines = descriptor.codeLines;
   const accentColor = descriptor.color;
+  const nodeIds = Object.keys(graph);
+
+  function setNoticeMsg(text, kind = "error") {
+    setNotice(text ? { text, kind } : null);
+  }
+
+  function applyMutation(fn, successMsg) {
+    try {
+      const next = fn(graph);
+      setGraph(next);
+      setPositions((prev) => ensurePositions(next, prev));
+      if (!next[startNode]) {
+        setStartNode(Object.keys(next)[0] || "");
+      }
+      setSteps([]);
+      playback.reset();
+      setSelectedEdge(null);
+      setPendingFrom(null);
+      setNoticeMsg(successMsg || null, "ok");
+    } catch (e) {
+      setNoticeMsg(e.message, "error");
+    }
+  }
 
   function generate() {
     playback.pause();
-    const s = descriptor.debug(DEFAULT_GRAPH, startNode);
-    setSteps(s);
-    playback.reset();
+    if (nodeIds.length === 0) {
+      setNoticeMsg("The graph is empty — add a node first.", "error");
+      return;
+    }
+    try {
+      const s = descriptor.debug(graph, startNode);
+      setSteps(s);
+      playback.reset();
+      setNoticeMsg(null);
+    } catch (e) {
+      setNoticeMsg(e.message, "error");
+    }
   }
 
   function selectAlgo(id) {
     setAlgoId(id);
     setSteps([]);
     playback.reset();
+    setNoticeMsg(null);
+  }
+
+  function handleAddNode() {
+    const id = nextNodeId(graph);
+    applyMutation((g) => addNode(g, id), `Node ${id} added`);
+  }
+
+  function handleAddEdge() {
+    const weight = parseFloat(weightInput);
+    applyMutation((g) => addEdge(g, edgeFrom, edgeTo, weight), `Edge ${edgeFrom} — ${edgeTo} added`);
+  }
+
+  function handleUpdateWeight() {
+    const weight = parseFloat(weightInput);
+    if (!edgeFrom || !edgeTo || edgeFrom === edgeTo) {
+      setNoticeMsg("Pick two different nodes to identify an edge.", "error");
+      return;
+    }
+    applyMutation((g) => setEdgeWeight(g, edgeFrom, edgeTo, weight), `Edge ${edgeFrom} — ${edgeTo} weight set to ${weight}`);
+  }
+
+  function handleRemoveEdge() {
+    if (!edgeFrom || !edgeTo || edgeFrom === edgeTo) {
+      setNoticeMsg("Pick two different nodes to identify an edge.", "error");
+      return;
+    }
+    applyMutation((g) => removeEdge(g, edgeFrom, edgeTo), `Edge ${edgeFrom} — ${edgeTo} removed`);
+  }
+
+  function handleReset() {
+    applyMutation((g) => createEmptyGraph(), "Graph cleared");
+    setPositions({});
+  }
+
+  function handleRestoreDefault() {
+    const restored = createDefaultGraph();
+    setGraph(restored);
+    setPositions(positionsFor(restored));
+    if (!restored[startNode]) setStartNode("A");
+    setSteps([]);
+    playback.reset();
+    setSelectedEdge(null);
+    setPendingFrom(null);
+    setNoticeMsg("Default example graph restored", "ok");
+  }
+
+  function handleNodeClick(id) {
+    if (mode === "add-edge") {
+      if (!pendingFrom) {
+        setPendingFrom(id);
+        setNoticeMsg(`Edge start: ${id} — click the target node.`, "ok");
+      } else if (id === pendingFrom) {
+        setPendingFrom(null);
+        setNoticeMsg(null);
+      } else {
+        const weight = parseFloat(weightInput);
+        const from = pendingFrom, to = id;
+        applyMutation((g) => addEdge(g, from, to, weight), `Edge ${from} — ${to} added`);
+      }
+      return;
+    }
+    if (mode === "delete") {
+      applyMutation((g) => removeNode(g, id), `Node ${id} removed`);
+      return;
+    }
+    setStartNode(id);
+    setNoticeMsg(`Source node: ${id}`, "ok");
+  }
+
+  function handleEdgeClick(from, to) {
+    if (mode === "delete") {
+      applyMutation((g) => removeEdge(g, from, to), `Edge ${from} — ${to} removed`);
+      return;
+    }
+    setSelectedEdge([from, to]);
+    setEdgeFrom(from);
+    setEdgeTo(to);
+    const entry = (graph[from] || []).find((e) => {
+      const norm = Array.isArray(e) ? e : [e, 1];
+      return norm[0] === to;
+    });
+    setWeightInput(String(Array.isArray(entry) ? entry[1] : 1));
+    setNoticeMsg(`Edge ${from} — ${to} selected`, "ok");
+  }
+
+  function handleCanvasClick(x, y) {
+    if (mode !== "add-node") return;
+    const id = nextNodeId(graph);
+    applyMutation((g) => addNode(g, id), `Node ${id} added`);
+    setPositions((prev) => ({ ...prev, [id]: { x, y } }));
   }
 
   const btnStyle = (active) => ({
     padding:"5px 14px", borderRadius:5, border:`1px solid ${active ? accentColor : border}`,
     background: active ? `${accentColor}18` : "transparent",
     color: active ? accentColor : textMute,
-    fontSize:10, cursor:"pointer", fontFamily:"monospace", transition:"all 0.15s",
+    fontSize:10, cursor:"pointer", transition:"all 0.15s",
   });
+
+  const smallBtn = {
+    padding:"5px 12px", borderRadius:7, border:`1px solid ${p.btnBorder}`,
+    background:"transparent", color:p.textPrimary, fontSize:12, fontWeight:500,
+    cursor:"pointer",
+  };
+
+  const selectStyle = {
+    background: p.inputBg, color: p.textPrimary, border: `1px solid ${p.borderStrong}`,
+    borderRadius: 6, padding: "4px 8px", fontSize: 12,
+  };
+
+  const modeHint = MODES.find((m) => m.id === mode)?.hint || "";
 
   return (
     <div>
@@ -78,9 +255,9 @@ export function GraphDebugger({ isDark }) {
       </div>
 
       {/* CONTROLS */}
-      <div className="glass-floating" style={{ borderRadius:14, padding:"12px 16px", marginBottom:14, display:"flex", gap:16, flexWrap:"wrap", alignItems:"flex-end" }}>
+      <div className="glass-floating" style={{ borderRadius:14, padding:"12px 16px", marginBottom:10, display:"flex", gap:16, flexWrap:"wrap", alignItems:"flex-end" }}>
         <div>
-          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>Algorithm</div>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
             {["dfs","bfs","dijkstra"].map((id) => (
               <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{GRAPH_DESCRIPTORS[id].name}</button>
@@ -89,16 +266,18 @@ export function GraphDebugger({ isDark }) {
         </div>
 
         <div>
-          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>Start node</div>
-          <div style={{ display:"flex", gap:4 }}>
-            {Object.keys(DEFAULT_GRAPH).map((n) => (
-              <button key={n} onClick={() => setStart(n)} aria-pressed={startNode===n} style={btnStyle(startNode===n)}>{n}</button>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Start node</div>
+          <div style={{ display:"flex", gap:4, flexWrap:"wrap", maxWidth:320 }}>
+            {nodeIds.map((n) => (
+              <button key={n} onClick={() => { setStartNode(n); setNoticeMsg(`Source node: ${n}`, "ok"); }}
+                aria-pressed={startNode===n} style={btnStyle(startNode===n)}>{n}</button>
             ))}
+            {nodeIds.length === 0 && <span style={{ fontSize:11, color:textMute }}>Empty graph</span>}
           </div>
         </div>
 
         <div>
-          <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:6 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>
             Speed: {playback.speed<300?"Fast":playback.speed<700?"Medium":"Slow"}
           </div>
           <input type="range" min={100} max={1000} aria-label="Playback speed"
@@ -129,6 +308,62 @@ export function GraphDebugger({ isDark }) {
         </div>
       </div>
 
+      {/* GRAPH EDITOR */}
+      <div className="glass-floating" style={{ borderRadius:14, padding:"12px 16px", marginBottom:10, display:"flex", gap:16, flexWrap:"wrap", alignItems:"flex-end" }}>
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Edit mode</div>
+          <div style={{ display:"flex", gap:5 }}>
+            {MODES.map((m) => (
+              <button key={m.id} onClick={() => { setMode(m.id); setPendingFrom(null); }} aria-pressed={mode===m.id}
+                title={m.hint} style={btnStyle(mode===m.id)}>{m.label}</button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Edge (weight)</div>
+          <div style={{ display:"flex", gap:5, alignItems:"center" }}>
+            <select aria-label="Edge source" value={edgeFrom} onChange={(e) => { setEdgeFrom(e.target.value); setSelectedEdge([e.target.value, edgeTo]); }} style={selectStyle}>
+              {nodeIds.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <span style={{ color:textMute, fontSize:12 }}>—</span>
+            <select aria-label="Edge target" value={edgeTo} onChange={(e) => { setEdgeTo(e.target.value); setSelectedEdge([edgeFrom, e.target.value]); }} style={selectStyle}>
+              {nodeIds.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <input aria-label="Edge weight" value={weightInput} onChange={(e) => setWeightInput(e.target.value)}
+              inputMode="decimal" style={{ width:56, background:p.inputBg, color:p.textPrimary,
+              border:`1px solid ${p.borderStrong}`, borderRadius:6, padding:"4px 8px", fontSize:12 }} />
+            <button onClick={handleAddEdge} style={smallBtn}>Add edge</button>
+            <button onClick={handleUpdateWeight} style={smallBtn}>Update weight</button>
+            <button onClick={handleRemoveEdge} style={{ ...smallBtn, color:p.red }}>Remove edge</button>
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Graph</div>
+          <div style={{ display:"flex", gap:5 }}>
+            <button onClick={handleAddNode} style={smallBtn}>Add node</button>
+            <button onClick={handleReset} style={{ ...smallBtn, color:p.red }}>Clear</button>
+            <button onClick={handleRestoreDefault} style={smallBtn}>Restore default</button>
+          </div>
+        </div>
+
+        <div style={{ marginLeft:"auto", fontSize:11, color:textMute, maxWidth:260, paddingBottom:2 }}>
+          {modeHint}
+        </div>
+      </div>
+
+      {notice && (
+        <div role="status" className="popover-in" style={{
+          marginBottom:10, padding:"8px 12px", borderRadius:8, fontSize:12,
+          background: notice.kind === "error" ? "rgba(255, 59, 48, 0.09)" : "rgba(48, 209, 88, 0.09)",
+          boxShadow: `inset 0 0 0 1px ${notice.kind === "error" ? p.red : p.green}55`,
+          color: notice.kind === "error" ? p.red : p.green,
+        }}>
+          {notice.text}
+        </div>
+      )}
+
       {/* PROGRESS */}
       {steps.length > 0 && (
         <>
@@ -145,21 +380,31 @@ export function GraphDebugger({ isDark }) {
         </>
       )}
 
-      {steps.length === 0 ? (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"40vh", gap:12, opacity:0.3 }}>
-          <div style={{ fontSize:42 }}>🕸️</div>
-          <div style={{ fontSize:11, color:textMute, letterSpacing:2 }}>SELECT ALGORITHM AND CLICK GENERATE</div>
-        </div>
-      ) : (
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+      <div style={{ display:"grid", gridTemplateColumns: steps.length > 0 ? "1fr 1fr" : "minmax(0, 460px)", gap:12, alignItems:"start" }}>
 
-          {/* LEFT — Graph + Visit Order */}
+          {/* LEFT — Graph (always visible for editing) + Visit Order */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
             <div className="surface-card" style={{ borderRadius:12, padding:"14px" }}>
-              <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Graph</div>
-              <GraphSVG graph={DEFAULT_GRAPH} step={current} isDark={isDark} stackLabel={algoId === "dijkstra" ? "In queue" : "In Stack"} />
+              <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>
+                Graph{nodeIds.length > 0 && <span style={{ fontWeight:400, color:textMute }}> — {nodeIds.length} nodes, {Math.round(Object.values(graph).flat().length / 2)} edges</span>}
+              </div>
+              <GraphSVG
+                graph={graph}
+                positions={positions}
+                step={current}
+                isDark={isDark}
+                stackLabel={algoId === "dijkstra" ? "In queue" : "In Stack"}
+                mode={mode}
+                sourceNode={startNode}
+                selectedNode={mode === "add-edge" ? pendingFrom : null}
+                selectedEdge={mode === "select" ? selectedEdge : null}
+                onNodeClick={handleNodeClick}
+                onEdgeClick={handleEdgeClick}
+                onCanvasClick={handleCanvasClick}
+              />
             </div>
 
+            {steps.length > 0 && (
             <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
               <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Visit order</div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
@@ -177,14 +422,22 @@ export function GraphDebugger({ isDark }) {
                 {(!current?.visitOrder?.length) && <span style={{ color:textMute, fontSize:11 }}>Not started yet...</span>}
               </div>
             </div>
+            )}
           </div>
 
-          {/* RIGHT — Code + Stack/Queue + Variables */}
+          {/* RIGHT — execution panels, or guidance before the first run */}
+          {steps.length === 0 ? (
+            <div className="surface-card panel-in" style={{ borderRadius:12, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, minHeight:300 }}>
+              <div style={{ fontSize:30, opacity:0.45 }} aria-hidden="true">🕸️</div>
+              <div style={{ fontSize:13, color:textMute }}>Select an algorithm and click Generate</div>
+              <div style={{ fontSize:11, color:textMute }}>…or build a graph with the editor and watch it come alive.</div>
+            </div>
+          ) : (
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
 
             <div className="editor-surface" style={{ borderRadius:12, overflow:"hidden" }}>
               <div style={{ padding:"8px 12px", borderBottom:`1px solid ${border}`, display:"flex", justifyContent:"space-between" }}>
-                <span style={{ fontSize:9, color:accentColor, letterSpacing:2, fontFamily:"monospace" }}>{descriptor.name}.JS</span>
+                <span style={{ fontSize:9, color:accentColor, letterSpacing:2, fontFamily:"monospace" }}>{descriptor.name.replace(/ /g, "_").toLowerCase()}.js</span>
                 <span style={{ fontSize:9, color:textMute, fontFamily:"monospace" }}>line {(current?.activeLine||0)+1}</span>
               </div>
               <div style={{ padding:"8px 0" }}>
@@ -275,22 +528,27 @@ export function GraphDebugger({ isDark }) {
               </div>
             )}
           </div>
+          )}
         </div>
-      )}
     </div>
   );
 }
 
-function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
-  if (!step) return null;
+function GraphSVG({
+  graph, positions, step, isDark, stackLabel = "In Stack",
+  mode = "select", sourceNode = null, selectedNode = null, selectedEdge = null,
+  onNodeClick, onEdgeClick, onCanvasClick,
+}) {
+  const p = getPalette(isDark ? "dark" : "light");
+  const nodeIds = Object.keys(graph);
   const {
     visited, current, callStack, heap, distances, previous,
     currentEdge, relaxedEdge, complete,
-  } = step;
-  const p = getPalette(isDark ? "dark" : "light");
+  } = step || {};
 
   const { adjacency } = normalizeGraph(graph);
   const weighted = isWeightedGraph(graph);
+  const nodeCursor = mode === "add-node" ? "copy" : mode === "delete" ? "not-allowed" : onNodeClick ? "pointer" : "default";
 
   const edges = [];
   const seen = new Set();
@@ -299,7 +557,7 @@ function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
       const key = edgeKey(node, to);
       if (seen.has(key)) return;
       seen.add(key);
-      const a = NODE_POS[node], b = NODE_POS[to];
+      const a = positions[node], b = positions[to];
       if (a && b) edges.push({ key, from: node, to, weight, a, b });
     });
   });
@@ -313,9 +571,11 @@ function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
 
   const edgeStyle = (e) => {
     const key = edgeKey(e.from, e.to);
+    const isSelected = selectedEdge && edgeKey(selectedEdge[0], selectedEdge[1]) === key;
     const isCurrent = currentEdge && edgeKey(currentEdge[0], currentEdge[1]) === key;
     const isRelaxed = relaxedEdge && edgeKey(relaxedEdge[0], relaxedEdge[1]) === key;
     const isTree = complete && treeKeys.has(key);
+    if (isSelected) return { stroke: p.accent, strokeWidth: 3.5 };
     if (isCurrent) return { stroke: p.accent, strokeWidth: 3.2 };
     if (isRelaxed) return { stroke: p.green, strokeWidth: 3 };
     if (isTree) return { stroke: p.green, strokeWidth: 2.5, opacity: 0.9 };
@@ -323,19 +583,45 @@ function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
   };
 
   return (
-    <svg viewBox="0 0 400 330" style={{ width:"100%", maxWidth:420 }} role="img" aria-label="Graph algorithm visualization">
+    <svg
+      viewBox="0 0 400 330"
+      style={{ width:"100%", maxWidth:420, border:`1px solid ${p.border}`, borderRadius:10, background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)", cursor: mode === "add-node" ? "copy" : "default" }}
+      role="img" aria-label="Graph playground"
+      onClick={(evt) => {
+        if (evt.target.tagName === "rect" && onCanvasClick) {
+          const rect = evt.currentTarget.getBoundingClientRect();
+          const x = Math.round(((evt.clientX - rect.left) / rect.width) * 400);
+          const y = Math.round(((evt.clientY - rect.top) / rect.height) * 330);
+          onCanvasClick(x, y);
+        }
+      }}
+    >
+      <rect x="0" y="0" width="400" height="330" fill="transparent" />
+
+      {nodeIds.length === 0 && (
+        <text x="200" y="160" textAnchor="middle" fontSize="12" fill={p.textFaint} pointerEvents="none">
+          Empty graph — add a node to begin
+        </text>
+      )}
+
       {edges.map(e => {
         const style = edgeStyle(e);
+        const clickable = Boolean(onEdgeClick) && (mode === "select" || mode === "delete");
         return (
           <g key={e.key}>
             <line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y}
+              stroke="transparent" strokeWidth="14" strokeLinecap="round"
+              style={{ cursor: clickable ? "pointer" : "default" }}
+              onClick={clickable ? () => onEdgeClick(e.from, e.to) : undefined} />
+            <line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y}
               stroke={style.stroke} strokeWidth={style.strokeWidth} opacity={style.opacity ?? 1}
-              strokeLinecap="round" style={{ transition: "stroke 0.2s, stroke-width 0.2s" }} />
+              strokeLinecap="round" pointerEvents="none"
+              style={{ transition: "stroke 0.2s, stroke-width 0.2s" }} />
             {weighted && (
               <text
                 x={(e.a.x + e.b.x) / 2} y={(e.a.y + e.b.y) / 2 - 5}
                 textAnchor="middle" fontSize={9} fontFamily="monospace"
-                fill={p.textSecondary}
+                fill={p.textSecondary} pointerEvents="none"
               >
                 {e.weight}
               </text>
@@ -344,18 +630,22 @@ function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
         );
       })}
 
-      {Object.entries(NODE_POS).map(([node, pos]) => {
+      {nodeIds.map((node) => {
+        const pos = positions[node] || { x: 200, y: 160 };
         const isCurrent  = node === current;
         const isVisited  = visited?.has(node);
         const isInQueue  = heap?.includes(node);
         const isInStack  = isInQueue || callStack?.includes(node);
+        const isSelected = node === selectedNode;
+        const isSource   = node === sourceNode;
 
         const fill = isCurrent  ? p.accent
                    : isInStack  ? p.purple
                    : isVisited  ? p.green
                    : (isDark ? "#2c2c30" : "#e8e8ed");
 
-        const stroke = isCurrent ? p.accent
+        const stroke = isSelected ? p.accent
+                     : isCurrent ? p.accent
                      : isInStack ? p.purple
                      : isVisited ? p.green
                      : (isDark ? "#55555c" : "#9a9aa2");
@@ -365,17 +655,30 @@ function GraphSVG({ graph, step, isDark, stackLabel = "In Stack" }) {
 
         return (
           <g key={node}>
+            {isSource && (
+              <circle cx={pos.x} cy={pos.y} r={27} fill="transparent"
+                stroke={p.accent} strokeWidth="1.2" strokeDasharray="3 3" opacity={0.8} />
+            )}
+            {isSelected && (
+              <circle cx={pos.x} cy={pos.y} r={27} fill="transparent"
+                stroke={p.accent} strokeWidth="1.5" opacity={0.9} />
+            )}
             <circle cx={pos.x} cy={pos.y} r={22}
-              fill={fill} stroke={stroke} strokeWidth={isCurrent ? 3 : 1.5}
-              style={{ filter: isCurrent ? `drop-shadow(0 0 8px ${p.accent})` : "none", transition:"all 0.2s" }}
+              fill={fill} stroke={stroke} strokeWidth={isCurrent || isSelected ? 3 : 1.5}
+              style={{
+                filter: isCurrent ? `drop-shadow(0 0 8px ${p.accent})` : "none",
+                transition:"all 0.2s",
+                cursor: onNodeClick ? nodeCursor : "default",
+              }}
+              onClick={onNodeClick ? (evt) => { evt.stopPropagation(); onNodeClick(node); } : undefined}
             />
-            <text x={pos.x} y={pos.y + 5} textAnchor="middle"
+            <text x={pos.x} y={pos.y + 5} textAnchor="middle" pointerEvents="none"
               fontSize={14} fontWeight="bold" fontFamily="monospace"
               fill={isCurrent || isVisited || isInStack ? "#0f172a" : (isDark ? "#9a9aa2" : "#55555c")}>
               {node}
             </text>
             {distances && (
-              <text x={pos.x} y={pos.y + 38} textAnchor="middle"
+              <text x={pos.x} y={pos.y + 38} textAnchor="middle" pointerEvents="none"
                 fontSize={10.5} fontWeight="bold" fontFamily="monospace"
                 fill={isCurrent ? p.accent : distLabel === "∞" ? p.red : p.textSecondary}>
                 {distLabel}

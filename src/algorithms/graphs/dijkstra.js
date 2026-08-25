@@ -23,6 +23,16 @@ export function dijkstra(graph, start) {
     throw new Error(`Unknown start node: ${start}`);
   }
 
+  for (const [node, nbs] of Object.entries(adjacency)) {
+    for (const { to, weight } of nbs) {
+      if (weight < 0) {
+        throw new Error(
+          `Dijkstra does not support negative weights (edge ${node} → ${to}: ${weight})`
+        );
+      }
+    }
+  }
+
   const collector = createEventCollector();
   const { emit, events } = collector;
 
