@@ -2,6 +2,22 @@ import { bfsDebug } from './bfs';
 import { dfsDebug } from './dfs';
 import { dijkstraDebug } from './dijkstraDebug';
 import { bellmanFordDebug } from './bellmanFordDebug';
+import { floydWarshallDebug } from './floydWarshallDebug';
+
+export const GRAPH_FLOYD_WARSHALL_CODE_LINES = [
+  { n: 0, code: "function floydWarshall(graph) {" },
+  { n: 1, code: "  nodes = all nodes" },
+  { n: 2, code: "  D[i][j] = w(i,j) | 0 if i = j | ∞" },
+  { n: 3, code: "  next[i][j] = j for each edge" },
+  { n: 4, code: "  for k in nodes:  ← intermediate" },
+  { n: 5, code: "    for i in nodes:" },
+  { n: 6, code: "      for j in nodes:" },
+  { n: 7, code: "        cand = D[i][k] + D[k][j]" },
+  { n: 8, code: "        if cand < D[i][j]:" },
+  { n: 9, code: "          D[i][j] = cand;  next[i][j] = next[i][k]" },
+  { n: 10, code: "  for i: if D[i][i] < 0 → negative cycle" },
+  { n: 11, code: "}  ← all-pairs matrix complete" },
+];
 
 export const GRAPH_BELLMAN_FORD_CODE_LINES = [
   { n: 0, code: "function bellmanFord(graph, start) {" },
@@ -151,6 +167,41 @@ export const graphDescriptors = [
       report reachable negative cycle
   ← done`,
     codeLines: GRAPH_BELLMAN_FORD_CODE_LINES,
+  },
+  {
+    id: "floyd-warshall",
+    name: "Floyd-Warshall",
+    category: "graphs",
+    color: "#64d2ff",
+    complexity: {
+      best: "O(V³)",
+      average: "O(V³)",
+      worst: "O(V³) — plus O(V) cycle check",
+      space: "O(V²)",
+      paradigm: "Dynamic Programming / All-Pairs Shortest Paths",
+    },
+    run: null,
+    steps: null,
+    debug: (graph) => floydWarshallDebug(graph),
+    pseudocode: `FloydWarshall(graph):
+  nodes = all nodes
+  D[i][j] = weight of edge i → j
+  D[i][i] = 0;  D[i][j] = ∞ if no edge
+  next[i][j] = j for each edge
+
+  for k in nodes:                 (intermediate)
+    for i in nodes:
+      for j in nodes:
+        cand = D[i][k] + D[k][j]
+        if cand < D[i][j]:
+          D[i][j] = cand
+          next[i][j] = next[i][k]
+
+  for i in nodes:
+    if D[i][i] < 0:
+      report negative cycle through i
+  ← all-pairs matrix complete`,
+    codeLines: GRAPH_FLOYD_WARSHALL_CODE_LINES,
   },
   {
     id: "bfs",

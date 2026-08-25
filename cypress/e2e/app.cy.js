@@ -225,6 +225,53 @@ describe("Algo App", () => {
     cy.contains(/Step 1 \//i).should("be.visible");
   });
 
+  it("floyd-warshall: no source needed, matrix updates, negative cycle, restore", () => {
+    cy.contains("button", "Graphs").click();
+    cy.contains("button", "Floyd-Warshall").click();
+
+    cy.contains("Start node").should("not.exist");
+
+    cy.contains("button", "Clear").click();
+    cy.contains("button", "Add node").click().click().click().click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("B");
+    cy.get('input[aria-label="Edge weight"]').clear().type("4");
+    cy.contains("button", "Add edge").click();
+    cy.get('select[aria-label="Edge source"]').select("B");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("1");
+    cy.contains("button", "Add edge").click();
+    cy.get('select[aria-label="Edge source"]').select("A");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("10");
+    cy.contains("button", "Add edge").click();
+
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("be.visible");
+    cy.contains("Distance matrix").scrollIntoView().should("be.visible");
+
+    cy.get('button[aria-label="Last step"]').click();
+    cy.contains("Distance matrix").should("be.visible");
+    cy.get("table").should("contain.text", "5");
+
+    cy.contains("button", "Update weight").scrollIntoView().should("be.visible");
+    cy.get('select[aria-label="Edge source"]').select("B");
+    cy.get('select[aria-label="Edge target"]').select("C");
+    cy.get('input[aria-label="Edge weight"]').clear().type("-1");
+    cy.contains("button", "Update weight").click();
+    cy.contains(/weight set to -1/i).should("exist");
+
+    cy.contains("button", "GENERATE").click();
+    cy.get('button[aria-label="Last step"]').click();
+    cy.get('[role="alert"]').should("contain.text", "Negative cycle");
+    cy.get("table").should("contain.text", "∞");
+
+    cy.contains("button", "Restore default").click();
+    cy.contains(/Default example graph restored/i).should("exist");
+    cy.contains("button", "GENERATE").click();
+    cy.contains(/Step 1 \//i).should("be.visible");
+  });
+
   it("groups metric radios so arrow keys move the selection", () => {
     cy.get('input[type="radio"][name="sort-metric"]')
       .first()

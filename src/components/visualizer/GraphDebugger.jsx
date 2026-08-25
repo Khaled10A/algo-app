@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getAlgorithm } from "../../algorithms/registry";
+import MatrixView from "./MatrixView";
 import {
   normalizeGraph, isWeightedGraph, edgeKey,
   createDefaultGraph, createEmptyGraph,
@@ -17,6 +18,7 @@ const GRAPH_DESCRIPTORS = {
   bfs: getAlgorithm("bfs"),
   dijkstra: getAlgorithm("dijkstra"),
   "bellman-ford": getAlgorithm("bellman-ford"),
+  "floyd-warshall": getAlgorithm("floyd-warshall"),
 };
 
 const BASE_POSITIONS = {
@@ -121,6 +123,9 @@ export function GraphDebugger({ isDark }) {
     if (nodeIds.length === 0) {
       setNoticeMsg("The graph is empty — add a node first.", "error");
       return;
+    }
+    if (algoId === "floyd-warshall") {
+      setStartNode("");
     }
     try {
       const s = descriptor.debug(graph, startNode);
@@ -260,13 +265,13 @@ export function GraphDebugger({ isDark }) {
         <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Algorithm</div>
           <div style={{ display:"flex", gap:5 }}>
-            {["dfs","bfs","dijkstra","bellman-ford"].map((id) => (
+            {["dfs","bfs","dijkstra","bellman-ford","floyd-warshall"].map((id) => (
               <button key={id} onClick={() => selectAlgo(id)} aria-pressed={algoId===id} style={btnStyle(algoId===id)}>{GRAPH_DESCRIPTORS[id].name}</button>
             ))}
           </div>
         </div>
 
-        <div>
+        {algoId !== "floyd-warshall" && <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>Start node</div>
           <div style={{ display:"flex", gap:4, flexWrap:"wrap", maxWidth:320 }}>
             {nodeIds.map((n) => (
@@ -275,7 +280,7 @@ export function GraphDebugger({ isDark }) {
             ))}
             {nodeIds.length === 0 && <span style={{ fontSize:11, color:textMute }}>Empty graph</span>}
           </div>
-        </div>
+        </div>}
 
         <div>
           <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:6 }}>
@@ -322,7 +327,9 @@ export function GraphDebugger({ isDark }) {
           boxShadow: `inset 0 0 0 1px ${p.red}55`,
           color: p.red,
         }}>
-          ⚠ Negative cycle detected via {current.negativeCycleEdge?.join(" → ")} — shortest distances are not well-defined for affected nodes.
+          ⚠ {algoId === "floyd-warshall"
+            ? `Negative cycle detected through ${(current.negativeCycleNodes || []).join(", ")} — shortest distances are not well-defined.`
+            : `Negative cycle detected via ${current.negativeCycleEdge?.join(" → ")} — shortest distances are not well-defined for affected nodes.`}
         </div>
       )}
 
@@ -400,8 +407,24 @@ export function GraphDebugger({ isDark }) {
 
       <div style={{ display:"grid", gridTemplateColumns: steps.length > 0 ? "1fr 1fr" : "minmax(0, 460px)", gap:12, alignItems:"start" }}>
 
-          {/* LEFT — Graph (always visible for editing) + Visit Order */}
+          {/* LEFT — Matrix (FW primary) + Graph (always visible for editing) + Visit Order */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            {algoId === "floyd-warshall" && steps.length > 0 && (
+              <div className="surface-card" style={{ borderRadius:12, padding:"16px 14px" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:10, display:"flex", justifyContent:"space-between" }}>
+                  <span>Distance matrix</span>
+                  {current && current.kNode && <span style={{ color:accentColor }}>via {current.kNode}</span>}
+                </div>
+                <MatrixView
+                  nodes={current.nodes}
+                  matrix={current.matrix}
+                  kNode={current.kNode}
+                  i={current.i}
+                  j={current.j}
+                  isDark={isDark}
+                />
+              </div>
+            )}
             <div className="surface-card" style={{ borderRadius:12, padding:"14px" }}>
               <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>
                 Graph{nodeIds.length > 0 && <span style={{ fontWeight:400, color:textMute }}> — {nodeIds.length} nodes, {Math.round(Object.values(graph).flat().length / 2)} edges</span>}
@@ -413,7 +436,8 @@ export function GraphDebugger({ isDark }) {
                 isDark={isDark}
                 stackLabel={algoId === "dijkstra" ? "In queue" : algoId === "bellman-ford" ? "Updated" : "In Stack"}
                 mode={mode}
-                sourceNode={startNode}
+                sourceNode={algoId === "floyd-warshall" ? null : startNode}
+                fwStep={algoId === "floyd-warshall" ? current : null}
                 selectedNode={mode === "add-edge" ? pendingFrom : null}
                 selectedEdge={mode === "select" ? selectedEdge : null}
                 onNodeClick={handleNodeClick}
@@ -422,7 +446,7 @@ export function GraphDebugger({ isDark }) {
               />
             </div>
 
-            {steps.length > 0 && (
+            {steps.length > 0 && algoId !== "floyd-warshall" && (
             <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
               <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Visit order</div>
               <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
@@ -476,7 +500,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId !== "bellman-ford" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
+            {algoId !== "bellman-ford" && algoId !== "floyd-warshall" && <div style={{ background:cardBg, border:`1px solid ${border}`, borderRadius:10, padding:"12px 14px" }}>
               <div style={{ fontSize:8, color:textMute, letterSpacing:2, marginBottom:8 }}>
                 {algoId === "dfs" ? "Call stack" : algoId === "dijkstra" ? "Priority queue" : "Queue"}
               </div>
@@ -547,7 +571,7 @@ export function GraphDebugger({ isDark }) {
               </div>
             </div>
 
-            {algoId !== "dfs" && current?.distances && (
+            {algoId !== "dfs" && algoId !== "floyd-warshall" && current?.distances && (
               <div className="glass-floating" style={{ borderRadius:12, padding:"13px 14px" }}>
                 <div style={{ fontSize:11, fontWeight:600, color:textMute, marginBottom:8 }}>Distances</div>
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
@@ -575,7 +599,7 @@ export function GraphDebugger({ isDark }) {
 function GraphSVG({
   graph, positions, step, isDark, stackLabel = "In Stack",
   mode = "select", sourceNode = null, selectedNode = null, selectedEdge = null,
-  onNodeClick, onEdgeClick, onCanvasClick,
+  onNodeClick, onEdgeClick, onCanvasClick, fwStep = null,
 }) {
   const p = getPalette(isDark ? "dark" : "light");
   const nodeIds = Object.keys(graph);
@@ -617,6 +641,12 @@ function GraphSVG({
     if (isCurrent) return { stroke: p.accent, strokeWidth: 3.2 };
     if (isRelaxed) return { stroke: p.green, strokeWidth: 3 };
     if (isTree) return { stroke: p.green, strokeWidth: 2.5, opacity: 0.9 };
+    if (fwStep && fwStep.pair) {
+      const { i, j, kNode } = fwStep;
+      const ik = edgeKey(i, kNode) === key;
+      const kj = edgeKey(kNode, j) === key;
+      if (ik || kj) return { stroke: p.accent, strokeWidth: 3 };
+    }
     return { stroke: isDark ? "#3a3a3e" : "#c8c8cd", strokeWidth: 2 };
   };
 
@@ -693,6 +723,14 @@ function GraphSVG({
 
         return (
           <g key={node}>
+            {fwStep && node === fwStep.kNode && (
+              <circle cx={pos.x} cy={pos.y} r={27} fill="transparent"
+                stroke={p.purple} strokeWidth="1.6" strokeDasharray="3 3" opacity={0.9} />
+            )}
+            {fwStep && (node === fwStep.i || node === fwStep.j) && (
+              <circle cx={pos.x} cy={pos.y} r={27} fill="transparent"
+                stroke={p.accent} strokeWidth="1.6" opacity={0.9} />
+            )}
             {isSource && (
               <circle cx={pos.x} cy={pos.y} r={27} fill="transparent"
                 stroke={p.accent} strokeWidth="1.2" strokeDasharray="3 3" opacity={0.8} />
