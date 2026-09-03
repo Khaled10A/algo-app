@@ -7,19 +7,26 @@ const LANDING_URL = "http://localhost:4173/index.html";
 
 describe("Landing page", () => {
   before(() => {
-    cy.request({ url: LANDING_URL, failOnStatusCode: false, timeout: 2000 })
-      .then(
-        (resp) => {
-          if (!resp || resp.status !== 200) {
-            cy.log("Landing dev server not running — skipping suite (start: cd landing && python3 -m http.server 4173)");
-            Cypress.skip();
-          }
-        },
-        () => {
-          cy.log("Landing dev server not running — skipping suite (start: cd landing && python3 -m http.server 4173)");
+    cy.request({
+      url: LANDING_URL,
+      failOnStatusCode: false,
+      timeout: 2000,
+    }).then(
+      (resp) => {
+        if (!resp || resp.status !== 200) {
+          cy.log(
+            "Landing dev server not running — skipping suite (start: cd landing && python3 -m http.server 4173)",
+          );
           Cypress.skip();
         }
-      );
+      },
+      () => {
+        cy.log(
+          "Landing dev server not running — skipping suite (start: cd landing && python3 -m http.server 4173)",
+        );
+        Cypress.skip();
+      },
+    );
   });
 
   beforeEach(() => {
@@ -31,7 +38,7 @@ describe("Landing page", () => {
     cy.get(".bg-video source").should(
       "have.attr",
       "src",
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260809_012548_ef22562c-c0ae-4816-ad9d-f8922af4e6a7.mp4"
+      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260809_012548_ef22562c-c0ae-4816-ad9d-f8922af4e6a7.mp4",
     );
     cy.get(".headline-line.l1").should("have.text", "Intelligence");
     cy.get(".headline-line.l2").should("have.text", "Designed To Evolve");

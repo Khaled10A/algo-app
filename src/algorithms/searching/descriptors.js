@@ -1,10 +1,10 @@
-import { bruteForceSearch } from './bruteForce';
-import { horspoolSearch } from './horspool';
-import { kmpSearch } from './kmp';
-import { bruteForceDebug } from './bruteForceDebug';
-import { horspoolDebug } from './horspoolDebug';
-import { kmpDebug } from './kmpDebug';
-import { binarySearchDebug } from './binarySearch';
+import { bruteForceSearch } from "./bruteForce";
+import { horspoolSearch } from "./horspool";
+import { kmpSearch } from "./kmp";
+import { bruteForceDebug } from "./bruteForceDebug";
+import { horspoolDebug } from "./horspoolDebug";
+import { kmpDebug } from "./kmpDebug";
+import { binarySearchDebug } from "./binarySearch";
 
 export const BRUTE_FORCE_CODE_LINES = [
   { n: 0, code: "function bruteForceSearch(text, pattern) {" },
@@ -29,16 +29,16 @@ export const HORSPOOL_CODE_LINES = [
 ];
 
 export const KMP_CODE_LINES = [
-  { n: 0,  code: "function kmpSearch(text, pattern) {" },
-  { n: 1,  code: "  Phase 1 — build LPS: pi=1, len=0" },
-  { n: 2,  code: "    if pattern[pi]==pattern[len]: lps[pi++]=++len" },
-  { n: 3,  code: "    elif len > 0: len = lps[len-1]" },
-  { n: 4,  code: "    else: lps[pi++] = 0" },
-  { n: 5,  code: "  LPS table ready" },
-  { n: 6,  code: "  Phase 2 — search: i=0, j=0" },
-  { n: 7,  code: "  while (i < n): compare text[i] vs pattern[j]" },
-  { n: 8,  code: "    match → i++, j++" },
-  { n: 9,  code: "    if j == m: report match at i-j; j = lps[j-1]" },
+  { n: 0, code: "function kmpSearch(text, pattern) {" },
+  { n: 1, code: "  Phase 1 — build LPS: pi=1, len=0" },
+  { n: 2, code: "    if pattern[pi]==pattern[len]: lps[pi++]=++len" },
+  { n: 3, code: "    elif len > 0: len = lps[len-1]" },
+  { n: 4, code: "    else: lps[pi++] = 0" },
+  { n: 5, code: "  LPS table ready" },
+  { n: 6, code: "  Phase 2 — search: i=0, j=0" },
+  { n: 7, code: "  while (i < n): compare text[i] vs pattern[j]" },
+  { n: 8, code: "    match → i++, j++" },
+  { n: 9, code: "    if j == m: report match at i-j; j = lps[j-1]" },
   { n: 10, code: "    elif mismatch & j > 0: j = lps[j-1]" },
   { n: 11, code: "    else: i++" },
   { n: 12, code: "}" },

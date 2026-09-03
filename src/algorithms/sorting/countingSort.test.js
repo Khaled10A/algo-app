@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { countingSort, countingSortEvents } from "./countingSort";
 import { countingSortDebug, COUNTING_SORT_LINE_MAP } from "./countingSortDebug";
 import { COUNTING_SORT_CODE_LINES } from "./countingSort";
-import { projectSortingEvents } from "./sortingSteps";
 
 const REFERENCE = (a) => [...a].sort((x, y) => x - y);
 
@@ -15,7 +14,10 @@ describe("countingSort - correctness", () => {
     ["duplicates", [2, 2, 2, 1, 1, 3, 3]],
     ["negative values", [-3, -1, -2, -1]],
     ["mixed positive/negative", [5, -1, 3, 0, -4, 12]],
-    ["large random array", Array.from({ length: 200 }, () => Math.floor(Math.random() * 200) - 100)],
+    [
+      "large random array",
+      Array.from({ length: 200 }, () => Math.floor(Math.random() * 200) - 100),
+    ],
   ])("sorts %s correctly", (_name, input) => {
     const original = [...input];
     const { sorted, comparisons } = countingSort(input);
@@ -69,7 +71,12 @@ describe("countingSort - event model", () => {
     const { events } = countingSortEvents([5, 3, 5]);
     const counts = events.filter((e) => e.type === "count-update");
     expect(counts).toHaveLength(3);
-    expect(counts[0]).toMatchObject({ inputIndex: 0, value: 5, countIndex: 2, count: 1 });
+    expect(counts[0]).toMatchObject({
+      inputIndex: 0,
+      value: 5,
+      countIndex: 2,
+      count: 1,
+    });
   });
 
   it("emits count-complete after all count-updates", () => {

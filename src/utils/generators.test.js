@@ -63,6 +63,6 @@ describe("generateText", () => {
         const text = generateText(120, pattern, "nomatch");
         expect(countOccurrences(text, pattern)).toBe(0);
       }
-    }
+    },
   );
 });

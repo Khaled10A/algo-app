@@ -26,7 +26,7 @@ export function normalizeGraph(graph) {
 
 export function isWeightedGraph(graph) {
   return Object.values(graph || {}).some((nbs) =>
-    (nbs || []).some((e) => Array.isArray(e))
+    (nbs || []).some((e) => Array.isArray(e)),
   );
 }
 
@@ -38,12 +38,32 @@ export function edgeKey(a, b) {
 /* ── Editing operations ───────────────────────────────────────── */
 
 export const DEFAULT_GRAPH = {
-  A: [["B", 4], ["D", 2]],
-  B: [["A", 4], ["C", 5], ["E", 10]],
-  C: [["B", 5], ["F", 3]],
-  D: [["A", 2], ["E", 7]],
-  E: [["B", 10], ["D", 7], ["F", 4]],
-  F: [["C", 3], ["E", 4]],
+  A: [
+    ["B", 4],
+    ["D", 2],
+  ],
+  B: [
+    ["A", 4],
+    ["C", 5],
+    ["E", 10],
+  ],
+  C: [
+    ["B", 5],
+    ["F", 3],
+  ],
+  D: [
+    ["A", 2],
+    ["E", 7],
+  ],
+  E: [
+    ["B", 10],
+    ["D", 7],
+    ["F", 4],
+  ],
+  F: [
+    ["C", 3],
+    ["E", 4],
+  ],
   G: [["D", 3]],
 };
 
@@ -64,7 +84,9 @@ function assertValidId(id) {
 
 function assertWeight(weight) {
   if (typeof weight !== "number" || !Number.isFinite(weight)) {
-    throw new Error(`Invalid weight: ${String(weight)} — enter a finite number`);
+    throw new Error(
+      `Invalid weight: ${String(weight)} — enter a finite number`,
+    );
   }
 }
 
@@ -100,7 +122,9 @@ export function addEdge(graph, from, to, weight) {
   if (!(to in graph)) throw new Error(`Node "${to}" does not exist`);
   if (from === to) throw new Error("Self-loops are not supported");
   if (hasEdge(graph, from, to)) {
-    throw new Error(`Edge ${from} — ${to} already exists (edit its weight instead)`);
+    throw new Error(
+      `Edge ${from} — ${to} already exists (edit its weight instead)`,
+    );
   }
   assertWeight(weight);
   const next = { ...graph };
@@ -115,7 +139,8 @@ export function removeEdge(graph, from, to) {
   if (!hasEdge(graph, from, to)) {
     throw new Error(`Edge ${from} — ${to} does not exist`);
   }
-  const removeFrom = (nbs, target) => nbs.filter((e) => normalizeEdge(e).to !== target);
+  const removeFrom = (nbs, target) =>
+    nbs.filter((e) => normalizeEdge(e).to !== target);
   const next = { ...graph };
   if (next[from]) next[from] = removeFrom(next[from], to);
   if (next[to]) next[to] = removeFrom(next[to], from);

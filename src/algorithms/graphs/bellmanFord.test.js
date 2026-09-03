@@ -5,7 +5,10 @@ import { GRAPH_BELLMAN_FORD_CODE_LINES } from "./descriptors";
 import { dijkstra } from "./dijkstra";
 
 const TASK_EXAMPLE = {
-  A: [["B", 4], ["C", 5]],
+  A: [
+    ["B", 4],
+    ["C", 5],
+  ],
   C: [["B", -3]],
   B: [],
 };
@@ -13,7 +16,10 @@ const TASK_EXAMPLE = {
 describe("bellmanFord — correctness", () => {
   it("matches Dijkstra on a normal positive-weight graph", () => {
     const graph = {
-      A: [["B", 4], ["D", 2]],
+      A: [
+        ["B", 4],
+        ["D", 2],
+      ],
       B: [["C", 5]],
       D: [["B", 1]],
       C: [],
@@ -34,7 +40,10 @@ describe("bellmanFord — correctness", () => {
 
   it("requires multiple relaxation passes for cascading improvements", () => {
     const graph = {
-      A: [["B", 5], ["C", 2]],
+      A: [
+        ["B", 5],
+        ["C", 2],
+      ],
       C: [["B", -2]],
       B: [],
     };
@@ -43,15 +52,21 @@ describe("bellmanFord — correctness", () => {
     const passes = events.filter((e) => e.type === "pass-start");
     expect(passes.length).toBeGreaterThanOrEqual(2);
     const bRelaxes = events.filter(
-      (e) => e.type === "relax-edge" && e.to === "B"
+      (e) => e.type === "relax-edge" && e.to === "B",
     );
     expect(bRelaxes.length).toBeGreaterThanOrEqual(2);
   });
 
   it("stops early when a pass produces no changes", () => {
     const graph = {
-      A: [["B", 1], ["C", 1]],
-      B: [["C", 1], ["D", 1]],
+      A: [
+        ["B", 1],
+        ["C", 1],
+      ],
+      B: [
+        ["C", 1],
+        ["D", 1],
+      ],
       C: [["D", 1]],
       D: [],
     };
@@ -105,7 +120,10 @@ describe("bellmanFord — correctness", () => {
 
   it("performs exactly V-1 passes without early stop on cascading graphs", () => {
     const graph = {
-      A: [["B", 5], ["C", 2]],
+      A: [
+        ["B", 5],
+        ["C", 2],
+      ],
       C: [["B", -2]],
       B: [],
     };
@@ -132,7 +150,10 @@ describe("bellmanFord — negative cycles", () => {
       B: [["C", -3]],
       C: [["A", -2]],
     };
-    const { negativeCycle, negativeCycleEdge, events } = bellmanFord(graph, "A");
+    const { negativeCycle, negativeCycleEdge, events } = bellmanFord(
+      graph,
+      "A",
+    );
     expect(negativeCycle).toBe(true);
     expect(negativeCycleEdge).toHaveLength(2);
     const detected = events.filter((e) => e.type === "negative-cycle-detected");
@@ -171,9 +192,16 @@ describe("bellmanFord — negative cycles", () => {
 describe("bellmanFord — event model", () => {
   it("emits only the documented event vocabulary", () => {
     const allowed = new Set([
-      "init", "pass-start", "inspect-edge", "skip-unreachable",
-      "skip-edge", "relax-edge", "pass-complete",
-      "negative-cycle-check", "negative-cycle-detected", "complete",
+      "init",
+      "pass-start",
+      "inspect-edge",
+      "skip-unreachable",
+      "skip-edge",
+      "relax-edge",
+      "pass-complete",
+      "negative-cycle-check",
+      "negative-cycle-detected",
+      "complete",
     ]);
     const { events } = bellmanFord(TASK_EXAMPLE, "A");
     for (const e of events) expect(allowed.has(e.type)).toBe(true);
@@ -182,15 +210,22 @@ describe("bellmanFord — event model", () => {
   it("emits pass events in order with correct numbering", () => {
     const { events } = bellmanFord(TASK_EXAMPLE, "A");
     const passEvents = events.filter(
-      (e) => e.type === "pass-start" || e.type === "pass-complete"
+      (e) => e.type === "pass-start" || e.type === "pass-complete",
     );
-    expect(passEvents[0]).toMatchObject({ type: "pass-start", pass: 1, total: 2 });
+    expect(passEvents[0]).toMatchObject({
+      type: "pass-start",
+      pass: 1,
+      total: 2,
+    });
     expect(passEvents[1]).toMatchObject({ type: "pass-complete", pass: 1 });
   });
 
   it("is fully deterministic across repeated executions", () => {
     const graph = {
-      A: [["B", 4], ["C", 5]],
+      A: [
+        ["B", 4],
+        ["C", 5],
+      ],
       C: [["B", -3]],
       B: [["A", 1]],
     };
@@ -248,8 +283,15 @@ describe("bellmanFordDebug — projector", () => {
 
   it("exposes pass counters and per-pass updates", () => {
     const steps = bellmanFordDebug(
-      { A: [["B", 5], ["C", 2]], C: [["B", -2]], B: [] },
-      "A"
+      {
+        A: [
+          ["B", 5],
+          ["C", 2],
+        ],
+        C: [["B", -2]],
+        B: [],
+      },
+      "A",
     );
     const passStart = steps.find((s) => s.vars.pass);
     expect(passStart.vars.pass).toBe("1 / 2");
@@ -281,7 +323,7 @@ describe("bellmanFordDebug — projector", () => {
 
   it("is deterministic for repeated debug runs", () => {
     expect(bellmanFordDebug(TASK_EXAMPLE, "A")).toEqual(
-      bellmanFordDebug(TASK_EXAMPLE, "A")
+      bellmanFordDebug(TASK_EXAMPLE, "A"),
     );
   });
 });

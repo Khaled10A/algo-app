@@ -31,12 +31,20 @@ describe("measure", () => {
     let i = 0;
     const stamps = [0, 10, 0, 30, 0, 50];
     const clock = () => stamps[Math.min(i++, stamps.length - 1)];
-    const { time } = measure(() => ({}), { setup: () => [], warmup: 1, repeats: 3, now: clock });
+    const { time } = measure(() => ({}), {
+      setup: () => [],
+      warmup: 1,
+      repeats: 3,
+      now: clock,
+    });
     expect(time).toBe(30);
   });
 
   it("captures operation counters from a measured run", () => {
-    const { output } = measure(() => ({ comparisons: 42 }), { setup: () => [], repeats: 3 });
+    const { output } = measure(() => ({ comparisons: 42 }), {
+      setup: () => [],
+      repeats: 3,
+    });
     expect(output.comparisons).toBe(42);
   });
 });
@@ -53,8 +61,20 @@ describe("runBenchmarkJob", () => {
 
     runBenchmarkJob({
       algos: [
-        { id: "a", run: (arr) => { inputsPerAlgo.push(arr); return { comparisons: 1 }; } },
-        { id: "b", run: (arr) => { inputsPerAlgo.push(arr); return { comparisons: 2 }; } },
+        {
+          id: "a",
+          run: (arr) => {
+            inputsPerAlgo.push(arr);
+            return { comparisons: 1 };
+          },
+        },
+        {
+          id: "b",
+          run: (arr) => {
+            inputsPerAlgo.push(arr);
+            return { comparisons: 2 };
+          },
+        },
       ],
       scenarios: [{ key: "random", makeInput }],
       sizes: [3],
@@ -81,8 +101,15 @@ describe("runBenchmarkJob", () => {
 
   it("collects matches when the scenario requests them", () => {
     const results = runBenchmarkJob({
-      algos: [{ id: "s", run: (text) => ({ matches: [0], comparisons: text.length }) }],
-      scenarios: [{ key: "file", collect: "matches", makeInput: () => ["abab"] }],
+      algos: [
+        {
+          id: "s",
+          run: (text) => ({ matches: [0], comparisons: text.length }),
+        },
+      ],
+      scenarios: [
+        { key: "file", collect: "matches", makeInput: () => ["abab"] },
+      ],
       sizes: [4],
       warmup: 0,
       repeats: 1,
@@ -123,10 +150,20 @@ describe("executeSpec (regression: single execution per algorithm)", () => {
   });
 
   it("validateSpec rejects empty selections without throwing", () => {
-    expect(validateSpec({ kind: "sorting", algoIds: [], types: [], sizes: [] })).toBeTruthy();
-    expect(validateSpec({ kind: "search-generate", pattern: "", algoIds: [] })).toBeTruthy();
     expect(
-      validateSpec({ kind: "search-generate", pattern: "x", algoIds: ["kmp"], sizes: [10], scenarios: ["start"] })
+      validateSpec({ kind: "sorting", algoIds: [], types: [], sizes: [] }),
+    ).toBeTruthy();
+    expect(
+      validateSpec({ kind: "search-generate", pattern: "", algoIds: [] }),
+    ).toBeTruthy();
+    expect(
+      validateSpec({
+        kind: "search-generate",
+        pattern: "x",
+        algoIds: ["kmp"],
+        sizes: [10],
+        scenarios: ["start"],
+      }),
     ).toBeNull();
   });
 });

@@ -1,14 +1,22 @@
-import { insertionSort, insertionSortSteps, insertionSortDebug } from './insertionSort';
-import { bubbleSort, bubbleSortSteps, bubbleSortDebug } from './bubbleSort';
-import { selectionSort, selectionSortSteps, selectionSortDebug } from './selectionSort';
-import { mergeSort, mergeSortDebug, MERGE_SORT_CODE_LINES } from './mergeSort';
-import { quickSort, quickSortDebug, QUICK_SORT_CODE_LINES } from './quickSort';
-import { heapSort, HEAP_SORT_CODE_LINES } from './heapSort';
-import { heapSortDebug } from './heapSortDebug';
-import { radixSortEvents, RADIX_SORT_CODE_LINES } from './radixSort';
-import { radixSortDebug } from './radixSortDebug';
-import { countingSort, countingSortEvents, COUNTING_SORT_CODE_LINES } from './countingSort';
-import { countingSortDebug } from './countingSortDebug';
+import {
+  insertionSort,
+  insertionSortSteps,
+  insertionSortDebug,
+} from "./insertionSort";
+import { bubbleSort, bubbleSortSteps, bubbleSortDebug } from "./bubbleSort";
+import {
+  selectionSort,
+  selectionSortSteps,
+  selectionSortDebug,
+} from "./selectionSort";
+import { mergeSort, mergeSortDebug, MERGE_SORT_CODE_LINES } from "./mergeSort";
+import { quickSort, quickSortDebug, QUICK_SORT_CODE_LINES } from "./quickSort";
+import { heapSort, HEAP_SORT_CODE_LINES } from "./heapSort";
+import { heapSortDebug } from "./heapSortDebug";
+import { radixSortEvents, RADIX_SORT_CODE_LINES } from "./radixSort";
+import { radixSortDebug } from "./radixSortDebug";
+import { countingSort, COUNTING_SORT_CODE_LINES } from "./countingSort";
+import { countingSortDebug } from "./countingSortDebug";
 
 export const INSERTION_SORT_CODE_LINES = [
   { n: 0, code: "function insertionSort(arr) {" },

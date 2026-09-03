@@ -11,15 +11,16 @@ export function bfsDebug(graph, start) {
   const queue = [];
   const visitOrder = [];
 
-  const snap = (activeLine, current, vars, log) => steps.push({
-    activeLine,
-    visited: new Set(visited),
-    queue: [...queue],
-    visitOrder: [...visitOrder],
-    current,
-    vars,
-    log,
-  });
+  const snap = (activeLine, current, vars, log) =>
+    steps.push({
+      activeLine,
+      visited: new Set(visited),
+      queue: [...queue],
+      visitOrder: [...visitOrder],
+      current,
+      vars,
+      log,
+    });
 
   visited.add(start);
   queue.push(start);
@@ -35,10 +36,19 @@ export function bfsDebug(graph, start) {
       if (!visited.has(neighbor)) {
         visited.add(neighbor);
         queue.push(neighbor);
-        snap(5, node, { node, v: neighbor, queue: `[${queue.join(",")}]` },
-          `${neighbor} not visited → enqueue`);
+        snap(
+          5,
+          node,
+          { node, v: neighbor, queue: `[${queue.join(",")}]` },
+          `${neighbor} not visited → enqueue`,
+        );
       } else {
-        snap(5, node, { node, v: neighbor }, `${neighbor} already visited → skip`);
+        snap(
+          5,
+          node,
+          { node, v: neighbor },
+          `${neighbor} already visited → skip`,
+        );
       }
     }
   }

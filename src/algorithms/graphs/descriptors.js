@@ -1,10 +1,10 @@
-import { bfsDebug } from './bfs';
-import { dfsDebug } from './dfs';
-import { dijkstraDebug } from './dijkstraDebug';
-import { bellmanFordDebug } from './bellmanFordDebug';
-import { floydWarshallDebug } from './floydWarshallDebug';
-import { primDebug } from './primDebug';
-import { kruskalDebug } from './kruskalDebug';
+import { bfsDebug } from "./bfs";
+import { dfsDebug } from "./dfs";
+import { dijkstraDebug } from "./dijkstraDebug";
+import { bellmanFordDebug } from "./bellmanFordDebug";
+import { floydWarshallDebug } from "./floydWarshallDebug";
+import { primDebug } from "./primDebug";
+import { kruskalDebug } from "./kruskalDebug";
 
 export const GRAPH_KRUSKAL_CODE_LINES = [
   { n: 0, code: "function kruskal(graph) {" },

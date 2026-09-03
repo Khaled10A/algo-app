@@ -55,7 +55,10 @@ export function projectMatrixEvents(events, { lineMap, label = "algorithm" }) {
       case "k-start": {
         k = event.k;
         kNode = event.node;
-        Object.assign(vars, { k: event.node, pass: `${k + 1} / ${nodes.length}` });
+        Object.assign(vars, {
+          k: event.node,
+          pass: `${k + 1} / ${nodes.length}`,
+        });
         Object.assign(memory, { "via node": event.node });
         callStack.push(`  └ intermediate node ${event.node}`);
         log = `Intermediate node ${event.node} — paths may now route through it`;
@@ -72,14 +75,16 @@ export function projectMatrixEvents(events, { lineMap, label = "algorithm" }) {
         Object.assign(vars, {
           pair: `${event.i} → ${event.j}`,
           via: event.kNode,
-          "current": fmtDist(event.currentDist),
-          "candidate": fmtDist(event.candidate),
+          current: fmtDist(event.currentDist),
+          candidate: fmtDist(event.candidate),
         });
         Object.assign(memory, {
           "D[i][k]": fmtDist(matrix[event.i][event.kNode]),
           "D[k][j]": fmtDist(matrix[event.kNode][event.j]),
         });
-        callStack.push(`  └ compare ${event.i} → ${event.j} via ${event.kNode}`);
+        callStack.push(
+          `  └ compare ${event.i} → ${event.j} via ${event.kNode}`,
+        );
         log = `Compare ${event.i} → ${event.j}: ${fmtDist(event.currentDist)} vs ${fmtDist(event.i)} → ${event.kNode} → ${event.j} (${fmtDist(event.candidate)})`;
         break;
       }
@@ -123,8 +128,12 @@ export function projectMatrixEvents(events, { lineMap, label = "algorithm" }) {
       }
       case "negative-cycle-detected": {
         negativeCycle = true;
-        if (!negativeCycleNodes.includes(event.node)) negativeCycleNodes.push(event.node);
-        Object.assign(vars, { node: event.node, "D[i][i]": fmtDist(event.distance) });
+        if (!negativeCycleNodes.includes(event.node))
+          negativeCycleNodes.push(event.node);
+        Object.assign(vars, {
+          node: event.node,
+          "D[i][i]": fmtDist(event.distance),
+        });
         Object.assign(memory, { "D[i][i]": fmtDist(event.distance) });
         callStack.push(`  └ negative cycle through ${event.node}`);
         log = `Negative cycle detected through ${event.node} (D[${event.node}][${event.node}] = ${fmtDist(event.distance)})`;
@@ -142,7 +151,9 @@ export function projectMatrixEvents(events, { lineMap, label = "algorithm" }) {
           log = `Done with warnings — negative cycle through ${(event.negativeCycleNodes || []).join(", ")}, distances not well-defined`;
         } else {
           Object.assign(vars, { pairs: String(event.size * event.size) });
-          Object.assign(memory, { matrix: `${event.size}×${event.size} complete` });
+          Object.assign(memory, {
+            matrix: `${event.size}×${event.size} complete`,
+          });
           callStack.push(`  └ all-pairs matrix complete`);
           log = `Done — all-pairs shortest distances computed for ${event.size} nodes`;
         }

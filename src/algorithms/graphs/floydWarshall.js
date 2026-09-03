@@ -48,7 +48,12 @@ export function floydWarshall(graph) {
     }
   }
 
-  emit("init", { nodes: [...nodes], size, matrix: snapshotMatrix(matrix), next: snapshotMatrix(next) });
+  emit("init", {
+    nodes: [...nodes],
+    size,
+    matrix: snapshotMatrix(matrix),
+    next: snapshotMatrix(next),
+  });
 
   let updates = 0;
 

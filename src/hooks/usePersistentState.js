@@ -21,13 +21,11 @@ export function usePersistentState(key, initial) {
         const resolved = typeof next === "function" ? next(prev) : next;
         try {
           window.localStorage.setItem(PREFIX + key, JSON.stringify(resolved));
-        } catch {
-          
-        }
+        } catch {}
         return resolved;
       });
     },
-    [key]
+    [key],
   );
 
   return [value, update];

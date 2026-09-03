@@ -1,6 +1,6 @@
-import { getAlgorithm, getBenchmarkable } from '../../algorithms/registry';
-import { generateArray, generateText } from '../../utils/generators';
-import { runBenchmarkJob } from './engine';
+import { getAlgorithm, getBenchmarkable } from "../../algorithms/registry";
+import { generateArray, generateText } from "../../utils/generators";
+import { runBenchmarkJob } from "./engine";
 
 export const DEFAULT_REPEATS = 5;
 export const DEFAULT_WARMUP = 1;
@@ -36,9 +36,7 @@ export function materializeSpec(spec) {
 
   if (spec.kind === "sorting") {
     const customArr =
-      spec.inputMode === "custom"
-        ? parseNumberList(spec.customArrayStr)
-        : null;
+      spec.inputMode === "custom" ? parseNumberList(spec.customArrayStr) : null;
 
     if (customArr && customArr.length > 0) {
       return {
@@ -85,7 +83,11 @@ export function materializeSpec(spec) {
       warmup,
       sizes: [spec.text.length],
       scenarios: [
-        { key: "file", collect: "matches", makeInput: () => [spec.text, spec.pattern] },
+        {
+          key: "file",
+          collect: "matches",
+          makeInput: () => [spec.text, spec.pattern],
+        },
       ],
     };
   }
@@ -101,7 +103,7 @@ function rejectOverLimit(values, label, errors) {
   for (const n of values) {
     if (n > LIMITS.maxSizePerPoint) {
       errors.push(
-        `${label} ${n.toLocaleString()} exceeds the maximum of ${LIMITS.maxSizePerPoint.toLocaleString()}. Reduce the input sizes.`
+        `${label} ${n.toLocaleString()} exceeds the maximum of ${LIMITS.maxSizePerPoint.toLocaleString()}. Reduce the input sizes.`,
       );
     }
   }
@@ -110,7 +112,8 @@ function rejectOverLimit(values, label, errors) {
 export function validateSpec(spec) {
   const errors = [];
   if (spec.kind === "sorting") {
-    if (!getBenchmarkable("sorting").length) return "No sorting algorithms available";
+    if (!getBenchmarkable("sorting").length)
+      return "No sorting algorithms available";
     if (spec.inputMode === "custom") {
       const custom = parseNumberList(spec.customArrayStr);
       if (!custom.length) return "Custom array is empty";
@@ -138,14 +141,14 @@ export function validateSpec(spec) {
   }
 
   const pointCount =
-    (spec.kind === "sorting" && spec.inputMode !== "custom"
+    spec.kind === "sorting" && spec.inputMode !== "custom"
       ? spec.sizes.length * spec.types.length
       : spec.kind === "search-generate"
-      ? spec.sizes.length * spec.scenarios.length
-      : 1);
+        ? spec.sizes.length * spec.scenarios.length
+        : 1;
   if (pointCount > LIMITS.maxPointsPerRun) {
     errors.push(
-      `This run would execute ${pointCount} benchmark points; the maximum is ${LIMITS.maxPointsPerRun}. Select fewer sizes or scenarios.`
+      `This run would execute ${pointCount} benchmark points; the maximum is ${LIMITS.maxPointsPerRun}. Select fewer sizes or scenarios.`,
     );
   }
 

@@ -4,9 +4,17 @@
  */
 export function bruteForceDebug(text, pattern) {
   const steps = [];
-  const n = text.length, m = pattern.length;
+  const n = text.length,
+    m = pattern.length;
 
-  const snap = (activeLine, vars, log, highlightText = [], highlightPat = [], matches = []) =>
+  const snap = (
+    activeLine,
+    vars,
+    log,
+    highlightText = [],
+    highlightPat = [],
+    matches = [],
+  ) =>
     steps.push({
       activeLine,
       vars,
@@ -14,8 +22,8 @@ export function bruteForceDebug(text, pattern) {
       // string-search specific fields
       text,
       pattern,
-      highlightText,   // indices in text currently being compared
-      highlightPat,    // indices in pattern currently being compared
+      highlightText, // indices in text currently being compared
+      highlightPat, // indices in pattern currently being compared
       matchPositions: [...matches],
       memory: {
         text: `"${text.length > 20 ? text.slice(0, 20) + "…" : text}"`,
@@ -31,8 +39,8 @@ export function bruteForceDebug(text, pattern) {
         vars.j !== undefined
           ? `  └ inner while(j < m)  j=${vars.j}`
           : vars.i !== undefined
-          ? `  └ outer for(i=0..n-m)  i=${vars.i}`
-          : "  └ init",
+            ? `  └ outer for(i=0..n-m)  i=${vars.i}`
+            : "  └ init",
       ],
     });
 
@@ -41,7 +49,11 @@ export function bruteForceDebug(text, pattern) {
   snap(0, {}, "Start: scan text with sliding window");
 
   for (let i = 0; i <= n - m; i++) {
-    snap(2, { i }, `Window at i=${i}: checking text[${i}..${i + m - 1}] vs pattern`);
+    snap(
+      2,
+      { i },
+      `Window at i=${i}: checking text[${i}..${i + m - 1}] vs pattern`,
+    );
 
     let j = 0;
     while (j < m) {
@@ -55,7 +67,14 @@ export function bruteForceDebug(text, pattern) {
       );
 
       if (text[i + j] !== pattern[j]) {
-        snap(4, { i, j }, `Mismatch! '${text[i + j]}' ≠ '${pattern[j]}' → shift window`, [i + j], [j], found);
+        snap(
+          4,
+          { i, j },
+          `Mismatch! '${text[i + j]}' ≠ '${pattern[j]}' → shift window`,
+          [i + j],
+          [j],
+          found,
+        );
         break;
       }
       j++;
@@ -63,14 +82,24 @@ export function bruteForceDebug(text, pattern) {
 
     if (j === m) {
       found.push(i);
-      snap(5, { i, j }, `✓ Match found at index ${i}!`, 
-        Array.from({ length: m }, (_, k) => i + k), 
+      snap(
+        5,
+        { i, j },
+        `✓ Match found at index ${i}!`,
+        Array.from({ length: m }, (_, k) => i + k),
         Array.from({ length: m }, (_, k) => k),
         found,
       );
     }
   }
 
-  snap(6, {}, `Done! ${found.length} match(es) found: [${found.join(", ")}]`, [], [], found);
+  snap(
+    6,
+    {},
+    `Done! ${found.length} match(es) found: [${found.join(", ")}]`,
+    [],
+    [],
+    found,
+  );
   return steps;
 }

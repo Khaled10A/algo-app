@@ -42,7 +42,9 @@ describe("graph editing — nodes", () => {
   });
 
   it("throws when removing a missing node", () => {
-    expect(() => removeNode(createDefaultGraph(), "Z")).toThrow(/does not exist/);
+    expect(() => removeNode(createDefaultGraph(), "Z")).toThrow(
+      /does not exist/,
+    );
   });
 });
 
@@ -51,8 +53,12 @@ describe("graph editing — edges", () => {
     const g = addEdge(createDefaultGraph(), "A", "F", 6);
     expect(hasEdge(g, "A", "F")).toBe(true);
     expect(hasEdge(g, "F", "A")).toBe(true);
-    expect(normalizeGraph(g).adjacency.A.find((e) => e.to === "F").weight).toBe(6);
-    expect(normalizeGraph(g).adjacency.F.find((e) => e.to === "A").weight).toBe(6);
+    expect(normalizeGraph(g).adjacency.A.find((e) => e.to === "F").weight).toBe(
+      6,
+    );
+    expect(normalizeGraph(g).adjacency.F.find((e) => e.to === "A").weight).toBe(
+      6,
+    );
   });
 
   it("rejects duplicate edges in either direction", () => {
@@ -68,7 +74,9 @@ describe("graph editing — edges", () => {
   });
 
   it("rejects self-loops", () => {
-    expect(() => addEdge(createDefaultGraph(), "A", "A", 1)).toThrow(/Self-loop/);
+    expect(() => addEdge(createDefaultGraph(), "A", "A", 1)).toThrow(
+      /Self-loop/,
+    );
   });
 
   it("rejects non-numeric and non-finite weights", () => {
@@ -80,9 +88,13 @@ describe("graph editing — edges", () => {
 
   it("permits structurally valid zero and negative weights in the model", () => {
     const g = addEdge(createDefaultGraph(), "D", "F", 0);
-    expect(normalizeGraph(g).adjacency.D.find((e) => e.to === "F").weight).toBe(0);
+    expect(normalizeGraph(g).adjacency.D.find((e) => e.to === "F").weight).toBe(
+      0,
+    );
     const g2 = addEdge(createDefaultGraph(), "D", "F", -2);
-    expect(normalizeGraph(g2).adjacency.F.find((e) => e.to === "D").weight).toBe(-2);
+    expect(
+      normalizeGraph(g2).adjacency.F.find((e) => e.to === "D").weight,
+    ).toBe(-2);
   });
 
   it("removes an edge in both directions", () => {
@@ -144,7 +156,7 @@ describe("dijkstra — negative weight rejection", () => {
   it("rejects negative weights with a message naming the edge", () => {
     const g = addEdge(createDefaultGraph(), "D", "F", -2);
     expect(() => dijkstra(g, "A")).toThrow(
-      /Dijkstra does not support negative weights \(edge D → F: -2\)/
+      /Dijkstra does not support negative weights \(edge D → F: -2\)/,
     );
   });
 

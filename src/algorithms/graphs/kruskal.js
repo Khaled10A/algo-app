@@ -43,7 +43,7 @@ export function kruskal(graph) {
     (a, b) =>
       a.weight - b.weight ||
       (a.from < b.from ? -1 : a.from > b.from ? 1 : 0) ||
-      (a.to < b.to ? -1 : a.to > b.to ? 1 : 0)
+      (a.to < b.to ? -1 : a.to > b.to ? 1 : 0),
   );
 
   emit("init", { nodeCount: nodes.length, edgeCount: edgeList.length });

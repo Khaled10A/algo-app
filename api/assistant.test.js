@@ -30,7 +30,11 @@ function mockRes() {
   return res;
 }
 
-function mockReq({ method = "POST", body = { messages: [{ role: "user", content: "hi" }] }, ip = "1.2.3.4" } = {}) {
+function mockReq({
+  method = "POST",
+  body = { messages: [{ role: "user", content: "hi" }] },
+  ip = "1.2.3.4",
+} = {}) {
   return {
     method,
     body,
@@ -80,12 +84,18 @@ describe("AI assistant endpoint", () => {
     expect(resNoMessages.statusCode).toBe(400);
 
     const resTooMany = mockRes();
-    const many = Array.from({ length: 25 }, (_, i) => ({ role: "user", content: "x" }));
+    const many = Array.from({ length: 25 }, (_, i) => ({
+      role: "user",
+      content: "x",
+    }));
     await handler(mockReq({ body: { messages: many } }), resTooMany);
     expect(resTooMany.statusCode).toBe(413);
 
     const resBadContent = mockRes();
-    await handler(mockReq({ body: { messages: [{ role: "user", content: 42 }] } }), resBadContent);
+    await handler(
+      mockReq({ body: { messages: [{ role: "user", content: 42 }] } }),
+      resBadContent,
+    );
     expect(resBadContent.statusCode).toBe(400);
   });
 

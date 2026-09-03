@@ -11,7 +11,7 @@ export function useRunHistory() {
     (run) => {
       setHistory((h) => [run, ...h].slice(0, MAX_HISTORY));
     },
-    [setHistory]
+    [setHistory],
   );
 
   const clearAll = useCallback(() => {
@@ -22,8 +22,11 @@ export function useRunHistory() {
   const clearSelection = useCallback(() => setCompare([]), [setCompare]);
 
   const updateCompare = useCallback(
-    (updater) => setCompare((prev) => (typeof updater === "function" ? updater(prev) : updater)),
-    [setCompare]
+    (updater) =>
+      setCompare((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      ),
+    [setCompare],
   );
 
   return { history, compare, addRun, clearAll, clearSelection, updateCompare };

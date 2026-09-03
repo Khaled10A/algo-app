@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { heapSort, heapSortEvents, HEAP_SORT_CODE_LINES } from "./heapSort";
 import { heapSortDebug, HEAP_SORT_LINE_MAP } from "./heapSortDebug";
-import { projectSortingEvents } from "./sortingSteps";
 
 const REFERENCE = (a) => [...a].sort((x, y) => x - y);
 
@@ -18,7 +17,10 @@ describe("heapSort — correctness", () => {
     ["duplicates", [2, 2, 2, 1, 1, 3]],
     ["negative values", [-3, -1, -2]],
     ["mixed positive/negative", [5, -1, 3, 0, -4, 12]],
-    ["large random array", Array.from({ length: 100 }, () => Math.floor(Math.random() * 200) - 100)],
+    [
+      "large random array",
+      Array.from({ length: 100 }, () => Math.floor(Math.random() * 200) - 100),
+    ],
   ])("sorts %s correctly and in place", (_name, input) => {
     const original = [...input];
     const { sorted, comparisons } = heapSort(input);
@@ -72,7 +74,9 @@ describe("heapSort — event ordering & shape", () => {
 
   it("emits extract-max only during the extract phase", () => {
     const { events } = heapSortEvents([5, 2, 8, 1]);
-    const buildCompleteIdx = events.findIndex((e) => e.type === "build-complete");
+    const buildCompleteIdx = events.findIndex(
+      (e) => e.type === "build-complete",
+    );
     for (let i = 0; i < events.length; i++) {
       if (events[i].type === "extract-max") {
         expect(i).toBeGreaterThan(buildCompleteIdx);
@@ -118,7 +122,9 @@ describe("heapSort — line map integrity", () => {
 
   it("exposes code lines matching the debugger line map", () => {
     expect(HEAP_SORT_CODE_LINES.length).toBeGreaterThan(0);
-    expect(HEAP_SORT_LINE_MAP.complete).toBeLessThan(HEAP_SORT_CODE_LINES.length);
+    expect(HEAP_SORT_LINE_MAP.complete).toBeLessThan(
+      HEAP_SORT_CODE_LINES.length,
+    );
   });
 });
 
@@ -160,7 +166,9 @@ describe("sorting projector — invariants", () => {
   });
 
   it("exposes the heap boundary during extraction", () => {
-    const steps = heapSortDebug([9, 4, 7, 1]).filter((s) => s.phase === "extract");
+    const steps = heapSortDebug([9, 4, 7, 1]).filter(
+      (s) => s.phase === "extract",
+    );
     expect(steps.length).toBeGreaterThan(0);
     for (const s of steps) {
       expect(s.boundary).toBeLessThan(4);

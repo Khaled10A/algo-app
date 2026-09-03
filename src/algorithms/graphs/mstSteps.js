@@ -39,7 +39,10 @@ export function projectMstEvents(events, { lineMap, label = "algorithm" }) {
 
     const popFrontier = () => {
       const idx = frontier.findIndex(
-        (e) => e.from === event.from && e.to === event.to && e.weight === event.weight
+        (e) =>
+          e.from === event.from &&
+          e.to === event.to &&
+          e.weight === event.weight,
       );
       if (idx !== -1) frontier.splice(idx, 1);
     };
@@ -156,7 +159,7 @@ export function projectMstEvents(events, { lineMap, label = "algorithm" }) {
         callStack.push(
           event.connected
             ? "  └ minimum spanning tree complete"
-            : "  └ minimum spanning forest complete"
+            : "  └ minimum spanning forest complete",
         );
         log = event.connected
           ? `Done — MST has ${event.edgeCount} edges, total weight ${event.totalWeight}`

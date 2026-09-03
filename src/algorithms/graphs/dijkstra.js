@@ -27,7 +27,7 @@ export function dijkstra(graph, start) {
     for (const { to, weight } of nbs) {
       if (weight < 0) {
         throw new Error(
-          `Dijkstra does not support negative weights (edge ${node} → ${to}: ${weight})`
+          `Dijkstra does not support negative weights (edge ${node} → ${to}: ${weight})`,
         );
       }
     }
@@ -47,7 +47,7 @@ export function dijkstra(graph, start) {
   const visited = new Set();
   const visitedOrder = [];
   const heap = new MinHeap(
-    (a, b) => (a.dist - b.dist) || (a.node < b.node ? -1 : 1)
+    (a, b) => a.dist - b.dist || (a.node < b.node ? -1 : 1),
   );
 
   emit("init", { start, nodeCount: nodes.length, nodes: [...nodes] });
@@ -98,7 +98,8 @@ export function dijkstra(graph, start) {
 
   emit("complete", {
     visitedCount: visited.size,
-    unreachableCount: nodes.filter((n) => !Number.isFinite(distances[n])).length,
+    unreachableCount: nodes.filter((n) => !Number.isFinite(distances[n]))
+      .length,
   });
 
   return { distances, previous, visitedOrder, events };

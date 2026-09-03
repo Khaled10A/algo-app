@@ -5,7 +5,9 @@ export function median(values) {
   if (!values.length) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
 export function round4(n) {
@@ -19,7 +21,10 @@ export function round4(n) {
  * - repeats measurements are aggregated with the median.
  * - operation counters come from the first measured invocation.
  */
-export function measure(fn, { setup, warmup = 1, repeats = 3, now = defaultNow } = {}) {
+export function measure(
+  fn,
+  { setup, warmup = 1, repeats = 3, now = defaultNow } = {},
+) {
   const prepare = setup || (() => []);
   for (let w = 0; w < warmup; w++) fn(...prepare());
 
@@ -76,7 +81,12 @@ export function runBenchmarkJob(job, options = {}) {
 
         const first = Array.isArray(input) ? input[0] : input;
         const point = {
-          n: typeof first === "string" ? first.length : (Array.isArray(first) ? first.length : size),
+          n:
+            typeof first === "string"
+              ? first.length
+              : Array.isArray(first)
+                ? first.length
+                : size,
           time: round4(time),
           comparisons: output?.comparisons ?? 0,
         };

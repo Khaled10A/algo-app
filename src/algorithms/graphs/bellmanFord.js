@@ -60,7 +60,12 @@ export function bellmanFord(graph, start) {
       emit("inspect-edge", { from, to, weight, pass });
 
       if (!Number.isFinite(distances[from])) {
-        emit("skip-unreachable", { from, to, reason: "source unreachable", pass });
+        emit("skip-unreachable", {
+          from,
+          to,
+          reason: "source unreachable",
+          pass,
+        });
         continue;
       }
 
@@ -112,7 +117,7 @@ export function bellmanFord(graph, start) {
   }
 
   const unreachableCount = nodes.filter(
-    (n) => !Number.isFinite(distances[n])
+    (n) => !Number.isFinite(distances[n]),
   ).length;
 
   emit("complete", {

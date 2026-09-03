@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import App from "./App";
 
 afterEach(() => {
@@ -22,7 +28,7 @@ describe("App shell", () => {
     fireEvent.click(screen.getByRole("button", { name: /RUN BENCHMARK/ }));
     await waitFor(
       () => expect(screen.getByText(/STRING MATCHING RESULTS/i)).toBeTruthy(),
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
     expect(screen.getAllByText("Brute Force").length).toBeGreaterThan(0);
   });
@@ -46,7 +52,10 @@ describe("App shell", () => {
   it("renders report, history, pseudocode, complexity and AI tabs after a run", async () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: /RUN BENCHMARK/ }));
-    await waitFor(() => expect(screen.getByText(/SORTING RESULTS/i)).toBeTruthy(), { timeout: 5000 });
+    await waitFor(
+      () => expect(screen.getByText(/SORTING RESULTS/i)).toBeTruthy(),
+      { timeout: 5000 },
+    );
 
     fireEvent.click(screen.getAllByRole("button", { name: "report" })[0]);
     expect(screen.getByText(/AUTO-GENERATED REPORT/i)).toBeTruthy();

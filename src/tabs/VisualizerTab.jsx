@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { Label, Empty } from '../components/ui/SharedComponents';
-import { getAlgorithmForDisplay } from '../algorithms/registry';
-import { playTone } from '../utils/audio';
-import { getPalette, MOTION } from '../theme/tokens';
+import { useEffect, useRef } from "react";
+import { Label, Empty } from "../components/ui/SharedComponents";
+import { getAlgorithmForDisplay } from "../algorithms/registry";
+import { playTone } from "../utils/audio";
+import { getPalette, MOTION } from "../theme/tokens";
 
 function btnBase(isDark) {
   const pf = getPalette(isDark ? "dark" : "light");
@@ -11,7 +11,9 @@ function btnBase(isDark) {
     border: `1px solid ${pf.btnBorder}`,
     borderRadius: 7,
     color: pf.textSecondary,
-    fontSize: 13, cursor: "pointer", padding: "6px 12px",
+    fontSize: 13,
+    cursor: "pointer",
+    padding: "6px 12px",
     transition: `background ${MOTION.fast}`,
   };
 }
@@ -20,9 +22,9 @@ function btnBase(isDark) {
 function getBarColor(val, maxVal, isHighlight, highlightIdx, idx) {
   if (isHighlight) return "#ff375f";
   const ratio = val / maxVal;
-  if (ratio < 0.25) return "#0a84ff";      // blue  — small
-  if (ratio < 0.5)  return "#30d158";      // green — medium-small
-  if (ratio < 0.75) return "#ff9f0a";      // orange — medium-large
+  if (ratio < 0.25) return "#0a84ff"; // blue  — small
+  if (ratio < 0.5) return "#30d158"; // green — medium-small
+  if (ratio < 0.75) return "#ff9f0a"; // orange — medium-large
   return "#ff453a";
 }
 
@@ -36,7 +38,8 @@ function getStepDesc(step, algo) {
   }
   const [a, b] = highlight;
   if (arr && a !== undefined && b !== undefined) {
-    const vA = arr[a], vB = arr[b];
+    const vA = arr[a],
+      vB = arr[b];
     if (vA !== undefined && vB !== undefined) {
       return vA > vB
         ? `⚡ Swap! A[${a}]=${vA} > A[${b}]=${vB}`
@@ -48,13 +51,18 @@ function getStepDesc(step, algo) {
 
 // ── SPEED PRESETS ─────────────────────────────────────────────
 const SPEEDS = [
-  { label: "Slow",    name: "Slow",    val: 900 },
-  { label: "Medium",  name: "Medium",  val: 400 },
-  { label: "Fast",    name: "Fast",    val: 120 },
-  { label: "Instant", name: "Instant", val: 30  },
+  { label: "Slow", name: "Slow", val: 900 },
+  { label: "Medium", name: "Medium", val: 400 },
+  { label: "Fast", name: "Fast", val: 120 },
+  { label: "Instant", name: "Instant", val: 30 },
 ];
 
-const BTN_LABELS = { "⏮": "First step", "◀": "Previous step", "▶": "Next step", "⏭": "Last step" };
+const BTN_LABELS = {
+  "⏮": "First step",
+  "◀": "Previous step",
+  "▶": "Next step",
+  "⏭": "Last step",
+};
 function btnLabel(lbl) {
   return BTN_LABELS[lbl] || lbl;
 }
@@ -75,12 +83,28 @@ function EnhancedViz({ steps, currentStep, isDark }) {
   return (
     <div>
       {/* AMBIENT LIGHT */}
-      <div aria-hidden="true" style={{
-        position:"absolute", inset:0, pointerEvents:"none",
-        background:"radial-gradient(560px 240px at 50% 96%, rgba(10,132,255,0.075), transparent 70%)",
-      }} />
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background:
+            "radial-gradient(560px 240px at 50% 96%, rgba(10,132,255,0.075), transparent 70%)",
+        }}
+      />
       {/* BARS */}
-      <div style={{ position:"relative", display:"flex", alignItems:"flex-end", gap:3, height:120, padding:"0 4px", marginBottom:8 }}>
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "flex-end",
+          gap: 3,
+          height: 120,
+          padding: "0 4px",
+          marginBottom: 8,
+        }}
+      >
         {arr.map((v, i) => {
           const isHi = hi.includes(i);
           const changed = prevArr[i] !== v;
@@ -88,45 +112,93 @@ function EnhancedViz({ steps, currentStep, isDark }) {
           const isSorted = sortedFrom != null && i >= sortedFrom;
           const isBoundary = step.boundary != null && i === step.boundary;
           return (
-            <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", flexShrink:0, borderLeft: isBoundary ? `2px dashed ${pf.accent}` : "none" }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                flexShrink: 0,
+                borderLeft: isBoundary ? `2px dashed ${pf.accent}` : "none",
+              }}
+            >
               {/* Value label on top */}
-              <div data-testid="bar-value" style={{
-                fontSize: barW > 20 ? 9 : 7,
-                color: isSorted ? pf.green : isHi ? pf.pink : textMute,
-                marginBottom: 2, fontFamily:"monospace",
-                fontWeight: isHi || isSorted ? "bold" : "normal",
-              }}>{v}</div>
+              <div
+                data-testid="bar-value"
+                style={{
+                  fontSize: barW > 20 ? 9 : 7,
+                  color: isSorted ? pf.green : isHi ? pf.pink : textMute,
+                  marginBottom: 2,
+                  fontFamily: "monospace",
+                  fontWeight: isHi || isSorted ? "bold" : "normal",
+                }}
+              >
+                {v}
+              </div>
               {/* Bar */}
-              <div style={{
-                width: barW,
-                height: `${Math.max((v / maxVal) * 100, 4)}px`,
-                background: isSorted ? pf.green : getBarColor(v, maxVal, isHi),
-                borderRadius: "3px 3px 0 0",
-                transition: "height 0.18s cubic-bezier(0.22, 1, 0.36, 1), background 0.16s ease, box-shadow 0.16s ease",
-                boxShadow: isHi ? `0 0 10px ${getBarColor(v, maxVal, true)}3d, inset 0 1px 0 rgba(255,255,255,0.25)` : "inset 0 1px 0 rgba(255,255,255,0.18)",
-                transform: isHi ? "scaleY(1.05)" : "scaleY(1)",
-                transformOrigin: "bottom",
-              }}/>
+              <div
+                style={{
+                  width: barW,
+                  height: `${Math.max((v / maxVal) * 100, 4)}px`,
+                  background: isSorted
+                    ? pf.green
+                    : getBarColor(v, maxVal, isHi),
+                  borderRadius: "3px 3px 0 0",
+                  transition:
+                    "height 0.18s cubic-bezier(0.22, 1, 0.36, 1), background 0.16s ease, box-shadow 0.16s ease",
+                  boxShadow: isHi
+                    ? `0 0 10px ${getBarColor(v, maxVal, true)}3d, inset 0 1px 0 rgba(255,255,255,0.25)`
+                    : "inset 0 1px 0 rgba(255,255,255,0.18)",
+                  transform: isHi ? "scaleY(1.05)" : "scaleY(1)",
+                  transformOrigin: "bottom",
+                }}
+              />
               {/* Index label */}
-              <div style={{
-                fontSize: 9.5, color: isHi ? pf.pink : pf.textFaint,
-                fontFamily:"monospace", marginTop:2,
-              }}>{i}</div>
+              <div
+                style={{
+                  fontSize: 9.5,
+                  color: isHi ? pf.pink : pf.textFaint,
+                  fontFamily: "monospace",
+                  marginTop: 2,
+                }}
+              >
+                {i}
+              </div>
             </div>
           );
         })}
       </div>
 
       {/* COLOR LEGEND */}
-      <div style={{ display:"flex", gap:12, marginTop:4, flexWrap:"wrap" }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 4, flexWrap: "wrap" }}>
         {[
-          ["#0a84ff","Small"],["#30d158","Med-Low"],
-          ["#ff9f0a","Med-High"],["#ff453a","Large"],
-          ["#ff375f","Active"],
+          ["#0a84ff", "Small"],
+          ["#30d158", "Med-Low"],
+          ["#ff9f0a", "Med-High"],
+          ["#ff453a", "Large"],
+          ["#ff375f", "Active"],
         ].map(([color, label]) => (
-          <div key={label} style={{ display:"flex", alignItems:"center", gap:4 }}>
-            <div style={{ width:10, height:10, borderRadius:2, background:color }}/>
-            <span style={{ fontSize:9, color: isDark ? "#475569" : "#94a3b8", fontFamily:"monospace" }}>{label}</span>
+          <div
+            key={label}
+            style={{ display: "flex", alignItems: "center", gap: 4 }}
+          >
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: color,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 9,
+                color: isDark ? "#475569" : "#94a3b8",
+                fontFamily: "monospace",
+              }}
+            >
+              {label}
+            </span>
           </div>
         ))}
       </div>
@@ -137,8 +209,8 @@ function EnhancedViz({ steps, currentStep, isDark }) {
 // ── MAIN COMPONENT ────────────────────────────────────────────
 export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
   const pf = getPalette(isDark ? "dark" : "light");
-  const border  = pf.border;
-  const cardBg  = pf.surface;
+  const border = pf.border;
+  const cardBg = pf.surface;
   const textMute = pf.textSecondary;
 
   const vizStep = playback.index;
@@ -147,13 +219,18 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
   const vizSpeed = playback.speed;
   const setVizSpeed = playback.setSpeed;
   const vizDescriptor = getAlgorithmForDisplay(vizAlgo);
-  const algoName = typeof vizDescriptor.steps === "function" ? vizDescriptor.name : String(vizAlgo);
+  const algoName =
+    typeof vizDescriptor.steps === "function"
+      ? vizDescriptor.name
+      : String(vizAlgo);
   const hasVizAlgo = typeof vizDescriptor.steps === "function";
 
   const currentStep = vizSteps[vizStep] || null;
   const stepDesc = getStepDesc(currentStep, algoName);
   const prevStep = vizStep > 0 ? vizSteps[vizStep - 1] : null;
-  const isSwap = currentStep && prevStep &&
+  const isSwap =
+    currentStep &&
+    prevStep &&
     currentStep.arr.some((v, i) => v !== prevStep.arr[i]);
 
   // Play sound on each animated step while playing
@@ -164,15 +241,22 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
       const arr = currentStep.arr;
       const hi = currentStep.highlight;
       if (arr && hi[0] !== undefined) {
-        playTone(200 + (arr[hi[0]] / Math.max(...arr)) * 600, 0.1, "sine", 0.12);
+        playTone(
+          200 + (arr[hi[0]] / Math.max(...arr)) * 600,
+          0.1,
+          "sine",
+          0.12,
+        );
       }
       lastStep.current = vizStep;
     }
   }, [vizStep, playback.playing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Comparison counter
-  const totalComps = vizSteps.filter(s => s.highlight?.length > 0).length;
-  const doneComps  = vizSteps.slice(0, vizStep + 1).filter(s => s.highlight?.length > 0).length;
+  const totalComps = vizSteps.filter((s) => s.highlight?.length > 0).length;
+  const doneComps = vizSteps
+    .slice(0, vizStep + 1)
+    .filter((s) => s.highlight?.length > 0).length;
 
   return (
     <div>
@@ -182,38 +266,94 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
       ) : vizSteps.length === 0 ? (
         <Empty icon="🎬" text="Generate an array to visualize" />
       ) : (
-        <div className="surface-card" style={{ borderRadius:16, padding:"18px 18px 14px", maxWidth:720, position:"relative", overflow:"hidden" }}>
-
+        <div
+          className="surface-card"
+          style={{
+            borderRadius: 16,
+            padding: "18px 18px 14px",
+            maxWidth: 720,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
           {/* HEADER ROW */}
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12, flexWrap:"wrap", gap:8 }}>
-            <span style={{ fontSize:11, color:pf.green, letterSpacing:0.2, fontWeight:700 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 12,
+              flexWrap: "wrap",
+              gap: 8,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                color: pf.green,
+                letterSpacing: 0.2,
+                fontWeight: 700,
+              }}
+            >
               {algoName.toUpperCase()}
             </span>
-            <div style={{ display:"flex", gap:10 }}>
-              <div style={{ textAlign:"center" }}>
-                <div style={{ fontSize:8, color:textMute, letterSpacing:1 }}>STEP</div>
-                <div style={{ fontSize:15, color:pf.green, fontWeight:600, fontVariantNumeric: "tabular-nums" }}>
-                  {vizStep + 1}<span style={{ color:textMute, fontSize:10 }}>/{vizSteps.length}</span>
+            <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: textMute, letterSpacing: 1 }}>
+                  STEP
+                </div>
+                <div
+                  style={{
+                    fontSize: 15,
+                    color: pf.green,
+                    fontWeight: 600,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {vizStep + 1}
+                  <span style={{ color: textMute, fontSize: 10 }}>
+                    /{vizSteps.length}
+                  </span>
                 </div>
               </div>
-              <div style={{ textAlign:"center" }}>
-                <div style={{ fontSize:8, color:textMute, letterSpacing:1 }}>OPS DONE</div>
-                <div style={{ fontSize:15, color:pf.orange, fontWeight:600, fontVariantNumeric: "tabular-nums" }}>
-                  {doneComps}<span style={{ color:textMute, fontSize:10 }}>/{totalComps}</span>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: textMute, letterSpacing: 1 }}>
+                  OPS DONE
+                </div>
+                <div
+                  style={{
+                    fontSize: 15,
+                    color: pf.orange,
+                    fontWeight: 600,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {doneComps}
+                  <span style={{ color: textMute, fontSize: 10 }}>
+                    /{totalComps}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* STEP DESCRIPTION */}
-          <div style={{
-            background: isSwap ? "rgba(255, 55, 95, 0.07)" : "rgba(48, 209, 88, 0.06)",
-            border: `1px solid ${isSwap ? "rgba(255, 55, 95, 0.28)" : "rgba(48, 209, 88, 0.20)"}`,
-            borderRadius:7, padding:"7px 12px", marginBottom:14,
-            fontSize:12,
-            color: isSwap ? pf.pink : textMute,
-            minHeight:30, display:"flex", alignItems:"center",
-          }}>
+          <div
+            style={{
+              background: isSwap
+                ? "rgba(255, 55, 95, 0.07)"
+                : "rgba(48, 209, 88, 0.06)",
+              border: `1px solid ${isSwap ? "rgba(255, 55, 95, 0.28)" : "rgba(48, 209, 88, 0.20)"}`,
+              borderRadius: 7,
+              padding: "7px 12px",
+              marginBottom: 14,
+              fontSize: 12,
+              color: isSwap ? pf.pink : textMute,
+              minHeight: 30,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             {stepDesc || "Ready"}
           </div>
 
@@ -221,41 +361,121 @@ export function VisualizerTab({ vizAlgo, vizSteps, playback, isDark }) {
           <EnhancedViz steps={vizSteps} currentStep={vizStep} isDark={isDark} />
 
           {/* FLOATING CONTROL SURFACE */}
-          <div className="glass-floating" style={{ borderRadius:14, padding:"12px 14px 10px", marginTop:16 }}>
-          {/* PROGRESS BAR */}
-          <div style={{ background: "rgba(127,127,127,0.30)", borderRadius:4, height:4, margin:"0 0 4px" }}>
-            <div style={{ width:`${((vizStep+1)/vizSteps.length)*100}%`, height:"100%",
-              background:"linear-gradient(90deg,#30d158,#0a84ff)", borderRadius:4, transition:"width 0.1s" }}/>
-          </div>
-          <input type="range" min={0} max={vizSteps.length-1} value={vizStep} aria-label="Step position"
-            onChange={e => { pauseViz(); setVizStep(+e.target.value); }}
-            style={{ width:"100%", accentColor:"#30d158", marginBottom:10 }} />
-
-          {/* CONTROLS */}
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8 }}>
-            {/* Step buttons */}
-            <div style={{ display:"flex", gap:6 }}>
-              {[["⏮",playback.reset],["◀",playback.prev],
-                ["▶",playback.next],["⏭",playback.goToEnd]
-              ].map(([lbl,fn]) => (
-                <button key={lbl} onClick={fn} className="icon-btn" style={{ fontSize:14, padding:"5px 11px", color: pf.textSecondary }} aria-label={btnLabel(lbl)}>{lbl}</button>
-              ))}
+          <div
+            className="glass-floating"
+            style={{
+              borderRadius: 14,
+              padding: "12px 14px 10px",
+              marginTop: 16,
+            }}
+          >
+            {/* PROGRESS BAR */}
+            <div
+              style={{
+                background: "rgba(127,127,127,0.30)",
+                borderRadius: 4,
+                height: 4,
+                margin: "0 0 4px",
+              }}
+            >
+              <div
+                style={{
+                  width: `${((vizStep + 1) / vizSteps.length) * 100}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg,#30d158,#0a84ff)",
+                  borderRadius: 4,
+                  transition: "width 0.1s",
+                }}
+              />
             </div>
+            <input
+              type="range"
+              min={0}
+              max={vizSteps.length - 1}
+              value={vizStep}
+              aria-label="Step position"
+              onChange={(e) => {
+                pauseViz();
+                setVizStep(+e.target.value);
+              }}
+              style={{
+                width: "100%",
+                accentColor: "#30d158",
+                marginBottom: 10,
+              }}
+            />
 
-            {/* Speed presets */}
-            <div style={{ display:"flex", gap:3, alignItems:"center" }}>
-              <span style={{ fontSize:11, fontWeight:600, color:textMute, marginRight:4 }}>Speed</span>
-              {SPEEDS.map(({ label, name, val }) => (
-                <button key={name} onClick={() => setVizSpeed && setVizSpeed(val)} style={{
-                  padding:"4px 10px", borderRadius:5, fontSize:10, cursor:"pointer",
-                  fontFamily:"monospace", border:`1px solid ${vizSpeed===val ? "#4ade80" : border}`,
-                  background: vizSpeed===val ? "rgba(48, 209, 88, 0.12)" : "transparent",
-                  color: vizSpeed===val ? pf.green : textMute,
-                  transition:"all 0.15s",
-                }} title={name}>{name}</button>
-              ))}
+            {/* CONTROLS */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 8,
+              }}
+            >
+              {/* Step buttons */}
+              <div style={{ display: "flex", gap: 6 }}>
+                {[
+                  ["⏮", playback.reset],
+                  ["◀", playback.prev],
+                  ["▶", playback.next],
+                  ["⏭", playback.goToEnd],
+                ].map(([lbl, fn]) => (
+                  <button
+                    key={lbl}
+                    onClick={fn}
+                    className="icon-btn"
+                    style={{
+                      fontSize: 14,
+                      padding: "5px 11px",
+                      color: pf.textSecondary,
+                    }}
+                    aria-label={btnLabel(lbl)}
+                  >
+                    {lbl}
+                  </button>
+                ))}
+              </div>
+
+              {/* Speed presets */}
+              <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: textMute,
+                    marginRight: 4,
+                  }}
+                >
+                  Speed
+                </span>
+                {SPEEDS.map(({ label, name, val }) => (
+                  <button
+                    key={name}
+                    onClick={() => setVizSpeed && setVizSpeed(val)}
+                    style={{
+                      padding: "4px 10px",
+                      borderRadius: 5,
+                      fontSize: 10,
+                      cursor: "pointer",
+                      fontFamily: "monospace",
+                      border: `1px solid ${vizSpeed === val ? "#4ade80" : border}`,
+                      background:
+                        vizSpeed === val
+                          ? "rgba(48, 209, 88, 0.12)"
+                          : "transparent",
+                      color: vizSpeed === val ? pf.green : textMute,
+                      transition: "all 0.15s",
+                    }}
+                    title={name}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
           </div>
         </div>
       )}

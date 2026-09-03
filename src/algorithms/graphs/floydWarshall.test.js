@@ -1,11 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { floydWarshall, reconstructPath } from "./floydWarshall";
-import { floydWarshallDebug, FLOYD_WARSHALL_LINE_MAP } from "./floydWarshallDebug";
+import {
+  floydWarshallDebug,
+  FLOYD_WARSHALL_LINE_MAP,
+} from "./floydWarshallDebug";
 import { GRAPH_FLOYD_WARSHALL_CODE_LINES } from "./descriptors";
 
 const CLASSIC = {
-  A: [["B", 4], ["C", 2]],
-  B: [["C", 1], ["D", 5]],
+  A: [
+    ["B", 4],
+    ["C", 2],
+  ],
+  B: [
+    ["C", 1],
+    ["D", 5],
+  ],
   C: [["D", 8]],
   D: [],
 };
@@ -43,7 +52,10 @@ describe("floydWarshall - correctness", () => {
 
   it("supports negative edges without negative cycles", () => {
     const graph = {
-      A: [["B", 4], ["C", 5]],
+      A: [
+        ["B", 4],
+        ["C", 5],
+      ],
       C: [["B", -3]],
       B: [],
     };
@@ -55,7 +67,10 @@ describe("floydWarshall - correctness", () => {
 
   it("resolves multiple shortest paths to the same distance", () => {
     const graph = {
-      A: [["B", 1], ["C", 1]],
+      A: [
+        ["B", 1],
+        ["C", 1],
+      ],
       B: [["D", 1]],
       C: [["D", 1]],
       D: [],
@@ -91,10 +106,24 @@ describe("floydWarshall - correctness", () => {
 
   it("produces a symmetric matrix for undirected-style graphs", () => {
     const graph = {
-      A: [["B", 2], ["C", 5]],
-      B: [["A", 2], ["C", 1], ["D", 4]],
-      C: [["A", 5], ["B", 1], ["D", 1]],
-      D: [["B", 4], ["C", 1]],
+      A: [
+        ["B", 2],
+        ["C", 5],
+      ],
+      B: [
+        ["A", 2],
+        ["C", 1],
+        ["D", 4],
+      ],
+      C: [
+        ["A", 5],
+        ["B", 1],
+        ["D", 1],
+      ],
+      D: [
+        ["B", 4],
+        ["C", 1],
+      ],
     };
     const { matrix } = floydWarshall(graph);
     for (const a of ["A", "B", "C", "D"]) {
@@ -161,8 +190,13 @@ describe("floydWarshall - validation & determinism", () => {
 describe("floydWarshall - event model", () => {
   it("emits only the documented event vocabulary", () => {
     const allowed = new Set([
-      "init", "k-start", "inspect-pair", "update-distance",
-      "k-complete", "negative-cycle-check", "negative-cycle-detected",
+      "init",
+      "k-start",
+      "inspect-pair",
+      "update-distance",
+      "k-complete",
+      "negative-cycle-check",
+      "negative-cycle-detected",
       "complete",
     ]);
     const { events } = floydWarshall(CLASSIC);
@@ -259,7 +293,9 @@ describe("floydWarshallDebug - matrix projector", () => {
 
   it("tracks k progression and the current pair", () => {
     const steps = floydWarshallDebug(CLASSIC);
-    const kStarts = steps.filter((s) => s.kNode && s.log.includes("Intermediate"));
+    const kStarts = steps.filter(
+      (s) => s.kNode && s.log.includes("Intermediate"),
+    );
     expect(kStarts.map((s) => s.kNode)).toEqual(["A", "B", "C", "D"]);
     const pairStep = steps.find((s) => s.pair);
     expect(pairStep.pair).toHaveLength(2);

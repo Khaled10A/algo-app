@@ -49,7 +49,10 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
         break;
       }
       case "build-start": {
-        Object.assign(vars, { phase: "build max heap", boundary: String(event.boundary) });
+        Object.assign(vars, {
+          phase: "build max heap",
+          boundary: String(event.boundary),
+        });
         Object.assign(memory, { array: `[${array.join(", ")}]` });
         callStack.push("  └ build max heap");
         log = "Build max heap — sift down from the last parent";
@@ -84,7 +87,10 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
         break;
       }
       case "build-complete": {
-        Object.assign(vars, { phase: "max heap built", boundary: String(event.boundary) });
+        Object.assign(vars, {
+          phase: "max heap built",
+          boundary: String(event.boundary),
+        });
         Object.assign(memory, { array: `[${array.join(", ")}]` });
         callStack.push("  └ max heap built");
         log = "Max heap built — every parent ≥ its children";
@@ -115,13 +121,15 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
           "input index": String(event.inputIndex),
           value: String(event.value),
           "count slot": String(event.countIndex),
-          "count": String(event.count),
+          count: String(event.count),
         });
         Object.assign(memory, {
           "count array": `[${countArray.join(", ")}]`,
           array: `[${array.join(", ")}]`,
         });
-        callStack.push(`  └ count a[${event.inputIndex}] → slot ${event.countIndex}`);
+        callStack.push(
+          `  └ count a[${event.inputIndex}] → slot ${event.countIndex}`,
+        );
         log = `Count a[${event.inputIndex}]=${event.value} → slot ${event.countIndex} (now ${event.count})`;
         break;
       }
@@ -165,7 +173,9 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
         Object.assign(memory, {
           output: `[${event.output.map((v) => (v === null ? "·" : v)).join(", ")}]`,
         });
-        callStack.push(`  └ place ${event.value} at output[${event.outputIndex}]`);
+        callStack.push(
+          `  └ place ${event.value} at output[${event.outputIndex}]`,
+        );
         log = `Place ${event.value} at output[${event.outputIndex}]`;
         break;
       }
@@ -178,7 +188,9 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
           place: String(event.place),
           phase: "counting by digit",
         });
-        Object.assign(memory, { "count array": "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]" });
+        Object.assign(memory, {
+          "count array": "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]",
+        });
         callStack.push(`  └ digit pass ${event.pass} (place ${event.place})`);
         log = `Digit pass ${event.pass} of ${event.totalPasses} — sorting by place ${event.place}`;
         break;
@@ -226,7 +238,10 @@ export function projectSortingEvents(events, { lineMap, label = "heapSort" }) {
       countArray: countArray ? [...countArray] : undefined,
       countIndex,
       output: output ? [...output] : undefined,
-      pass: currentPass !== null && totalPassesVal !== null ? `${currentPass} / ${totalPassesVal}` : undefined,
+      pass:
+        currentPass !== null && totalPassesVal !== null
+          ? `${currentPass} / ${totalPassesVal}`
+          : undefined,
       place: currentPlace,
       complete,
     });

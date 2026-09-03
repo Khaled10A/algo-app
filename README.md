@@ -8,17 +8,17 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 
 ## Features
 
-| Section | Description |
-|-----|-------------|
-| **Benchmark** | Run algorithms against multiple input sizes and types; compare execution time or comparison counts via line and bar charts. Measurements use warmup iterations and median aggregation, run in a Web Worker, and share identical inputs across algorithms for fair comparison. |
-| **Visualizer** | Watch sorting algorithms execute step by step with animated array bars; requestAnimationFrame-based playback with speed presets. |
-| **Debugger** | Step through any algorithm with a live view of variables, memory state, call stack, and per-line highlighting. Covers all five sorting algorithms, Binary Search (with found/not-found targets), and Brute Force / Horspool / KMP string matching. |
-| **Graphs** | First-class graph domain: DFS & BFS traversal, Dijkstra and Bellman-Ford shortest paths (weighted graphs, negative edges, negative-cycle detection, priority-queue visualization, distance badges, predecessor tree) over an interactive SVG graph. |
-| **Complexity** | Time and space complexity reference table with Big-O for best, average, and worst cases, plus side-by-side comparison runs. |
-| **Pseudocode** | Clean pseudocode panel for every supported algorithm. |
-| **History** | Track and compare up to 20 previous benchmark runs side by side. Persisted across sessions. |
-| **Report** | Auto-generated summary of results with export options. |
-| **AI Assistant** | Ask questions about algorithm behaviour and results (Arabic/English). Requests are proxied through a serverless function — no API key ships to the browser. |
+| Section          | Description                                                                                                                                                                                                                                                                   |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Benchmark**    | Run algorithms against multiple input sizes and types; compare execution time or comparison counts via line and bar charts. Measurements use warmup iterations and median aggregation, run in a Web Worker, and share identical inputs across algorithms for fair comparison. |
+| **Visualizer**   | Watch sorting algorithms execute step by step with animated array bars; requestAnimationFrame-based playback with speed presets.                                                                                                                                              |
+| **Debugger**     | Step through any algorithm with a live view of variables, memory state, call stack, and per-line highlighting. Covers all five sorting algorithms, Binary Search (with found/not-found targets), and Brute Force / Horspool / KMP string matching.                            |
+| **Graphs**       | First-class graph domain: DFS & BFS traversal, Dijkstra and Bellman-Ford shortest paths (weighted graphs, negative edges, negative-cycle detection, priority-queue visualization, distance badges, predecessor tree) over an interactive SVG graph.                           |
+| **Complexity**   | Time and space complexity reference table with Big-O for best, average, and worst cases, plus side-by-side comparison runs.                                                                                                                                                   |
+| **Pseudocode**   | Clean pseudocode panel for every supported algorithm.                                                                                                                                                                                                                         |
+| **History**      | Track and compare up to 20 previous benchmark runs side by side. Persisted across sessions.                                                                                                                                                                                   |
+| **Report**       | Auto-generated summary of results with export options.                                                                                                                                                                                                                        |
+| **AI Assistant** | Ask questions about algorithm behaviour and results (Arabic/English). Requests are proxied through a serverless function — no API key ships to the browser.                                                                                                                   |
 
 ---
 
@@ -26,31 +26,31 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 
 ### Sorting
 
-| Algorithm | Paradigm | Best | Average | Worst | Space |
-|-----------|----------|------|---------|-------|-------|
-| Insertion Sort | Decrease & Conquer | O(n) | O(n²) | O(n²) | O(1) |
-| Selection Sort | Brute Force | O(n²) | O(n²) | O(n²) | O(1) |
-| Bubble Sort | Brute Force | O(n) | O(n²) | O(n²) | O(1) |
-| Merge Sort | Divide & Conquer | O(n log n) | O(n log n) | O(n log n) | O(n) |
-| Quick Sort | Divide & Conquer | O(n log n) | O(n log n) | O(n²) | O(log n) |
+| Algorithm      | Paradigm           | Best       | Average    | Worst      | Space    |
+| -------------- | ------------------ | ---------- | ---------- | ---------- | -------- |
+| Insertion Sort | Decrease & Conquer | O(n)       | O(n²)      | O(n²)      | O(1)     |
+| Selection Sort | Brute Force        | O(n²)      | O(n²)      | O(n²)      | O(1)     |
+| Bubble Sort    | Brute Force        | O(n)       | O(n²)      | O(n²)      | O(1)     |
+| Merge Sort     | Divide & Conquer   | O(n log n) | O(n log n) | O(n log n) | O(n)     |
+| Quick Sort     | Divide & Conquer   | O(n log n) | O(n log n) | O(n²)      | O(log n) |
 
 ### Searching
 
-| Algorithm | Paradigm | Best | Average | Worst | Space |
-|-----------|----------|------|---------|-------|-------|
-| Binary Search | Decrease & Conquer | O(1) | O(log n) | O(log n) | O(1) |
-| Brute Force | Brute Force | O(n) | O(n×m) | O(n×m) | O(1) |
-| Horspool | Transform & Conquer | O(n/m) | O(n/m) | O(n×m) | O(σ) |
-| KMP | Dynamic Programming | O(n) | O(n+m) | O(n+m) | O(m) |
+| Algorithm     | Paradigm            | Best   | Average  | Worst    | Space |
+| ------------- | ------------------- | ------ | -------- | -------- | ----- |
+| Binary Search | Decrease & Conquer  | O(1)   | O(log n) | O(log n) | O(1)  |
+| Brute Force   | Brute Force         | O(n)   | O(n×m)   | O(n×m)   | O(1)  |
+| Horspool      | Transform & Conquer | O(n/m) | O(n/m)   | O(n×m)   | O(σ)  |
+| KMP           | Dynamic Programming | O(n)   | O(n+m)   | O(n+m)   | O(m)  |
 
 ### Graph Traversal
 
-| Algorithm | Paradigm | Best | Average | Worst | Space |
-|-----------|----------|------|---------|-------|-------|
-| BFS | Graph Traversal | O(V+E) | O(V+E) | O(V+E) | O(V) |
-| DFS | Graph Traversal | O(V+E) | O(V+E) | O(V+E) | O(V) |
-| Dijkstra | Greedy / Shortest Paths | O((V+E) log V) | O((V+E) log V) | O((V+E) log V) | O(V+E) |
-| Bellman-Ford | Dynamic Programming / Shortest Paths | O(V·E) | O(V·E) | O(V·E) | O(V) |
+| Algorithm    | Paradigm                             | Best           | Average        | Worst          | Space  |
+| ------------ | ------------------------------------ | -------------- | -------------- | -------------- | ------ |
+| BFS          | Graph Traversal                      | O(V+E)         | O(V+E)         | O(V+E)         | O(V)   |
+| DFS          | Graph Traversal                      | O(V+E)         | O(V+E)         | O(V+E)         | O(V)   |
+| Dijkstra     | Greedy / Shortest Paths              | O((V+E) log V) | O((V+E) log V) | O((V+E) log V) | O(V+E) |
+| Bellman-Ford | Dynamic Programming / Shortest Paths | O(V·E)         | O(V·E)         | O(V·E)         | O(V)   |
 
 ---
 

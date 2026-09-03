@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { runBenchmark, BenchmarkCancelledError } from "../core/benchmark/runner";
+import {
+  runBenchmark,
+  BenchmarkCancelledError,
+} from "../core/benchmark/runner";
 import { validateSpec, parseNumberList } from "../core/benchmark/jobs";
 import { usePersistentState } from "./usePersistentState";
 
 let idCounter = 0;
 function makeRunId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID();
   }
   idCounter += 1;
@@ -16,12 +22,20 @@ function describeBenchmarkError(err) {
   if (err instanceof BenchmarkCancelledError || err?.cancelled) return null;
   if (err?.timeout) return err.message;
   if (err instanceof TypeError) return `Benchmark failed: ${err.message}`;
-  return err?.message ? `Benchmark failed: ${err.message}` : "Benchmark failed unexpectedly.";
+  return err?.message
+    ? `Benchmark failed: ${err.message}`
+    : "Benchmark failed unexpectedly.";
 }
 
 export function useBenchmarks() {
-  const [sortResults, setSortResults] = usePersistentState("results:sort", null);
-  const [searchResults, setSearchResults] = usePersistentState("results:search", null);
+  const [sortResults, setSortResults] = usePersistentState(
+    "results:sort",
+    null,
+  );
+  const [searchResults, setSearchResults] = usePersistentState(
+    "results:search",
+    null,
+  );
   const [sortRunning, setSortRunning] = useState(false);
   const [searchRunning, setSearchRunning] = useState(false);
   const [sortError, setSortError] = useState(null);
@@ -35,7 +49,7 @@ export function useBenchmarks() {
       sortAbortRef.current?.abort();
       searchAbortRef.current?.abort();
     },
-    []
+    [],
   );
 
   function begin(kind, abortRef, setError) {
@@ -62,10 +76,26 @@ export function useBenchmarks() {
   }, []);
 
   const runSort = useCallback(
-    async ({ algoIds, types, sizesStr, metric, inputMode, customArrayStr, label }) => {
+    async ({
+      algoIds,
+      types,
+      sizesStr,
+      metric,
+      inputMode,
+      customArrayStr,
+      label,
+    }) => {
       if (sortAbortRef.current) return;
       const sizes = parseNumberList(sizesStr);
-      const spec = { kind: "sorting", algoIds, types, sizes, inputMode, customArrayStr, metric };
+      const spec = {
+        kind: "sorting",
+        algoIds,
+        types,
+        sizes,
+        inputMode,
+        customArrayStr,
+        metric,
+      };
       const error = validateSpec(spec);
       if (error) {
         setSortError(error);
@@ -78,7 +108,9 @@ export function useBenchmarks() {
       try {
         const results = await runBenchmark(spec, { signal: controller.signal });
         const sizesOut =
-          inputMode === "custom" ? [parseNumberList(customArrayStr).length] : sizes;
+          inputMode === "custom"
+            ? [parseNumberList(customArrayStr).length]
+            : sizes;
         const envelope = {
           id: makeRunId(),
           kind: "sorting",
@@ -104,11 +136,21 @@ export function useBenchmarks() {
         }
       }
     },
-    [setSortResults]
+    [setSortResults],
   );
 
   const runSearch = useCallback(
-    async ({ algoIds, scenarios, sizesStr, metric, inputMode, pattern, text, fileName, label }) => {
+    async ({
+      algoIds,
+      scenarios,
+      sizesStr,
+      metric,
+      inputMode,
+      pattern,
+      text,
+      fileName,
+      label,
+    }) => {
       if (searchAbortRef.current) return;
       const spec =
         inputMode === "file"
@@ -174,7 +216,7 @@ export function useBenchmarks() {
         }
       }
     },
-    [setSearchResults]
+    [setSearchResults],
   );
 
   return {

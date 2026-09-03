@@ -3,13 +3,26 @@ import { kruskal } from "./kruskal";
 import { kruskalDebug, KRUSKAL_LINE_MAP } from "./kruskalDebug";
 import { GRAPH_KRUSKAL_CODE_LINES } from "./descriptors";
 import { prim } from "./prim";
-import { createDefaultGraph, addEdge, removeNode } from "./graph";
 
 const CONNECTED = {
-  A: [["B", 4], ["C", 2]],
-  B: [["A", 4], ["C", 1], ["D", 5]],
-  C: [["A", 2], ["B", 1], ["D", 8]],
-  D: [["B", 5], ["C", 8]],
+  A: [
+    ["B", 4],
+    ["C", 2],
+  ],
+  B: [
+    ["A", 4],
+    ["C", 1],
+    ["D", 5],
+  ],
+  C: [
+    ["A", 2],
+    ["B", 1],
+    ["D", 8],
+  ],
+  D: [
+    ["B", 5],
+    ["C", 8],
+  ],
 };
 
 function edgeSet(edges) {
@@ -49,14 +62,22 @@ describe("kruskal - correctness", () => {
   });
 
   it("matches Prim total weight on the same graph", () => {
-    expect(kruskal(CONNECTED).totalWeight).toBe(prim(CONNECTED, "A").totalWeight);
+    expect(kruskal(CONNECTED).totalWeight).toBe(
+      prim(CONNECTED, "A").totalWeight,
+    );
   });
 
   it("handles graphs with cycles", () => {
     const graph = {
       A: [["B", 1]],
-      B: [["A", 1], ["C", 2]],
-      C: [["B", 2], ["A", 3]],
+      B: [
+        ["A", 1],
+        ["C", 2],
+      ],
+      C: [
+        ["B", 2],
+        ["A", 3],
+      ],
     };
     const { edges, totalWeight } = kruskal(graph);
     expect(edges).toHaveLength(2);
@@ -78,7 +99,10 @@ describe("kruskal - correctness", () => {
   });
 
   it("handles a single-node graph", () => {
-    const { edges, totalWeight, connected, treeCount } = kruskal({ A: [] }, "A");
+    const { edges, totalWeight, connected, treeCount } = kruskal(
+      { A: [] },
+      "A",
+    );
     expect(edges).toEqual([]);
     expect(totalWeight).toBe(0);
     expect(connected).toBe(true);
@@ -95,9 +119,18 @@ describe("kruskal - correctness", () => {
 
   it("resolves multiple equal-weight edges deterministically", () => {
     const graph = {
-      A: [["B", 1], ["C", 1]],
-      B: [["A", 1], ["C", 1]],
-      C: [["A", 1], ["B", 1]],
+      A: [
+        ["B", 1],
+        ["C", 1],
+      ],
+      B: [
+        ["A", 1],
+        ["C", 1],
+      ],
+      C: [
+        ["A", 1],
+        ["B", 1],
+      ],
     };
     const a = kruskal(graph);
     expect(a.totalWeight).toBe(2);
@@ -125,8 +158,15 @@ describe("kruskal - validation", () => {
 describe("kruskal - event model", () => {
   it("emits only the shared MST event vocabulary", () => {
     const allowed = new Set([
-      "init", "start-node", "visit-node", "enqueue-edge", "inspect-edge",
-      "reject-edge", "select-edge", "disconnected", "complete",
+      "init",
+      "start-node",
+      "visit-node",
+      "enqueue-edge",
+      "inspect-edge",
+      "reject-edge",
+      "select-edge",
+      "disconnected",
+      "complete",
     ]);
     const { events } = kruskal(CONNECTED);
     for (const e of events) expect(allowed.has(e.type)).toBe(true);

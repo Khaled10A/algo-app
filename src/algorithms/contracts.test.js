@@ -62,7 +62,7 @@ describe("run/steps/debug equivalence (sorting)", () => {
         [2, 2, 2],
         [5, -1, 3, 3, 0, 12, -4],
         ...Array.from({ length: 8 }, () =>
-          randomArray(Math.floor(Math.random() * 40) + 1)
+          randomArray(Math.floor(Math.random() * 40) + 1),
         ),
       ];
       for (const arr of inputs) {
@@ -85,12 +85,15 @@ describe("run/steps/debug equivalence (sorting)", () => {
           expect(dbg[dbg.length - 1].arr).toEqual(expected);
         }
       }
-    }
+    },
   );
 });
 
 describe("debug snapshot invariants", () => {
-  const debuggables = [...getWithDebug("sorting"), ...getWithDebug("searching")];
+  const debuggables = [
+    ...getWithDebug("sorting"),
+    ...getWithDebug("searching"),
+  ];
 
   it.each(debuggables.map((d) => [d.id, d]))(
     "%s: snapshots stay within codeLines bounds and carry required fields",
@@ -117,7 +120,7 @@ describe("debug snapshot invariants", () => {
         }
         expect(steps[steps.length - 1].log).toMatch(/Done|not found|Found!/i);
       }
-    }
+    },
   );
 
   it("mergeSortDebug highlights real indices", () => {
@@ -154,7 +157,9 @@ describe("debug snapshot invariants", () => {
 });
 
 describe("run/debug equivalence (string searching)", () => {
-  const stringMatchers = getWithDebug("searching").filter((d) => d.group === "string");
+  const stringMatchers = getWithDebug("searching").filter(
+    (d) => d.group === "string",
+  );
 
   it.each(stringMatchers.map((d) => [d.id, d]))(
     "%s: final matchPositions equal run() matches",
@@ -173,7 +178,7 @@ describe("run/debug equivalence (string searching)", () => {
         const dbg = d.debug(text, pattern);
         expect(dbg[dbg.length - 1].matchPositions).toEqual(expected);
       }
-    }
+    },
   );
 
   it.each(stringMatchers.map((d) => [d.id, d]))(
@@ -181,7 +186,7 @@ describe("run/debug equivalence (string searching)", () => {
     (_id, d) => {
       expect(d.run("aaaa", "aaa").matches).toEqual([0, 1]);
       expect(d.run("aaaaa", "aa").matches).toEqual([0, 1, 2, 3]);
-    }
+    },
   );
 });
 

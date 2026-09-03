@@ -45,7 +45,7 @@ export function usePlayback({ length = 0, initialSpeed = 400, onFinish }) {
       }
       rafRef.current = requestAnimationFrame(loop);
     },
-    [stopLoop]
+    [stopLoop],
   );
 
   const pause = useCallback(() => {
@@ -68,11 +68,14 @@ export function usePlayback({ length = 0, initialSpeed = 400, onFinish }) {
   const goTo = useCallback(
     (n) => {
       pause();
-      const clamped = Math.max(0, Math.min(Math.max(0, lengthRef.current - 1), n));
+      const clamped = Math.max(
+        0,
+        Math.min(Math.max(0, lengthRef.current - 1), n),
+      );
       indexRef.current = clamped;
       setIndex(clamped);
     },
-    [pause]
+    [pause],
   );
 
   const next = useCallback(() => goTo(indexRef.current + 1), [goTo]);
@@ -83,5 +86,18 @@ export function usePlayback({ length = 0, initialSpeed = 400, onFinish }) {
 
   useEffect(() => stopLoop, [stopLoop]);
 
-  return { index, setStep: goTo, playing, play, pause, toggle: playing ? pause : play, next, prev, reset, goToEnd: jumpToEnd, speed, setSpeed };
+  return {
+    index,
+    setStep: goTo,
+    playing,
+    play,
+    pause,
+    toggle: playing ? pause : play,
+    next,
+    prev,
+    reset,
+    goToEnd: jumpToEnd,
+    speed,
+    setSpeed,
+  };
 }

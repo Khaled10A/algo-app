@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // Strict Content-Security-Policy for the built app. The main app loads no
 // remote scripts, styles, fonts or images (system font stacks only), so the
@@ -16,7 +16,7 @@ const CSP_CONTENT = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-].join('; ');
+].join("; ");
 
 // Inject the CSP <meta> only on production builds. A static <meta> in
 // index.html would also apply during `npm run dev`, where Vite injects an
@@ -24,21 +24,16 @@ const CSP_CONTENT = [
 // script-src/style-src would block.
 function cspMetaPlugin() {
   return {
-    name: 'inject-csp-meta',
-    apply: 'build',
-    enforce: 'post',
+    name: "inject-csp-meta",
+    apply: "build",
+    enforce: "post",
     transformIndexHtml(html) {
       const meta = `    <meta http-equiv="Content-Security-Policy" content="${CSP_CONTENT}" />\n  </head>`;
-      return html.replace('</head>', meta);
+      return html.replace("</head>", meta);
     },
   };
 }
 
 export default defineConfig({
   plugins: [react(), cspMetaPlugin()],
-  test: {
-    // Repairs window.localStorage/sessionStorage under Vitest's jsdom
-    // environment (see ./vitest.setup.js).
-    setupFiles: ["./vitest.setup.js"],
-  },
-})
+});

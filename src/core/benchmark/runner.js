@@ -1,4 +1,4 @@
-import { executeSpec, isWithinSyncBudget } from './jobs';
+import { executeSpec, isWithinSyncBudget } from "./jobs";
 
 export class BenchmarkCancelledError extends Error {
   constructor() {
@@ -11,7 +11,7 @@ export class BenchmarkCancelledError extends Error {
 export class BenchmarkTimeoutError extends Error {
   constructor(timeoutMs) {
     super(
-      `Benchmark stopped after ${Math.round(timeoutMs / 1000)}s — likely too much work for these input sizes. Reduce the sizes and try again.`
+      `Benchmark stopped after ${Math.round(timeoutMs / 1000)}s — likely too much work for these input sizes. Reduce the sizes and try again.`,
     );
     this.name = "BenchmarkTimeoutError";
     this.timeout = true;
@@ -30,7 +30,9 @@ const WORKERS_ENABLED =
 
 function tryCreateWorker() {
   try {
-    return new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
+    return new Worker(new URL("./worker.js", import.meta.url), {
+      type: "module",
+    });
   } catch {
     return null;
   }
@@ -93,8 +95,8 @@ export function runBenchmark(spec, { signal, timeoutMs = 120000 } = {}) {
       if (!isWithinSyncBudget(spec)) {
         finishReject(
           new BenchmarkBudgetError(
-            "Background benchmarking is unavailable in this environment and these inputs are too large to run safely on the main thread. Reduce the input sizes."
-          )
+            "Background benchmarking is unavailable in this environment and these inputs are too large to run safely on the main thread. Reduce the input sizes.",
+          ),
         );
         return;
       }
@@ -122,12 +124,10 @@ export function runBenchmark(spec, { signal, timeoutMs = 120000 } = {}) {
         try {
           finishResolve(executeSpec(spec));
           return;
-        } catch {
-          
-        }
+        } catch {}
       }
       finishReject(
-        new Error(event.message || "Benchmark worker failed unexpectedly")
+        new Error(event.message || "Benchmark worker failed unexpectedly"),
       );
     };
 

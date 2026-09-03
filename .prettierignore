@@ -1,0 +1,8 @@
+dist/
+node_modules/
+coverage/
+landing/
+package-lock.json
+.opencode/
+.design-rules/
+PROJECT_DOCUMENTATION.md

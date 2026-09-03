@@ -34,8 +34,10 @@ export const PALETTES = {
     btnDisabledBg: "rgba(255, 255, 255, 0.08)",
     btnDisabledText: "rgba(235, 235, 245, 0.35)",
     shadowCard: "0 1px 2px rgba(0, 0, 0, 0.22), 0 6px 20px rgba(0, 0, 0, 0.14)",
-    shadowFloat: "0 4px 12px rgba(0, 0, 0, 0.22), 0 14px 36px rgba(0, 0, 0, 0.18)",
-    shadowPopover: "0 12px 32px rgba(0, 0, 0, 0.38), 0 32px 80px rgba(0, 0, 0, 0.42)",
+    shadowFloat:
+      "0 4px 12px rgba(0, 0, 0, 0.22), 0 14px 36px rgba(0, 0, 0, 0.18)",
+    shadowPopover:
+      "0 12px 32px rgba(0, 0, 0, 0.38), 0 32px 80px rgba(0, 0, 0, 0.42)",
     scrim: "rgba(0, 0, 0, 0.42)",
     onAccent: "#ffffff",
   },
@@ -74,8 +76,10 @@ export const PALETTES = {
     btnDisabledBg: "rgba(0, 0, 0, 0.05)",
     btnDisabledText: "rgba(60, 60, 67, 0.4)",
     shadowCard: "0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 20px rgba(0, 0, 0, 0.06)",
-    shadowFloat: "0 4px 12px rgba(0, 0, 0, 0.06), 0 14px 36px rgba(0, 0, 0, 0.08)",
-    shadowPopover: "0 12px 32px rgba(0, 0, 0, 0.12), 0 32px 80px rgba(0, 0, 0, 0.16)",
+    shadowFloat:
+      "0 4px 12px rgba(0, 0, 0, 0.06), 0 14px 36px rgba(0, 0, 0, 0.08)",
+    shadowPopover:
+      "0 12px 32px rgba(0, 0, 0, 0.12), 0 32px 80px rgba(0, 0, 0, 0.16)",
     scrim: "rgba(0, 0, 0, 0.32)",
     onAccent: "#ffffff",
   },

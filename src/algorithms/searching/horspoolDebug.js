@@ -4,9 +4,18 @@
  */
 export function horspoolDebug(text, pattern) {
   const steps = [];
-  const n = text.length, m = pattern.length;
+  const n = text.length,
+    m = pattern.length;
 
-  const snap = (activeLine, vars, log, highlightText = [], highlightPat = [], matches = [], shiftTable = {}) =>
+  const snap = (
+    activeLine,
+    vars,
+    log,
+    highlightText = [],
+    highlightPat = [],
+    matches = [],
+    shiftTable = {},
+  ) =>
     steps.push({
       activeLine,
       vars,
@@ -32,21 +41,37 @@ export function horspoolDebug(text, pattern) {
         vars.phase === "build"
           ? `  └ build shift table`
           : vars.k !== undefined
-          ? `  └ compare right-to-left  k=${vars.k}`
-          : vars.i !== undefined
-          ? `  └ aligned at i=${vars.i}`
-          : "  └ init",
+            ? `  └ compare right-to-left  k=${vars.k}`
+            : vars.i !== undefined
+              ? `  └ aligned at i=${vars.i}`
+              : "  └ init",
       ],
     });
 
   if (m === 0 || m > n) {
-    snap(0, {}, "Pattern empty or longer than text — no search needed.", [], [], [], {});
+    snap(
+      0,
+      {},
+      "Pattern empty or longer than text — no search needed.",
+      [],
+      [],
+      [],
+      {},
+    );
     return steps;
   }
 
   // ── Build shift table ────────────────────────────────────
   const shift = {};
-  snap(0, { phase: "build" }, "Phase 1: Build bad-character shift table", [], [], [], {});
+  snap(
+    0,
+    { phase: "build" },
+    "Phase 1: Build bad-character shift table",
+    [],
+    [],
+    [],
+    {},
+  );
 
   for (let i = 0; i < m - 1; i++) {
     shift[pattern[i]] = m - 1 - i;
@@ -60,20 +85,36 @@ export function horspoolDebug(text, pattern) {
       { ...shift },
     );
   }
-  snap(2, { phase: "build" }, `Table ready. Unknown chars shift by m=${m}`, [], [], [], { ...shift });
+  snap(
+    2,
+    { phase: "build" },
+    `Table ready. Unknown chars shift by m=${m}`,
+    [],
+    [],
+    [],
+    { ...shift },
+  );
 
   // ── Search ───────────────────────────────────────────────
   const found = [];
-  let i = m - 1;  // i points to the rightmost char of the current window
+  let i = m - 1; // i points to the rightmost char of the current window
 
   while (i < n) {
-    snap(3, { i }, `Align window: text[${i - m + 1}..${i}] vs pattern`, 
-      Array.from({ length: m }, (_, k) => i - m + 1 + k), [], found, { ...shift });
+    snap(
+      3,
+      { i },
+      `Align window: text[${i - m + 1}..${i}] vs pattern`,
+      Array.from({ length: m }, (_, k) => i - m + 1 + k),
+      [],
+      found,
+      { ...shift },
+    );
 
     let k = 0;
     // compare right-to-left
     while (k < m) {
-      const ti = i - k, pi = m - 1 - k;
+      const ti = i - k,
+        pi = m - 1 - k;
       snap(
         4,
         { i, k },
@@ -85,7 +126,15 @@ export function horspoolDebug(text, pattern) {
       );
 
       if (text[ti] !== pattern[pi]) {
-        snap(5, { i, k }, `Mismatch '${text[ti]}' ≠ '${pattern[pi]}'`, [ti], [pi], found, { ...shift });
+        snap(
+          5,
+          { i, k },
+          `Mismatch '${text[ti]}' ≠ '${pattern[pi]}'`,
+          [ti],
+          [pi],
+          found,
+          { ...shift },
+        );
         break;
       }
       k++;
@@ -93,20 +142,39 @@ export function horspoolDebug(text, pattern) {
 
     if (k === m) {
       found.push(i - m + 1);
-      snap(6, { i, k }, `✓ Match at index ${i - m + 1}!`,
+      snap(
+        6,
+        { i, k },
+        `✓ Match at index ${i - m + 1}!`,
         Array.from({ length: m }, (_, x) => i - m + 1 + x),
         Array.from({ length: m }, (_, x) => x),
-        found, { ...shift });
+        found,
+        { ...shift },
+      );
     }
 
     const badChar = text[i];
     const s = shift[badChar] !== undefined ? shift[badChar] : m;
-    snap(7, { i, shift: s },
+    snap(
+      7,
+      { i, shift: s },
       `Bad char text[${i}]='${badChar}' → shift by ${s}`,
-      [i], [], found, { ...shift });
+      [i],
+      [],
+      found,
+      { ...shift },
+    );
     i += s;
   }
 
-  snap(8, {}, `Done! ${found.length} match(es): [${found.join(", ")}]`, [], [], found, { ...shift });
+  snap(
+    8,
+    {},
+    `Done! ${found.length} match(es): [${found.join(", ")}]`,
+    [],
+    [],
+    found,
+    { ...shift },
+  );
   return steps;
 }

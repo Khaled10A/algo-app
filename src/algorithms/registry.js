@@ -1,6 +1,6 @@
-import { sortingDescriptors } from './sorting/descriptors';
-import { searchingDescriptors } from './searching/descriptors';
-import { graphDescriptors } from './graphs/descriptors';
+import { sortingDescriptors } from "./sorting/descriptors";
+import { searchingDescriptors } from "./searching/descriptors";
+import { graphDescriptors } from "./graphs/descriptors";
 
 export const ALL_DESCRIPTORS = [
   ...sortingDescriptors,
@@ -14,12 +14,29 @@ export const DOMAINS = [
   {
     id: "sorting",
     label: "Sorting",
-    subTabs: ["benchmark", "visualizer", "complexity", "pseudocode", "history", "report", "debugger", "ai"],
+    subTabs: [
+      "benchmark",
+      "visualizer",
+      "complexity",
+      "pseudocode",
+      "history",
+      "report",
+      "debugger",
+      "ai",
+    ],
   },
   {
     id: "searching",
     label: "String Matching",
-    subTabs: ["benchmark", "complexity", "pseudocode", "history", "report", "debugger", "ai"],
+    subTabs: [
+      "benchmark",
+      "complexity",
+      "pseudocode",
+      "history",
+      "report",
+      "debugger",
+      "ai",
+    ],
   },
   {
     id: "graphs",
@@ -87,6 +104,6 @@ export function getWithSteps(category) {
 export function getWithDebug(categories) {
   const cats = Array.isArray(categories) ? categories : [categories];
   return ALL_DESCRIPTORS.filter(
-    (d) => cats.includes(d.category) && typeof d.debug === "function"
+    (d) => cats.includes(d.category) && typeof d.debug === "function",
   );
 }

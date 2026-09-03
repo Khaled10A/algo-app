@@ -6,10 +6,24 @@ import { createDefaultGraph, createEmptyGraph } from "./graph";
 import { MinHeap } from "../../core/structures/minHeap";
 
 const CONNECTED = {
-  A: [["B", 4], ["C", 2]],
-  B: [["A", 4], ["C", 1], ["D", 5]],
-  C: [["A", 2], ["B", 1], ["D", 8]],
-  D: [["B", 5], ["C", 8]],
+  A: [
+    ["B", 4],
+    ["C", 2],
+  ],
+  B: [
+    ["A", 4],
+    ["C", 1],
+    ["D", 5],
+  ],
+  C: [
+    ["A", 2],
+    ["B", 1],
+    ["D", 8],
+  ],
+  D: [
+    ["B", 5],
+    ["C", 8],
+  ],
 };
 
 function edgeSet(edges) {
@@ -39,7 +53,7 @@ describe("prim — correctness", () => {
 
   it("produces the same total weight from any start node", () => {
     const totals = ["A", "B", "C", "D"].map(
-      (n) => prim(CONNECTED, n).totalWeight
+      (n) => prim(CONNECTED, n).totalWeight,
     );
     expect(new Set(totals)).toHaveProperty("size", 1);
     expect(totals[0]).toBe(8);
@@ -47,9 +61,18 @@ describe("prim — correctness", () => {
 
   it("breaks equal-weight ties deterministically", () => {
     const graph = {
-      A: [["B", 1], ["C", 1]],
-      B: [["A", 1], ["C", 1]],
-      C: [["A", 1], ["B", 1]],
+      A: [
+        ["B", 1],
+        ["C", 1],
+      ],
+      B: [
+        ["A", 1],
+        ["C", 1],
+      ],
+      C: [
+        ["A", 1],
+        ["B", 1],
+      ],
     };
     const a = prim(graph, "A");
     const b = prim(graph, "A");
@@ -61,8 +84,14 @@ describe("prim — correctness", () => {
   it("handles graphs with cycles", () => {
     const graph = {
       A: [["B", 1]],
-      B: [["A", 1], ["C", 2]],
-      C: [["B", 2], ["A", 3]],
+      B: [
+        ["A", 1],
+        ["C", 2],
+      ],
+      C: [
+        ["B", 2],
+        ["A", 3],
+      ],
     };
     const { edges, totalWeight } = prim(graph, "A");
     expect(edges).toHaveLength(2);
@@ -72,7 +101,7 @@ describe("prim — correctness", () => {
   it("handles a single-node graph", () => {
     const { edges, totalWeight, visitedOrder, connected, treeCount } = prim(
       { A: [] },
-      "A"
+      "A",
     );
     expect(edges).toEqual([]);
     expect(totalWeight).toBe(0);
@@ -90,7 +119,7 @@ describe("prim — correctness", () => {
     };
     const { edges, totalWeight, connected, treeCount, events } = prim(
       graph,
-      "A"
+      "A",
     );
     expect(edges).toHaveLength(2);
     expect(totalWeight).toBe(3);
@@ -104,7 +133,7 @@ describe("prim — correctness", () => {
     // G -> D (directed), so Prim from A yields a minimum spanning FOREST.
     const { edges, totalWeight, connected, treeCount } = prim(
       createDefaultGraph(),
-      "A"
+      "A",
     );
     expect(edges).toHaveLength(5);
     expect(totalWeight).toBe(18);
@@ -143,8 +172,15 @@ describe("prim — validation", () => {
 describe("prim — event model", () => {
   it("emits only the documented event vocabulary", () => {
     const allowed = new Set([
-      "init", "start-node", "visit-node", "enqueue-edge", "inspect-edge",
-      "reject-edge", "select-edge", "disconnected", "complete",
+      "init",
+      "start-node",
+      "visit-node",
+      "enqueue-edge",
+      "inspect-edge",
+      "reject-edge",
+      "select-edge",
+      "disconnected",
+      "complete",
     ]);
     const { events } = prim(CONNECTED, "A");
     for (const e of events) expect(allowed.has(e.type)).toBe(true);
@@ -281,7 +317,7 @@ describe("prim — MinHeap interaction", () => {
       (a, b) =>
         a.weight - b.weight ||
         (a.from < b.from ? -1 : a.from > b.from ? 1 : 0) ||
-        (a.to < b.to ? -1 : 1)
+        (a.to < b.to ? -1 : 1),
     );
     heap.push({ from: "A", to: "C", weight: 2 });
     heap.push({ from: "A", to: "B", weight: 2 });

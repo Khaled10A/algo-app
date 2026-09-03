@@ -1,4 +1,4 @@
-import { executeSpec } from './jobs';
+import { executeSpec } from "./jobs";
 
 self.onmessage = (event) => {
   const spec = event.data;

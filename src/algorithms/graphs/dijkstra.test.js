@@ -5,12 +5,32 @@ import { GRAPH_DIJKSTRA_CODE_LINES } from "./descriptors";
 import { MinHeap } from "../../core/structures/minHeap";
 
 const WEIGHTED = {
-  A: [["B", 4], ["D", 2]],
-  B: [["A", 4], ["C", 5], ["E", 10]],
-  C: [["B", 5], ["F", 3]],
-  D: [["A", 2], ["E", 7]],
-  E: [["B", 10], ["D", 7], ["F", 4]],
-  F: [["C", 3], ["E", 4]],
+  A: [
+    ["B", 4],
+    ["D", 2],
+  ],
+  B: [
+    ["A", 4],
+    ["C", 5],
+    ["E", 10],
+  ],
+  C: [
+    ["B", 5],
+    ["F", 3],
+  ],
+  D: [
+    ["A", 2],
+    ["E", 7],
+  ],
+  E: [
+    ["B", 10],
+    ["D", 7],
+    ["F", 4],
+  ],
+  F: [
+    ["C", 3],
+    ["E", 4],
+  ],
   G: [["D", 3]],
 };
 
@@ -29,9 +49,23 @@ const EVENT_TYPES = new Set([
 describe("dijkstra — correctness", () => {
   it("computes correct distances and predecessors on a weighted graph", () => {
     const { distances, previous, visitedOrder } = dijkstra(WEIGHTED, "A");
-    expect(distances).toEqual({ A: 0, B: 4, C: 9, D: 2, E: 9, F: 12, G: Infinity });
+    expect(distances).toEqual({
+      A: 0,
+      B: 4,
+      C: 9,
+      D: 2,
+      E: 9,
+      F: 12,
+      G: Infinity,
+    });
     expect(previous).toEqual({
-      A: null, B: "A", C: "B", D: "A", E: "D", F: "C", G: null,
+      A: null,
+      B: "A",
+      C: "B",
+      D: "A",
+      E: "D",
+      F: "C",
+      G: null,
     });
     expect(visitedOrder[0]).toBe("A");
     expect(visitedOrder).not.toContain("G");
@@ -67,7 +101,10 @@ describe("dijkstra — correctness", () => {
 
   it("supports zero-weight edges", () => {
     const graph = {
-      A: [["B", 0], ["C", 3]],
+      A: [
+        ["B", 0],
+        ["C", 3],
+      ],
       B: [["C", 0]],
       C: [],
     };
@@ -78,7 +115,10 @@ describe("dijkstra — correctness", () => {
 
   it("resolves multiple equal shortest paths deterministically (first relaxation wins)", () => {
     const graph = {
-      A: [["B", 1], ["C", 1]],
+      A: [
+        ["B", 1],
+        ["C", 1],
+      ],
       B: [["D", 1]],
       C: [["D", 1]],
       D: [],
@@ -103,7 +143,10 @@ describe("dijkstra — correctness", () => {
     const graph = {
       A: [["B", 1]],
       B: [["C", 1]],
-      C: [["A", 1], ["D", 1]],
+      C: [
+        ["A", 1],
+        ["D", 1],
+      ],
       D: [["B", 1]],
     };
     const { distances, visitedOrder } = dijkstra(graph, "A");
@@ -113,10 +156,24 @@ describe("dijkstra — correctness", () => {
 
   it("works on an undirected-style graph (both directions listed)", () => {
     const graph = {
-      A: [["B", 2], ["C", 5]],
-      B: [["A", 2], ["C", 1], ["D", 4]],
-      C: [["A", 5], ["B", 1], ["D", 1]],
-      D: [["B", 4], ["C", 1]],
+      A: [
+        ["B", 2],
+        ["C", 5],
+      ],
+      B: [
+        ["A", 2],
+        ["C", 1],
+        ["D", 4],
+      ],
+      C: [
+        ["A", 5],
+        ["B", 1],
+        ["D", 1],
+      ],
+      D: [
+        ["B", 4],
+        ["C", 1],
+      ],
     };
     const { distances } = dijkstra(graph, "A");
     expect(distances).toEqual({ A: 0, B: 2, C: 3, D: 4 });
@@ -150,7 +207,11 @@ describe("dijkstra — event model", () => {
   it("starts with init/select and ends with complete", () => {
     const { events } = dijkstra(WEIGHTED, "A");
     expect(events[0].type).toBe("init");
-    expect(events[1]).toMatchObject({ type: "select-node", node: "A", distance: 0 });
+    expect(events[1]).toMatchObject({
+      type: "select-node",
+      node: "A",
+      distance: 0,
+    });
     expect(events.at(-1).type).toBe("complete");
   });
 
@@ -160,10 +221,18 @@ describe("dijkstra — event model", () => {
     expect(relaxes.length).toBeGreaterThan(0);
     for (const e of relaxes) {
       expect(e.oldDistance).toBeGreaterThan(e.newDistance);
-      expect(e.newDistance).toBe(e.weight + Math.min(e.oldDistance, Infinity) === Infinity ? e.newDistance : expect.any(Number));
+      expect(e.newDistance).toBe(
+        e.weight + Math.min(e.oldDistance, Infinity) === Infinity
+          ? e.newDistance
+          : expect.any(Number),
+      );
     }
     const toB = relaxes.find((e) => e.from === "A" && e.to === "B");
-    expect(toB).toMatchObject({ oldDistance: Infinity, newDistance: 4, weight: 4 });
+    expect(toB).toMatchObject({
+      oldDistance: Infinity,
+      newDistance: 4,
+      weight: 4,
+    });
   });
 
   it("is fully deterministic across repeated executions", () => {
@@ -268,7 +337,7 @@ describe("MinHeap", () => {
 
   it("uses a custom comparator with deterministic tie-breaks", () => {
     const heap = new MinHeap(
-      (a, b) => (a.dist - b.dist) || (a.node < b.node ? -1 : 1)
+      (a, b) => a.dist - b.dist || (a.node < b.node ? -1 : 1),
     );
     heap.push({ node: "C", dist: 1 });
     heap.push({ node: "A", dist: 1 });

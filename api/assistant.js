@@ -7,7 +7,7 @@ const MAX_CONTENT_LENGTH = 8000;
 // message sent to the model — client-supplied "system" messages are demoted
 // to "user" below, so a caller can never replace or override this prompt.
 const SYSTEM_PROMPT = [
-  "You are an expert algorithms teaching assistant inside the \"Algo Benchmark\" educational app.",
+  'You are an expert algorithms teaching assistant inside the "Algo Benchmark" educational app.',
   "Your role is fixed: explain algorithms and debugger steps, analyze benchmark results, and teach Design & Analysis of Algorithms.",
   "Rules:",
   "- Respond helpfully and concisely, in the language the user writes in where practical.",
@@ -49,7 +49,10 @@ const RATE_LIMIT_PREFIX = "algo-app:ratelimit";
 const buckets = new Map();
 function checkRateLimitInMemory(ip) {
   const now = Date.now();
-  const bucket = buckets.get(ip) || { count: 0, resetAt: now + RATE_LIMIT.windowMs };
+  const bucket = buckets.get(ip) || {
+    count: 0,
+    resetAt: now + RATE_LIMIT.windowMs,
+  };
   if (now > bucket.resetAt) {
     bucket.count = 0;
     bucket.resetAt = now + RATE_LIMIT.windowMs;
@@ -79,7 +82,7 @@ function getSharedLimiter() {
           redis: Redis.fromEnv(),
           limiter: Ratelimit.slidingWindow(RATE_LIMIT.maxRequests, "60 s"),
           prefix: RATE_LIMIT_PREFIX,
-        })
+        }),
     );
   }
   return sharedLimiterPromise;
@@ -87,7 +90,7 @@ function getSharedLimiter() {
 
 async function checkRateLimit(ip) {
   const upstashConfigured = Boolean(
-    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN,
   );
   if (!upstashConfigured) return checkRateLimitInMemory(ip);
   try {
@@ -99,7 +102,7 @@ async function checkRateLimit(ip) {
     // instance rather than blocking every request.
     console.error(
       "[assistant] Upstash rate limiter failed, using in-memory fallback:",
-      err?.message || err
+      err?.message || err,
     );
     return checkRateLimitInMemory(ip);
   }
@@ -107,7 +110,8 @@ async function checkRateLimit(ip) {
 
 function clientIp(req) {
   const fwd = req.headers["x-forwarded-for"];
-  if (typeof fwd === "string" && fwd.length > 0) return fwd.split(",")[0].trim();
+  if (typeof fwd === "string" && fwd.length > 0)
+    return fwd.split(",")[0].trim();
   return req.socket?.remoteAddress || "unknown";
 }
 
@@ -122,10 +126,13 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST")
+    return res.status(405).json({ error: "Method not allowed" });
 
   if (!(await checkRateLimit(clientIp(req)))) {
-    return res.status(429).json({ error: "Too many requests — please wait a minute and try again." });
+    return res.status(429).json({
+      error: "Too many requests — please wait a minute and try again.",
+    });
   }
 
   let body = req.body;
@@ -142,7 +149,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "messages[] is required" });
   }
   if (rawMessages.length > MAX_MESSAGES) {
-    return res.status(413).json({ error: `Too many messages (max ${MAX_MESSAGES})` });
+    return res
+      .status(413)
+      .json({ error: `Too many messages (max ${MAX_MESSAGES})` });
   }
 
   // The server owns the only system prompt. Client-supplied "system"
@@ -154,16 +163,23 @@ export default async function handler(req, res) {
   const messages = [{ role: "system", content: SYSTEM_PROMPT }];
   for (const m of rawMessages) {
     if (!m || typeof m.content !== "string") {
-      return res.status(400).json({ error: "Each message needs a string content field" });
+      return res
+        .status(400)
+        .json({ error: "Each message needs a string content field" });
     }
     const content = m.content.slice(0, MAX_CONTENT_LENGTH);
     const clientRole = m.role;
     const isClientSystem = clientRole === "system";
     let role = isClientSystem ? "user" : clientRole;
     if (!["user", "assistant"].includes(role)) role = "user";
-    if (role === "user" && !isClientSystem && looksLikePromptInjection(content)) {
+    if (
+      role === "user" &&
+      !isClientSystem &&
+      looksLikePromptInjection(content)
+    ) {
       return res.status(400).json({
-        error: "Message contains text that looks like a prompt-injection attempt and was not sent to the model.",
+        error:
+          "Message contains text that looks like a prompt-injection attempt and was not sent to the model.",
       });
     }
     messages.push({ role, content });
@@ -194,13 +210,18 @@ export default async function handler(req, res) {
     const data = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
       const detail =
-        data?.error?.message || `Upstream request failed with status ${upstream.status}`;
-      return res.status(upstream.status === 429 ? 429 : 502).json({ error: detail });
+        data?.error?.message ||
+        `Upstream request failed with status ${upstream.status}`;
+      return res
+        .status(upstream.status === 429 ? 429 : 502)
+        .json({ error: detail });
     }
 
     const content = data?.choices?.[0]?.message?.content;
     if (typeof content !== "string") {
-      return res.status(502).json({ error: "Malformed response from model provider" });
+      return res
+        .status(502)
+        .json({ error: "Malformed response from model provider" });
     }
 
     return res.status(200).json({ content });

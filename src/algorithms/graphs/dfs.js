@@ -11,15 +11,16 @@ export function dfsDebug(graph, start) {
   const callStack = [];
   const visitOrder = [];
 
-  const snap = (activeLine, current, vars, log) => steps.push({
-    activeLine,
-    visited: new Set(visited),
-    callStack: [...callStack],
-    visitOrder: [...visitOrder],
-    current,
-    vars,
-    log,
-  });
+  const snap = (activeLine, current, vars, log) =>
+    steps.push({
+      activeLine,
+      visited: new Set(visited),
+      callStack: [...callStack],
+      visitOrder: [...visitOrder],
+      current,
+      vars,
+      log,
+    });
 
   function dfs(node) {
     callStack.push(node);
@@ -30,10 +31,20 @@ export function dfsDebug(graph, start) {
     for (const { to: neighbor } of adjacency[node]) {
       snap(4, node, { u: node, v: neighbor }, `Check neighbor ${neighbor}`);
       if (!visited.has(neighbor)) {
-        snap(5, node, { u: node, v: neighbor }, `${neighbor} not visited → go deeper`);
+        snap(
+          5,
+          node,
+          { u: node, v: neighbor },
+          `${neighbor} not visited → go deeper`,
+        );
         dfs(neighbor);
       } else {
-        snap(5, node, { u: node, v: neighbor }, `${neighbor} already visited → skip`);
+        snap(
+          5,
+          node,
+          { u: node, v: neighbor },
+          `${neighbor} already visited → skip`,
+        );
       }
     }
     callStack.pop();

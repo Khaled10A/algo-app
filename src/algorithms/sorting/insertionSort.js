@@ -4,21 +4,33 @@
  * Space: O(1)
  */
 export function insertionSort(arr) {
-  const a = [...arr]; let comparisons = 0;
+  const a = [...arr];
+  let comparisons = 0;
   for (let i = 1; i < a.length; i++) {
-    let key = a[i], j = i - 1;
-    while (j >= 0 && (comparisons++, a[j] > key)) { a[j + 1] = a[j]; j--; }
+    let key = a[i],
+      j = i - 1;
+    while (j >= 0 && (comparisons++, a[j] > key)) {
+      a[j + 1] = a[j];
+      j--;
+    }
     a[j + 1] = key;
   }
   return { sorted: a, comparisons };
 }
 
 export function insertionSortSteps(arr) {
-  const a = [...arr], steps = [{ arr: [...a], highlight: [] }];
+  const a = [...arr],
+    steps = [{ arr: [...a], highlight: [] }];
   for (let i = 1; i < a.length; i++) {
-    let key = a[i], j = i - 1;
-    while (j >= 0 && a[j] > key) { a[j + 1] = a[j]; j--; steps.push({ arr: [...a], highlight: [j + 1, j + 2] }); }
-    a[j + 1] = key; steps.push({ arr: [...a], highlight: [j + 1] });
+    let key = a[i],
+      j = i - 1;
+    while (j >= 0 && a[j] > key) {
+      a[j + 1] = a[j];
+      j--;
+      steps.push({ arr: [...a], highlight: [j + 1, j + 2] });
+    }
+    a[j + 1] = key;
+    steps.push({ arr: [...a], highlight: [j + 1] });
   }
   return steps;
 }
@@ -30,25 +42,32 @@ export function insertionSortDebug(arr) {
   const a = [...arr];
   const steps = [];
 
-  const snap = (activeLine, vars, log) => steps.push({
-    arr: [...a],
-    highlight: vars.j !== undefined ? [vars.j, vars.j + 1] : [],
-    activeLine,
-    vars: { ...vars },
-    memory: {
-      "arr": `[${a.join(", ")}]`,
-      "i":   vars.i   !== undefined ? String(vars.i)   : "-",
-      "j":   vars.j   !== undefined ? String(vars.j)   : "-",
-      "key": vars.key !== undefined ? String(vars.key) : "-",
-    },
-    callStack: ["insertionSort(arr)", vars.j !== undefined ? "  └ inner while(j≥0 && arr[j]>key)" : "  └ outer for(i=1..n)"],
-    log,
-  });
+  const snap = (activeLine, vars, log) =>
+    steps.push({
+      arr: [...a],
+      highlight: vars.j !== undefined ? [vars.j, vars.j + 1] : [],
+      activeLine,
+      vars: { ...vars },
+      memory: {
+        arr: `[${a.join(", ")}]`,
+        i: vars.i !== undefined ? String(vars.i) : "-",
+        j: vars.j !== undefined ? String(vars.j) : "-",
+        key: vars.key !== undefined ? String(vars.key) : "-",
+      },
+      callStack: [
+        "insertionSort(arr)",
+        vars.j !== undefined
+          ? "  └ inner while(j≥0 && arr[j]>key)"
+          : "  └ outer for(i=1..n)",
+      ],
+      log,
+    });
 
   snap(0, {}, "Start: arr initialized");
 
   for (let i = 1; i < a.length; i++) {
-    let key = a[i], j = i - 1;
+    let key = a[i],
+      j = i - 1;
     snap(2, { i, j, key }, `Outer loop: i=${i}, key=A[${i}]=${key}`);
 
     while (j >= 0 && a[j] > key) {

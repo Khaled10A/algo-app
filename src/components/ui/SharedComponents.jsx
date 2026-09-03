@@ -17,7 +17,11 @@ export function Sec({ title, children }) {
       >
         {title}
       </div>
-      <div role="group" aria-label={title} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+      <div
+        role="group"
+        aria-label={title}
+        style={{ display: "flex", flexDirection: "column", gap: 5 }}
+      >
         {children}
       </div>
     </div>
@@ -37,7 +41,9 @@ function handleRadioArrows(e, groupName) {
   const up = e.key === "ArrowUp" || e.key === "ArrowLeft";
   if (!down && !up) return;
   const group = Array.from(
-    document.querySelectorAll(`input[type="radio"][name="${CSS.escape(groupName)}"]`)
+    document.querySelectorAll(
+      `input[type="radio"][name="${CSS.escape(groupName)}"]`,
+    ),
   );
   if (group.length < 2) return;
   const idx = group.indexOf(e.currentTarget);
@@ -51,13 +57,26 @@ export function Chk({ label, checked, onChange, radio, groupName }) {
   const th = useTheme();
   const p = getPalette(th);
   return (
-    <label style={{ display: "flex", alignItems: "center", gap: 9, cursor: "pointer", userSelect: "none", minHeight: 20 }}>
+    <label
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 9,
+        cursor: "pointer",
+        userSelect: "none",
+        minHeight: 20,
+      }}
+    >
       <input
         type={radio ? "radio" : "checkbox"}
         name={radio ? groupName : undefined}
         checked={checked}
         onChange={onChange}
-        onKeyDown={radio && groupName ? (e) => handleRadioArrows(e, groupName) : undefined}
+        onKeyDown={
+          radio && groupName
+            ? (e) => handleRadioArrows(e, groupName)
+            : undefined
+        }
         className="chk-input"
         style={hiddenInputStyle}
       />
@@ -79,14 +98,40 @@ export function Chk({ label, checked, onChange, radio, groupName }) {
       >
         {checked &&
           (radio ? (
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: p.onAccent }} />
+            <span
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                background: p.onAccent,
+              }}
+            />
           ) : (
-            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path d="M2 6.2 4.8 9 10 3.4" stroke={p.onAccent} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="9"
+              height="9"
+              viewBox="0 0 12 12"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 6.2 4.8 9 10 3.4"
+                stroke={p.onAccent}
+                strokeWidth="1.9"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           ))}
       </span>
-      <span style={{ fontSize: 12.5, color: checked ? p.textPrimary : p.textSecondary, fontWeight: checked ? 500 : 400, transition: `color ${MOTION.fast}` }}>
+      <span
+        style={{
+          fontSize: 12.5,
+          color: checked ? p.textPrimary : p.textSecondary,
+          fontWeight: checked ? 500 : 400,
+          transition: `color ${MOTION.fast}`,
+        }}
+      >
         {label}
       </span>
     </label>
@@ -124,7 +169,11 @@ export function SInput({ value, onChange, placeholder, hint, label }) {
           e.currentTarget.style.boxShadow = "none";
         }}
       />
-      {hint && <div style={{ fontSize: 11, color: p.textSecondary, marginTop: 4 }}>{hint}</div>}
+      {hint && (
+        <div style={{ fontSize: 11, color: p.textSecondary, marginTop: 4 }}>
+          {hint}
+        </div>
+      )}
     </div>
   );
 }
@@ -151,7 +200,9 @@ export function RunBtn({ onClick, onCancel, running, label }) {
           cursor: "pointer",
           fontFamily: "inherit",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 69, 58, 0.10)")}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.background = "rgba(255, 69, 58, 0.10)")
+        }
         onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
       >
         CANCEL
@@ -230,7 +281,15 @@ export function Label({ color, children }) {
   const th = useTheme();
   const p = getPalette(th);
   return (
-    <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: color || p.textPrimary, marginBottom: 14 }}>
+    <div
+      style={{
+        fontSize: 17,
+        fontWeight: 700,
+        letterSpacing: "-0.02em",
+        color: color || p.textPrimary,
+        marginBottom: 14,
+      }}
+    >
       {children}
     </div>
   );
@@ -259,26 +318,61 @@ export function Empty({ icon, text }) {
   );
 }
 
-export const ChartBox = forwardRef(({ title, children, onExport, onFullscreen }, ref) => {
-  const th = useTheme();
-  const p = getPalette(th);
-  return (
-    <div
-      ref={ref}
-      className="surface-card hoverable-card"
-      style={{
-        borderRadius: 12,
-        padding: "14px 16px",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: p.textSecondary }}>{title}</div>
-        <div style={{ display: "flex", gap: 5 }}>
-          {onFullscreen && (
+export const ChartBox = forwardRef(
+  ({ title, children, onExport, onFullscreen }, ref) => {
+    const th = useTheme();
+    const p = getPalette(th);
+    return (
+      <div
+        ref={ref}
+        className="surface-card hoverable-card"
+        style={{
+          borderRadius: 12,
+          padding: "14px 16px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 8,
+          }}
+        >
+          <div
+            style={{ fontSize: 12, fontWeight: 600, color: p.textSecondary }}
+          >
+            {title}
+          </div>
+          <div style={{ display: "flex", gap: 5 }}>
+            {onFullscreen && (
+              <button
+                onClick={onFullscreen}
+                aria-label={`Fullscreen: ${title}`}
+                title="Fullscreen"
+                style={{
+                  background: "none",
+                  border: `1px solid ${p.btnBorder}`,
+                  borderRadius: 5,
+                  color: p.textSecondary,
+                  fontSize: 11,
+                  cursor: "pointer",
+                  padding: "3px 7px",
+                  transition: `background ${MOTION.fast}`,
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = p.trackBg)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "none")
+                }
+              >
+                ⛶
+              </button>
+            )}
             <button
-              onClick={onFullscreen}
-              aria-label={`Fullscreen: ${title}`}
-              title="Fullscreen"
+              onClick={onExport}
+              aria-label={`Export PNG: ${title}`}
               style={{
                 background: "none",
                 border: `1px solid ${p.btnBorder}`,
@@ -286,39 +380,23 @@ export const ChartBox = forwardRef(({ title, children, onExport, onFullscreen },
                 color: p.textSecondary,
                 fontSize: 11,
                 cursor: "pointer",
-                padding: "3px 7px",
+                padding: "3px 8px",
                 transition: `background ${MOTION.fast}`,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = p.trackBg)}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = p.trackBg)
+              }
               onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
             >
-              ⛶
+              Export
             </button>
-          )}
-          <button
-            onClick={onExport}
-            aria-label={`Export PNG: ${title}`}
-            style={{
-              background: "none",
-              border: `1px solid ${p.btnBorder}`,
-              borderRadius: 5,
-              color: p.textSecondary,
-              fontSize: 11,
-              cursor: "pointer",
-              padding: "3px 8px",
-              transition: `background ${MOTION.fast}`,
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = p.trackBg)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
-          >
-            Export
-          </button>
+          </div>
         </div>
+        {children}
       </div>
-      {children}
-    </div>
-  );
-});
+    );
+  },
+);
 
 export function FullscreenChart({ chart, onClose }) {
   const th = useTheme();
@@ -350,8 +428,17 @@ export function FullscreenChart({ chart, onClose }) {
           position: "relative",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: p.textPrimary }}>{chart.title}</span>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 14,
+          }}
+        >
+          <span style={{ fontSize: 14, fontWeight: 600, color: p.textPrimary }}>
+            {chart.title}
+          </span>
           <button
             onClick={onClose}
             aria-label="Close fullscreen chart"

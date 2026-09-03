@@ -79,7 +79,10 @@ export default function MatrixView({
       <table style={{ borderCollapse: "collapse", margin: "0 auto" }}>
         <thead>
           <tr>
-            <th style={{ ...headerStyle(""), border: "none" }} aria-hidden="true" />
+            <th
+              style={{ ...headerStyle(""), border: "none" }}
+              aria-hidden="true"
+            />
             {nodes.map((id) => (
               <th key={id} style={headerStyle(id)} scope="col">
                 {id}

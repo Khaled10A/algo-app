@@ -39,8 +39,10 @@ describe("radixSort - correctness", () => {
 
   it("is stable across digit passes (equal keys retain relative order)", () => {
     const input = [
-      { key: 12, tag: "a" }, { key: 3, tag: "b" },
-      { key: 12, tag: "c" }, { key: 3, tag: "d" },
+      { key: 12, tag: "a" },
+      { key: 3, tag: "b" },
+      { key: 12, tag: "c" },
+      { key: 3, tag: "d" },
     ];
     const values = input.map((o) => o.key);
     const { sorted } = (() => {
@@ -49,7 +51,8 @@ describe("radixSort - correctness", () => {
       for (let pass = 0; pass < 4; pass++) {
         const place = Math.pow(10, pass);
         const count = new Array(10).fill(0);
-        for (let i = 0; i < a.length; i++) count[Math.floor(a[i] / place) % 10]++;
+        for (let i = 0; i < a.length; i++)
+          count[Math.floor(a[i] / place) % 10]++;
         for (let d = 1; d < 10; d++) count[d] += count[d - 1];
         const out = new Array(a.length);
         for (let i = a.length - 1; i >= 0; i--) {

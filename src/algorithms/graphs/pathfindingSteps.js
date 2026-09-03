@@ -24,7 +24,12 @@ import { edgeKey } from "./graph";
  */
 export function projectPathfindingEvents(
   events,
-  { lineMap, label = "algorithm", knownFromDistances = false, passTracking = false }
+  {
+    lineMap,
+    label = "algorithm",
+    knownFromDistances = false,
+    passTracking = false,
+  },
 ) {
   const visited = new Set();
   const visitOrder = [];
@@ -71,7 +76,10 @@ export function projectPathfindingEvents(
           visited.add(event.start);
           visitOrder.push(event.start);
         }
-        Object.assign(vars, { start: event.start, nodes: String(event.nodeCount) });
+        Object.assign(vars, {
+          start: event.start,
+          nodes: String(event.nodeCount),
+        });
         Object.assign(memory, { distances: "all ∞", previous: "all ∅" });
         callStack.push(`  └ init from ${event.start}`);
         log = `Initialize: dist[${event.start}] = 0, all others ∞`;
@@ -79,9 +87,14 @@ export function projectPathfindingEvents(
       }
       case "select-node": {
         heap.push(event.node);
-        Object.assign(vars, { node: event.node, dist: fmtDist(event.distance) });
+        Object.assign(vars, {
+          node: event.node,
+          dist: fmtDist(event.distance),
+        });
         Object.assign(memory, { heap: `[${heap.join(", ")}]` });
-        callStack.push(`  └ PQ.push((${event.node}, ${fmtDist(event.distance)}))`);
+        callStack.push(
+          `  └ PQ.push((${event.node}, ${fmtDist(event.distance)}))`,
+        );
         log = `Push ${event.node} (d=${fmtDist(event.distance)}) into the priority queue`;
         break;
       }
@@ -89,7 +102,10 @@ export function projectPathfindingEvents(
         const idx = heap.indexOf(event.node);
         if (idx !== -1) heap.splice(idx, 1);
         current = event.node;
-        Object.assign(vars, { node: event.node, dist: fmtDist(event.distance) });
+        Object.assign(vars, {
+          node: event.node,
+          dist: fmtDist(event.distance),
+        });
         Object.assign(memory, { heap: `[${heap.join(", ")}]` });
         callStack.push(`  └ PQ.pop() → ${event.node}`);
         log = `Pop ${event.node} (d=${fmtDist(event.distance)}) — min of the queue`;
@@ -107,7 +123,10 @@ export function projectPathfindingEvents(
         visitOrder.push(event.node);
         current = event.node;
         distances[event.node] = event.distance;
-        Object.assign(vars, { node: event.node, dist: fmtDist(event.distance) });
+        Object.assign(vars, {
+          node: event.node,
+          dist: fmtDist(event.distance),
+        });
         Object.assign(memory, {
           visited: `[${[...visited].join(", ")}]`,
           "dist[node]": fmtDist(event.distance),
@@ -123,13 +142,19 @@ export function projectPathfindingEvents(
           to: event.to,
           weight: String(event.weight),
         });
-        callStack.push(`  └ edge ${event.from} → ${event.to} (w=${event.weight})`);
+        callStack.push(
+          `  └ edge ${event.from} → ${event.to} (w=${event.weight})`,
+        );
         log = `Inspect edge ${event.from} → ${event.to} (w=${event.weight})`;
         break;
       }
       case "skip-edge": {
         currentEdge = [event.from, event.to];
-        Object.assign(vars, { from: event.from, to: event.to, reason: event.reason });
+        Object.assign(vars, {
+          from: event.from,
+          to: event.to,
+          reason: event.reason,
+        });
         callStack.push(`  └ skip ${event.from} → ${event.to}`);
         log = `Skip ${event.from} → ${event.to} (${event.reason})`;
         break;
@@ -176,14 +201,19 @@ export function projectPathfindingEvents(
         });
         Object.assign(memory, { distances: fmtMap(distances) });
         callStack.push(`  └ pass ${event.pass} complete`);
-        log = event.changes > 0
-          ? `Pass ${event.pass} complete — ${event.changes} distance update${event.changes === 1 ? "" : "s"}`
-          : `Pass ${event.pass} complete — no changes (early stop)`;
+        log =
+          event.changes > 0
+            ? `Pass ${event.pass} complete — ${event.changes} distance update${event.changes === 1 ? "" : "s"}`
+            : `Pass ${event.pass} complete — no changes (early stop)`;
         break;
       }
       case "skip-unreachable": {
         currentEdge = [event.from, event.to];
-        Object.assign(vars, { from: event.from, to: event.to, reason: event.reason });
+        Object.assign(vars, {
+          from: event.from,
+          to: event.to,
+          reason: event.reason,
+        });
         callStack.push(`  └ skip ${event.from} → ${event.to}`);
         log = `Skip ${event.from} → ${event.to} — ${event.from} is unreachable`;
         break;
@@ -223,7 +253,10 @@ export function projectPathfindingEvents(
             visited: String(event.visitedCount),
             unreachable: String(event.unreachableCount),
           });
-          Object.assign(memory, { distances: fmtMap(distances), previous: fmtMap(previous) });
+          Object.assign(memory, {
+            distances: fmtMap(distances),
+            previous: fmtMap(previous),
+          });
           callStack.push(`  └ shortest-path tree complete`);
           log = `Done — ${event.visitedCount} nodes visited, ${event.unreachableCount} unreachable`;
         }

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 /**
  * Exercises the real worker module's message protocol in Node by
@@ -76,8 +76,8 @@ describe("benchmark worker protocol", () => {
           pattern: "ab",
           text: "abab",
           repeats: 1,
-        })
-      )
+        }),
+      ),
     );
     expect(reply.ok).toBe(true);
     expect(reply.results.kmp.file[0].matches).toEqual([0, 2]);

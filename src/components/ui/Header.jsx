@@ -4,7 +4,13 @@ import { MOTION } from "../../theme/tokens";
 
 function SunIcon({ color }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="4.4" stroke={color} strokeWidth="1.8" />
       <g stroke={color} strokeWidth="1.8" strokeLinecap="round">
         <line x1="12" y1="2.5" x2="12" y2="5" />
@@ -22,7 +28,13 @@ function SunIcon({ color }) {
 
 function MoonIcon({ color }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M20 13.2A8.2 8.2 0 0 1 10.8 4a8.2 8.2 0 1 0 9.2 9.2Z"
         stroke={color}
@@ -33,7 +45,15 @@ function MoonIcon({ color }) {
   );
 }
 
-export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onToggleTheme }) {
+export function Header({
+  tab,
+  setTab,
+  subTab,
+  setSubTab,
+  isDark,
+  palette,
+  onToggleTheme,
+}) {
   const domain = DOMAINS.find((d) => d.id === tab) || DOMAINS[0];
   const p = palette;
 
@@ -94,7 +114,14 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
         borderRadius: 14,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          flexShrink: 0,
+        }}
+      >
         <div
           aria-hidden="true"
           style={{
@@ -119,16 +146,31 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
           </svg>
         </div>
         <div>
-          <div className="toolbar-brand-name" style={{ fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em", color: p.textStrong, lineHeight: 1.2 }}>
+          <div
+            className="toolbar-brand-name"
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: "-0.01em",
+              color: p.textStrong,
+              lineHeight: 1.2,
+            }}
+          >
             ALGO BENCHMARK
           </div>
-          <div className="toolbar-tagline" style={{ fontSize: 10, color: p.textSecondary, lineHeight: 1.2 }}>
+          <div
+            className="toolbar-tagline"
+            style={{ fontSize: 10, color: p.textSecondary, lineHeight: 1.2 }}
+          >
             Design &amp; Analysis of Algorithms
           </div>
         </div>
       </div>
 
-      <nav aria-label="Algorithm domains" style={{ ...segContainer, marginLeft: 4 }}>
+      <nav
+        aria-label="Algorithm domains"
+        style={{ ...segContainer, marginLeft: 4 }}
+      >
         {thumb && (
           <div
             aria-hidden="true"
@@ -140,7 +182,8 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
               height: "calc(100% - 4px)",
               borderRadius: 7,
               background: p.surface,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.24), 0 3px 10px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.10)",
+              boxShadow:
+                "0 1px 3px rgba(0,0,0,0.24), 0 3px 10px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.10)",
               transition: `left ${MOTION.spring}, width ${MOTION.spring}`,
             }}
           />
@@ -235,7 +278,11 @@ export function Header({ tab, setTab, subTab, setSubTab, isDark, palette, onTogg
           transition: `background ${MOTION.fast}`,
         }}
       >
-        {isDark ? <SunIcon color={p.textSecondary} /> : <MoonIcon color={p.textSecondary} />}
+        {isDark ? (
+          <SunIcon color={p.textSecondary} />
+        ) : (
+          <MoonIcon color={p.textSecondary} />
+        )}
       </button>
     </header>
   );

@@ -17,7 +17,12 @@ function getCtx() {
   return ctx;
 }
 
-export function playTone(freq = 440, duration = 0.08, type = "sine", vol = 0.15) {
+export function playTone(
+  freq = 440,
+  duration = 0.08,
+  type = "sine",
+  vol = 0.15,
+) {
   const audioCtx = getCtx();
   if (!audioCtx) return;
   try {
@@ -28,12 +33,13 @@ export function playTone(freq = 440, duration = 0.08, type = "sine", vol = 0.15)
     osc.type = type;
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
     gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioCtx.currentTime + duration,
+    );
     osc.start(audioCtx.currentTime);
     osc.stop(audioCtx.currentTime + duration);
-  } catch {
-    
-  }
+  } catch {}
 }
 
 export function playVictory() {

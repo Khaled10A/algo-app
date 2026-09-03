@@ -10,7 +10,11 @@
     "preview": "vite preview",
     "test:unit": "vitest run",
     "test:e2e": "env -u ELECTRON_RUN_AS_NODE cypress run --e2e",
-    "test:e2e:open": "env -u ELECTRON_RUN_AS_NODE cypress open --e2e"
+    "test:e2e:open": "env -u ELECTRON_RUN_AS_NODE cypress open --e2e",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@upstash/ratelimit": "^2.0.8",
@@ -23,7 +27,14 @@
     "@testing-library/react": "^16.1.0",
     "@vitejs/plugin-react": "^4.3.1",
     "cypress": "^13.17.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.12.0",
     "jsdom": "^25.0.1",
+    "prettier": "^3.9.6",
     "vite": "^5.4.2",
     "vitest": "^4.1.9"
   }

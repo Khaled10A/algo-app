@@ -46,7 +46,7 @@ export function prim(graph, start) {
     (a, b) =>
       a.weight - b.weight ||
       (a.from < b.from ? -1 : a.from > b.from ? 1 : 0) ||
-      (a.to < b.to ? -1 : 1)
+      (a.to < b.to ? -1 : 1),
   );
 
   emit("init", { nodeCount: nodes.length, start });
@@ -74,7 +74,10 @@ export function prim(graph, start) {
     if (heap.size === 0) {
       const unvisited = nodes.filter((n) => !visited.has(n));
       if (unvisited.length === 0) break;
-      emit("disconnected", { unvisited: [...unvisited], treeCount: treeCount + 1 });
+      emit("disconnected", {
+        unvisited: [...unvisited],
+        treeCount: treeCount + 1,
+      });
       treeCount++;
       growTree(unvisited[0]);
       continue;

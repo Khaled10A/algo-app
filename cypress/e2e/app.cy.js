@@ -15,7 +15,9 @@ describe("Algo App", () => {
   it("switches to string matching and runs a benchmark", () => {
     cy.contains("button", "String Matching").click();
     cy.contains("button", "RUN BENCHMARK").click();
-    cy.contains("STRING MATCHING RESULTS", { timeout: 8000 }).should("be.visible");
+    cy.contains("STRING MATCHING RESULTS", { timeout: 8000 }).should(
+      "be.visible",
+    );
     cy.contains("Brute Force").should("be.visible");
     cy.contains("KMP").should("be.visible");
   });
@@ -23,8 +25,12 @@ describe("Algo App", () => {
   it("shows a CANCEL control during a long benchmark and returns to idle when cancelled", () => {
     cy.get('input[placeholder="50,100,150"]').clear().type("30000");
     cy.contains("button", "RUN BENCHMARK").click();
-    cy.contains("button", "CANCEL", { timeout: 4000 }).should("be.visible").click();
-    cy.contains("button", "RUN BENCHMARK", { timeout: 4000 }).should("be.visible");
+    cy.contains("button", "CANCEL", { timeout: 4000 })
+      .should("be.visible")
+      .click();
+    cy.contains("button", "RUN BENCHMARK", { timeout: 4000 }).should(
+      "be.visible",
+    );
     cy.contains("button", "CANCEL").should("not.exist");
   });
 
@@ -58,11 +64,13 @@ describe("Algo App", () => {
           metric: "time",
           inputMode: "random",
           customArr: null,
-          results: { "ghost-sort": { random: [{ n: 10, time: 1, comparisons: 5 }] } },
+          results: {
+            "ghost-sort": { random: [{ n: 10, time: 1, comparisons: 5 }] },
+          },
           sizes: [10],
           algos: ["ghost-sort"],
           types: ["random"],
-        })
+        }),
       );
     });
     cy.reload();
@@ -73,7 +81,10 @@ describe("Algo App", () => {
     cy.contains("button", "pseudocode").click();
     cy.contains("pseudocode").should("be.visible");
     cy.window().then((win) =>
-      win.localStorage.setItem("algo-app:v1:pseudo:algo", JSON.stringify("deleted-algo"))
+      win.localStorage.setItem(
+        "algo-app:v1:pseudo:algo",
+        JSON.stringify("deleted-algo"),
+      ),
     );
     cy.reload();
     cy.contains("button", "pseudocode").click();
@@ -128,7 +139,9 @@ describe("Algo App", () => {
     cy.contains("Distances").scrollIntoView().should("be.visible");
     cy.get("svg").should("contain.text", "0");
 
-    cy.contains("button", "Update weight").scrollIntoView().should("be.visible");
+    cy.contains("button", "Update weight")
+      .scrollIntoView()
+      .should("be.visible");
     cy.get('select[aria-label="Edge source"]').select("A");
     cy.get('select[aria-label="Edge target"]').select("B");
     cy.get('input[aria-label="Edge weight"]').clear().type("-5");
@@ -164,7 +177,10 @@ describe("Algo App", () => {
     cy.contains("button", "Delete").click();
     cy.get('svg[aria-label="Graph playground"] circle[r="22"]').eq(0).click();
     cy.contains(/Node A removed/i).should("exist");
-    cy.get('svg[aria-label="Graph playground"]').should("not.contain.text", "A");
+    cy.get('svg[aria-label="Graph playground"]').should(
+      "not.contain.text",
+      "A",
+    );
 
     cy.contains("button", "Restore default").click();
     cy.contains(/Default example graph restored/i).should("exist");
@@ -195,7 +211,9 @@ describe("Algo App", () => {
     cy.contains("Distances").scrollIntoView().should("be.visible");
     cy.get("svg").should("contain.text", "4");
 
-    cy.contains("button", "Update weight").scrollIntoView().should("be.visible");
+    cy.contains("button", "Update weight")
+      .scrollIntoView()
+      .should("be.visible");
     cy.get('select[aria-label="Edge source"]').select("B");
     cy.get('select[aria-label="Edge target"]').select("C");
     cy.get('input[aria-label="Edge weight"]').clear().type("1");
@@ -254,7 +272,9 @@ describe("Algo App", () => {
     cy.contains("Distance matrix").should("be.visible");
     cy.get("table").should("contain.text", "5");
 
-    cy.contains("button", "Update weight").scrollIntoView().should("be.visible");
+    cy.contains("button", "Update weight")
+      .scrollIntoView()
+      .should("be.visible");
     cy.get('select[aria-label="Edge source"]').select("B");
     cy.get('select[aria-label="Edge target"]').select("C");
     cy.get('input[aria-label="Edge weight"]').clear().type("-1");
@@ -383,7 +403,8 @@ describe("Algo App", () => {
     cy.contains("OPS DONE").should("be.visible");
     cy.get('[data-testid="bar-value"]').should("have.length", 16);
 
-    for (let i = 0; i < 5; i++) cy.get('button[aria-label="Next step"]').click();
+    for (let i = 0; i < 5; i++)
+      cy.get('button[aria-label="Next step"]').click();
     cy.contains("OPS DONE").should("be.visible");
     cy.get('[data-testid="bar-value"]').should("have.length", 16);
 
@@ -427,6 +448,8 @@ describe("Algo App", () => {
       .first()
       .focus()
       .type("{downArrow}");
-    cy.get('input[type="radio"][name="sort-metric"]').eq(1).should("be.checked");
+    cy.get('input[type="radio"][name="sort-metric"]')
+      .eq(1)
+      .should("be.checked");
   });
 });
