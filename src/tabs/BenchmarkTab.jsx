@@ -309,6 +309,29 @@ export function SearchResults({ results, metric, lineRef: externalLineRef, barRe
                       {mk === "time" ? row.time.toFixed(4) + " ms" : row.comparisons.toLocaleString()}
                     </td>
                   ))}
+                  <td style={{ ...ts.TD, color: "#8944ab", fontFamily: "monospace", fontSize: 10 }}>
+                    {data[algo][sc][data[algo][sc].length - 1].comparisons.toLocaleString()}
+                  </td>
+                  <td style={{ ...ts.TD, fontSize: 10 }}>
+                    {(() => {
+                      const n = sizes[sizes.length - 1];
+                      const c = getAlgorithmForDisplay(algo).complexity;
+                      if (!c) return "-";
+                      const theoretical = c.worst.includes("n²") ? Math.round(n*n)
+                        : c.worst.includes("n log n") ? Math.round(n * Math.log2(n))
+                        : c.worst.includes("n×m") ? "-"
+                        : c.worst.includes("n+m") ? "-"
+                        : n;
+                      return (
+                        <span>
+                          <span style={{ color: "#c93400" }}>{c.worst}</span>
+                          {theoretical !== "-" && (
+                            <span style={{ color: "#475569", fontSize: 9 }}> ≈ {theoretical.toLocaleString()}</span>
+                          )}
+                        </span>
+                      );
+                    })()}
+                  </td>
                 </tr>
               );
             })}</tbody>

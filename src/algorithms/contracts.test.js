@@ -17,7 +17,9 @@ function isSortedAsc(a) {
 function randomArray(n) {
   const out = [];
   for (let i = 0; i < n; i++) {
-    if (Math.random() < 0.2) out.push(-Math.floor(Math.random() * 50));
+    // || 0 normalizes the -0 that -Math.floor(0) produces; Vitest's toEqual
+    // distinguishes -0 from 0, which made this fixture flaky.
+    if (Math.random() < 0.2) out.push(-Math.floor(Math.random() * 50) || 0);
     else out.push(Math.floor(Math.random() * 100));
     if (out.length > 1 && Math.random() < 0.3) out[out.length - 1] = out[0];
   }

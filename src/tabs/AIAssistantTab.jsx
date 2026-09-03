@@ -451,6 +451,19 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
         <div ref={bottomRef} />
       </div>
 
+      {/* AI-GENERATED NOTICE (permanent, not a tooltip) */}
+      <div style={{
+        fontSize: 10,
+        color: textMute,
+        textAlign: "center",
+        direction: isRTL ? "rtl" : "ltr",
+        lineHeight: 1.5,
+      }}>
+        {lang === "ar"
+          ? "⚠️ ردود هذا المساعد مولّدة بالذكاء الاصطناعي وقد تحتوي على أخطاء — تحقّق من المعلومات المهمة."
+          : "⚠️ AI-generated responses may be inaccurate — verify important information."}
+      </div>
+
       {/* FLOATING INPUT BAR */}
       <div
         className="glass-floating"
@@ -483,13 +496,6 @@ export function AIAssistantTab({ isDark, sortResults, searchResults }) {
           </svg>
         </button>
       </div>
-
-      <style>{`
-        @keyframes bounce {
-          0%, 60%, 100% { transform: translateY(0); }
-          30% { transform: translateY(-6px); }
-        }
-      `}</style>
     </div>
   );
 }

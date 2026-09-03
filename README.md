@@ -128,6 +128,7 @@ The assistant calls `/api/assistant`, a serverless function that keeps the model
 
 - **Local development:** run `vercel dev` (which executes `api/` functions locally), or deploy first.
 - **Deployment (Vercel):** set `GROQ_API_KEY` as an encrypted environment variable in your project settings. Never prefix it with `VITE_` — anything prefixed that way is embedded into the client bundle and publicly readable.
+- **Rate limiting (optional):** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (a free Upstash Redis database, see `.env.example`) to make the endpoint's rate limit (15 requests/min per client IP) shared across serverless instances. Without these variables the endpoint falls back to per-instance in-memory limiting.
 - Optionally set `VITE_AI_ENDPOINT` in the client env to point the UI at a deployed proxy while developing locally without one.
 
 Without a configured key the app works fully; the AI tab simply reports that it is not configured on the deployment.

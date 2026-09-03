@@ -339,6 +339,18 @@ body[data-theme="light"] .editor-surface {
   }
 }
 
+/* Typing indicator dots (AI assistant). Defined here rather than in an
+   inline <style> so the production Content-Security-Policy (style-src 'self')
+   does not block it. */
+@keyframes bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+}
+
 /* ── Scrollbars ───────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 10px;

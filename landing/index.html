@@ -6,6 +6,18 @@
   <title>Intelligence Designed To Evolve</title>
   <meta name="description" content="Build applications that reason, adapt and collaborate using a modular AI platform designed for production." />
 
+  <!--
+    NOTE — external dependencies of this standalone landing page (all CDN, by
+    design; the page is not part of the Vite app build):
+      - Background video: CloudFront-hosted .mp4 (see <video> below).
+      - Display font "BubbledotICG-FinePos": db.onlinewebfonts.com stylesheet.
+      - Sans font "Inter": fonts.googleapis.com stylesheet.
+      - Icons: FontAwesome 6.5.2 from cdnjs.cloudflare.com (trust row logos).
+    The local assets these files once referenced (landing/fonts/GeistPixel-Circle.woff2,
+    landing/assets/logo.webp) were never committed to the repository, so those
+    broken references have been removed (see the inline SVG logo fallback below).
+    These CDN dependencies are intentional and not a bug.
+  -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -29,7 +41,10 @@
   <div class="page">
     <header class="header">
       <a href="#" class="logo-btn" aria-label="Home">
-        <img src="assets/logo.webp" alt="" width="52" height="52" decoding="async" />
+        <!-- assets/logo.webp was never committed; inline sparkle fallback. -->
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" fill="#2e2e2e" />
+        </svg>
       </a>
 
       <nav class="nav-pill" aria-label="Primary">
