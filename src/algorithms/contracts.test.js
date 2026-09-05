@@ -33,7 +33,7 @@ describe("registry integrity", () => {
       expect(ids.has(d.id)).toBe(false);
       ids.add(d.id);
       expect(typeof d.name).toBe("string");
-      expect(d.category).toMatch(/^(sorting|searching|graphs)$/);
+      expect(d.category).toMatch(/^(sorting|searching|graphs|dynamicProgramming|backtracking)$/);
       expect(typeof d.color).toBe("string");
       expect(d.complexity).toHaveProperty("worst");
       expect(Array.isArray(d.codeLines)).toBe(true);
@@ -43,6 +43,7 @@ describe("registry integrity", () => {
     expect(getBenchmarkable("sorting")).toHaveLength(8);
     expect(getBenchmarkable("searching")).toHaveLength(3);
     expect(getWithDebug(["sorting"])).toHaveLength(8);
+    expect(getWithDebug(["dynamicProgramming"])).toHaveLength(7);
   });
 
   it("getAlgorithm throws for unknown ids", () => {

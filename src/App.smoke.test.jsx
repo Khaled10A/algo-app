@@ -81,6 +81,15 @@ describe("App shell", () => {
     expect(stored).toBe("light");
   });
 
+  it("exposes the DP debugger under the Dynamic Programming domain", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Dynamic Programming/ }));
+    expect(screen.getByText(/DP DEBUGGER/i)).toBeTruthy();
+    // Click GENERATE — Fibonacci tabulation is implemented
+    fireEvent.click(screen.getByRole("button", { name: /GENERATE/i }));
+    expect(screen.getByText(/Step 1 \//)).toBeTruthy();
+  });
+
   it("binary search debugger supports a not-found target", () => {
     render(<App />);
     fireEvent.click(screen.getAllByRole("button", { name: "debugger" })[0]);

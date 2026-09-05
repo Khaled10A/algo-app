@@ -17,6 +17,13 @@ export default function MatrixView({
   negativeCycleNodes = [],
   isDark,
   compact = false,
+  // DP extension props (backward-compatible)
+  rowLabels,
+  colLabels,
+  dpTable,
+  dpCurrent,
+  dpBacktrackPath = [],
+  dpHighlightStates = false,
 }) {
   const p = getPalette(isDark ? "dark" : "light");
 
@@ -74,6 +81,124 @@ export default function MatrixView({
     borderBottom: "1px solid " + p.border,
   });
 
+  // DP table rendering mode
+  const isDP = dpTable && dpTable.length > 0;
+  const dpRowLabels = rowLabels || [];
+  const dpColLabels = colLabels || [];
+  const dpBacktrackSet = new Set(dpBacktrackPath.map(([a, b]) => a + "~" + b));
+
+  const dpCellBackground = (row, col) => {
+    if (!dpHighlightStates || !dpTable[row] || !dpTable[row][col]) return undefined;
+    const cell = dpTable[row][col];
+    const key = row + "~" + col;
+    if (cell.state === "current") return p.accentTint;
+    if (cell.state === "comparing") return "rgba(255, 159, 10, 0.18)";
+    if (cell.state === "backtrack") return "rgba(255, 55, 95, 0.18)";
+    if (cell.state === "backtrack-path") return "rgba(255, 55, 95, 0.08)";
+    if (dpBacktrackSet.has(key)) return "rgba(255, 55, 95, 0.08)";
+    return undefined;
+  };
+
+  const dpCellColor = (row, col) => {
+    if (!dpHighlightStates || !dpTable[row] || !dpTable[row][col]) return undefined;
+    const cell = dpTable[row][col];
+    if (cell.state === "current") return p.accentText;
+    if (cell.state === "comparing") return p.orange;
+    if (cell.state === "backtrack") return p.pink;
+    return undefined;
+  };
+
+  const dpCellWeight = (row, col) => {
+    if (!dpHighlightStates || !dpTable[row] || !dpTable[row][col]) return undefined;
+    const cell = dpTable[row][col];
+    if (cell.state === "current" || cell.state === "comparing" || cell.state === "backtrack") return 700;
+    return undefined;
+  };
+
+  const dpCellBorder = (row, col) => {
+    if (!dpHighlightStates || !dpTable[row] || !dpTable[row][col]) return undefined;
+    const cell = dpTable[row][col];
+    if (cell.state === "current") return `inset 0 0 0 1.5px ${p.accent}`;
+    return undefined;
+  };
+
+  if (isDP) {
+    return (
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ borderCollapse: "collapse", margin: "0 auto" }}>
+          <thead>
+            <tr>
+              <th
+                style={{ ...headerStyle(""), border: "none" }}
+                aria-hidden="true"
+              />
+              {dpColLabels.map((label, ci) => (
+                <th
+                  key={ci}
+                  style={{
+                    ...headerStyle(String(ci)),
+                    color:
+                      dpCurrent && dpCurrent[1] === ci ? p.accent : undefined,
+                    background:
+                      dpCurrent && dpCurrent[1] === ci ? p.accentTint : undefined,
+                  }}
+                  scope="col"
+                >
+                  {label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {dpTable.map((row, ri) => (
+              <tr key={ri}>
+                <th
+                  style={{
+                    ...rowLabelStyle(String(ri)),
+                    color:
+                      dpCurrent && dpCurrent[0] === ri ? p.accent : undefined,
+                    background:
+                      dpCurrent && dpCurrent[0] === ri ? p.accentTint : undefined,
+                  }}
+                  scope="row"
+                >
+                  {dpRowLabels[ri] || String(ri)}
+                </th>
+                {row.map((cell, ci) => {
+                  const bg = dpCellBackground(ri, ci);
+                  const fg = dpCellColor(ri, ci);
+                  const wt = dpCellWeight(ri, ci);
+                  const bx = dpCellBorder(ri, ci);
+                  return (
+                    <td
+                      key={ci}
+                      style={{
+                        padding: compact ? "3px 7px" : "5px 9px",
+                        textAlign: "center",
+                        fontFamily: "monospace",
+                        fontSize: compact ? 11 : 12,
+                        border: "1px solid " + p.border,
+                        color: fg || (cell.value == null ? p.textFaint : p.textSecondary),
+                        background: bg || "transparent",
+                        whiteSpace: "nowrap",
+                        transition: "background 0.15s, color 0.15s",
+                        fontWeight: wt,
+                        boxShadow: bx,
+                      }}
+                    >
+                      {cell.value == null ? "·" : String(cell.value)}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // Original Floyd-Warshall rendering
   return (
     <div style={{ overflowX: "auto" }}>
       <table style={{ borderCollapse: "collapse", margin: "0 auto" }}>

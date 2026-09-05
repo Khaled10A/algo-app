@@ -1,11 +1,15 @@
 import { sortingDescriptors } from "./sorting/descriptors";
 import { searchingDescriptors } from "./searching/descriptors";
 import { graphDescriptors } from "./graphs/descriptors";
+import { dpDescriptors } from "./dynamicProgramming/descriptors";
+import { backtrackingDescriptors } from "./backtracking/descriptors";
 
 export const ALL_DESCRIPTORS = [
   ...sortingDescriptors,
   ...searchingDescriptors,
   ...graphDescriptors,
+  ...dpDescriptors,
+  ...backtrackingDescriptors,
 ];
 
 const BY_ID = new Map(ALL_DESCRIPTORS.map((d) => [d.id, d]));
@@ -42,6 +46,16 @@ export const DOMAINS = [
     id: "graphs",
     label: "Graphs",
     subTabs: ["debugger"],
+  },
+  {
+    id: "dynamicProgramming",
+    label: "Dynamic Programming",
+    subTabs: ["debugger", "complexity", "pseudocode", "ai"],
+  },
+  {
+    id: "backtracking",
+    label: "Backtracking",
+    subTabs: ["debugger", "complexity", "pseudocode", "ai"],
   },
 ];
 
