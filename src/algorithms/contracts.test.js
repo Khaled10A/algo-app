@@ -33,7 +33,7 @@ describe("registry integrity", () => {
       expect(ids.has(d.id)).toBe(false);
       ids.add(d.id);
       expect(typeof d.name).toBe("string");
-      expect(d.category).toMatch(/^(sorting|searching|graphs|dynamicProgramming|backtracking)$/);
+      expect(d.category).toMatch(/^(sorting|searching|graphs|dynamicProgramming|backtracking|divideAndConquer|greedy)$/);
       expect(typeof d.color).toBe("string");
       expect(d.complexity).toHaveProperty("worst");
       expect(Array.isArray(d.codeLines)).toBe(true);
@@ -44,6 +44,8 @@ describe("registry integrity", () => {
     expect(getBenchmarkable("searching")).toHaveLength(3);
     expect(getWithDebug(["sorting"])).toHaveLength(8);
     expect(getWithDebug(["dynamicProgramming"])).toHaveLength(7);
+    // Greedy now has 3 debuggable algorithms: Huffman Coding, Activity Selection, Fractional Knapsack
+    expect(getWithDebug(["greedy"])).toHaveLength(3);
   });
 
   it("getAlgorithm throws for unknown ids", () => {

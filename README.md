@@ -8,9 +8,9 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 
 ## Key Features
 
-- **Benchmarking** — Run sorting and string-matching algorithms against multiple input sizes and shapes; compare execution time or comparison counts via line and bar charts. Uses Web Workers for non-blocking measurement, warmup iterations, median aggregation, and shared identical inputs across algorithms for fair comparison.
+- **Benchmarking** — Run sorting algorithms against multiple input sizes and shapes; compare execution time or comparison counts via line and bar charts. Uses Web Workers for non-blocking measurement, warmup iterations, median aggregation, and shared identical inputs across algorithms for fair comparison.
 - **Visualizer** — Watch sorting algorithms execute step by step with animated array bars, swap/compare highlighting, sorted-region markers, comparison counters, and audio tones. Driven by `requestAnimationFrame` with speed presets.
-- **Memory Debugger** — Step through any algorithm with a live view of variables, memory state, call stack, and per-line source highlighting. Covers all 8 sorting algorithms, Binary Search (found/not-found targets), and Brute Force / Horspool / KMP string matching.
+- **Memory Debuggers** — Step through any algorithm with a live view of variables, memory state, call stack, and per-line source highlighting. Separate debugger tabs exist for Sorting & Searching, Graphs, Divide & Conquer, Dynamic Programming, Backtracking, and Greedy algorithms.
 - **Graph Playground** — An interactive SVG graph editor (add, remove, connect, set weights) combined with step-by-step debuggers for DFS, BFS, Dijkstra, Bellman-Ford, Floyd-Warshall, Prim, and Kruskal. Shows colored visit states, queues/heaps/frontiers, distance badges, predecessor trees, and matrix views.
 - **Complexity Reference** — Time and space complexity table with Big-O for best, average, and worst cases, plus a "run side-by-side" comparison panel.
 - **Pseudocode** — Clean pseudocode display for every supported algorithm.
@@ -32,6 +32,7 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 | Excel Export | SheetJS `xlsx` (dynamically imported) |
 | Unit / Component Tests | Vitest 4 + jsdom + Testing Library |
 | E2E Tests | Cypress 13 |
+| CI | GitHub Actions (Vitest + Cypress on push/PR) |
 | Serverless Function | Node.js (Vercel-style `api/` handler) |
 | AI Provider | Groq (`llama-3.3-70b-versatile`) |
 | Rate Limiting | Upstash Redis (optional, shared) / in-memory fallback |
@@ -53,7 +54,7 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
 │   └── assistant.js            Serverless AI proxy (Groq chat completions)
 ├── landing/                    Standalone marketing page (not part of Vite build)
 ├── cypress/                    E2E tests
-│   └── e2e/app.cy.js           Full app E2E suite (18 cases)
+│   └── e2e/                   Full app E2E suite + domain-specific E2E (DP debugger, landing)
 └── src/
     ├── main.jsx                React bootstrap (StrictMode + ErrorBoundary)
     ├── App.jsx                 Root component: layout, tabs, all settings
@@ -62,8 +63,15 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
     │   ├── sorting/            8 sorts (insertion, bubble, selection, merge,
     │   │                       quick, heap, counting, radix) + debug/steps
     │   ├── searching/          Brute force, Horspool, KMP, Binary Search
-    │   └── graphs/             DFS, BFS, Dijkstra, Bellman-Ford, Floyd-Warshall,
-    │                           Prim, Kruskal + interactive graph editor model
+    │   ├── graphs/             DFS, BFS, Dijkstra, Bellman-Ford, Floyd-Warshall,
+    │   │                       Prim, Kruskal + interactive graph editor model
+    │   ├── divideAndConquer/   Closest Pair, Karatsuba, Strassen + D&C debugger
+    │   ├── dynamicProgramming/ Fibonacci, Knapsack, LCS, LIS, Edit Distance,
+    │   │                       Matrix Chain + DP debugger
+    │   ├── backtracking/       n-Queens, Sudoku, Subset Sum, Permutations,
+    │   │                       Combinations + Backtrack debugger
+    │   └── greedy/              Huffman Coding, Activity Selection,
+    │                           Fractional Knapsack + Greedy debugger
     ├── core/
     │   ├── benchmark/          Engine (measure/median), jobs, Web Worker runner
     │   ├── execution/          Deterministic event collector
@@ -72,10 +80,12 @@ A React web application for **visualizing**, **benchmarking**, and **step-by-ste
     │   ├── charts/             Hand-written SVG line/bar charts
     │   ├── sidebar/            Configuration panels per domain
     │   ├── ui/                 Header, shared primitives (buttons, inputs, checkboxes)
-    │   └── visualizer/         Graph debugger SVG, matrix view
+    │   └── visualizer/         Graph debugger SVG, matrix view, DP table view,
+    │                           backtrack tree view
     ├── hooks/                  useBenchmarks, usePlayback, usePersistentState, useRunHistory
-    ├── tabs/                   Benchmark, Visualizer, Debugger, Complexity,
-    │                           Pseudocode, History, Report, AI Assistant
+    ├── tabs/                   Benchmark, Visualizer, Debugger, DNCDebugger,
+    │                           DPDebugger, BacktrackDebugger, GreedyDebugger,
+    │                           Complexity, Pseudocode, History, Report, AI Assistant
     ├── theme/                  Design tokens (dark/light palettes), ThemeContext
     ├── styles/                 Global CSS (glass materials, motion, themes)
     └── utils/                  Array/text generators, constants, export utils, audio
@@ -133,7 +143,7 @@ npm run preview
 ## Testing
 
 ```bash
-npm run test:unit          # Vitest unit + component tests (348 tests)
+npm run test:unit          # Vitest unit + component tests (500+ tests)
 npm run test:e2e           # Cypress E2E (start dev server in another terminal first)
 npm run test:e2e:open      # Interactive Cypress runner
 npm run lint               # ESLint
@@ -173,15 +183,20 @@ Highlights show comparisons and swaps in real time. Sorted regions are visually 
 Step through any algorithm with a detailed view of its internal state.
 
 **How to use:**
-1. Select an algorithm and domain (Sorting, Searching, or Graphs).
-2. Configure input (array size, text/pattern for string matching, or use the default graph).
-3. Click **GENERATE** then step through with play/next/prev controls.
+1. Select a debugger tab: Debugger (Sorting & Searching), DNCDebugger (Divide & Conquer), DPDebugger (Dynamic Programming), BacktrackDebugger (Backtracking), or GreedyDebugger (Greedy).
+2. Select an algorithm within that domain.
+3. Configure input (array size, text/pattern for string matching, graph for graph algorithms, or use defaults for D&C/DP/backtracking/greedy).
+4. Click **GENERATE** then step through with play/next/prev controls.
 
-**What you see per step:**
+**What you see per step across all debugger tabs:**
 - **Sorting:** Array bars with active elements highlighted, variable watches, memory snapshot, call stack, highlighted source line.
 - **String Matching:** Text and pattern grids with highlight positions, LPS (for KMP) or shift (for Horspool) tables, match positions.
 - **Binary Search:** Array with mid/low/high pointers, target value, found/not-found result.
 - **Graphs:** Interactive SVG with colored visit states, queue/stack/heap panels, distance badges on nodes, predecessor tree, and for Floyd-Warshall the full distance matrix.
+- **Divide & Conquer:** Recursion tree visualization, current subproblem matrices/points, quadrant partitions, depth tracking, subproblem calls, recombination formulas.
+- **Dynamic Programming:** DP table view (2D table with cell-by-cell filling animation), current state variables, subproblem dependencies, final result.
+- **Backtracking:** Backtrack tree visualization showing exploration path, current state, pruned branches, solution count.
+- **Greedy:** Step-by-step greedy choices, candidate selection visualization, feasible set tracking, objective value progression.
 
 ### Graph Playground
 
@@ -253,6 +268,18 @@ The AI requests are proxied through the serverless `api/assistant.js` endpoint, 
 | Horspool | Transform & Conquer | O(n/m) | O(n/m) | O(n×m) | O(σ) |
 | KMP | Dynamic Programming | O(n) | O(n+m) | O(n+m) | O(m) |
 
+### Dynamic Programming (6)
+
+| Algorithm | Paradigm | Time | Space |
+|---|---|---|---|
+| Fibonacci (Memoized) | Top-Down DP | O(n) | O(n) |
+| Fibonacci (Tabulated) | Bottom-Up DP | O(n) | O(1) |
+| 0/1 Knapsack | Dynamic Programming | O(n×W) | O(n×W) |
+| Longest Common Subsequence | Dynamic Programming | O(n×m) | O(n×m) |
+| Longest Increasing Subsequence | Dynamic Programming | O(n²) | O(n) |
+| Edit Distance (Levenshtein) | Dynamic Programming | O(n×m) | O(n×m) |
+| Matrix Chain Multiplication | Dynamic Programming | O(n³) | O(n²) |
+
 ### Graph Algorithms (7)
 
 | Algorithm | Type | Time | Space |
@@ -265,9 +292,70 @@ The AI requests are proxied through the serverless `api/assistant.js` endpoint, 
 | Prim | Minimum Spanning Tree | O((V+E) log V) | O(V+E) |
 | Kruskal | Minimum Spanning Tree | O(E log E) | O(V+E) |
 
+### Divide & Conquer (3)
+
+| Algorithm | Tier | Paradigm | Time | Space |
+|---|---|---|---|---|
+| Closest Pair of Points | Core | Divide & Conquer (geometric) | O(n log n) | O(n) |
+| Karatsuba Multiplication | Core | Divide & Conquer (numeric) | O(n^1.585) | O(n) |
+| Strassen Matrix Multiplication | Advanced | Divide & Conquer (matrix) | O(n^2.807) | O(n²) |
+
+### Backtracking (5)
+
+| Algorithm | Paradigm | Time | Space |
+|---|---|---|---|
+| N-Queens | Backtracking | O(n!) | O(n) |
+| Sudoku Solver | Backtracking | O(9^m) | O(m) |
+| Subset Sum | Backtracking | O(2^n) | O(n) |
+| Permutations | Backtracking | O(n!) | O(n) |
+| Combinations | Backtracking | O(C(n,k)) | O(k) |
+
+### Greedy Algorithms (3)
+
+| Algorithm | Paradigm | Time | Space |
+|---|---|---|---|
+| Huffman Coding | Greedy | O(n log n) | O(n) |
+| Activity Selection | Greedy | O(n log n) | O(1) |
+| Fractional Knapsack | Greedy | O(n log n) | O(1) |
+
+#### Strassen Matrix Multiplication (Advanced) — input-size policy
+
+Strassen is implemented as the **standard seven-product recursion** with a strict
+**1×1 scalar base case**:
+
+- For an n×n node (n > 1), A and B are split into four (n/2)×(n/2) quadrants;
+  the ten quadrant sums/differences S1..S10 are formed;
+  M1..M7 are computed recursively:
+  `M1 = (A11+A22)(B11+B22)`, `M2 = (A21+A22)B11`, `M3 = A11(B12−B22)`,
+  `M4 = A22(B21−B11)`, `M5 = (A11+A12)B22`, `M6 = (A21−A11)(B11+B12)`,
+  `M7 = (A12−A22)(B21+B22)`;
+  and recombined via
+  `C11 = M1+M4−M5+M7`, `C12 = M3+M5`, `C21 = M2+M4`, `C22 = M1−M2+M3+M6`.
+- **Supported sizes are powers of two** (1×1, 2×2, 4×4, 8×8). There is **no
+  padding strategy**: non-power-of-two matrices are *rejected* with an explicit
+  validation message (`validateStrassenInput`) rather than being silently padded
+  or resized. Dimensions are never changed without the user seeing why — the
+  rejection message states the actual size and the supported sizes.
+  (A documented zero-padding scheme could be added later, but padding would
+  complicate the recursion-tree visualization without educational benefit here.)
+- **Visualization limit is 8×8** (`STRASSEN_DEFAULT_MAX_N`). This cap keeps the
+  seven-way recursion tree (7^3 = 343 base cases at n = 8) and its per-step
+  matrix snapshots responsive in playback; it is a visualization limit, not an
+  algorithmic one. The arithmetic itself is exact IEEE-double multiplication of
+  small integers, so correctness never depends on size.
+- Every step is visualized in the D&C debugger: current matrices with
+  dimensions, quadrant partitions, recursion depth, the ten additions/
+  subtractions, the seven recursive M1..M7 subproblems, intermediates, the
+  recombination formulas, and the returned matrix — plus the full 7-ary
+  recursion tree.
+
+---
+
 ---
 
 ## Architecture
+
+The app now includes dedicated debugger tabs for each algorithm domain:
 
 Every algorithm is described by a single canonical **descriptor** registered centrally in `src/algorithms/registry.js`:
 
@@ -275,7 +363,8 @@ Every algorithm is described by a single canonical **descriptor** registered cen
 {
   id: "quick-sort",
   name: "Quick Sort",
-  category: "sorting",        // sorting | searching | graphs
+  category: "sorting",        // sorting | searching | graphs | divideAndConquer
+                            // | dynamicProgramming | backtracking | greedy
   color: "#a78bfa",
   complexity: { best, average, worst, space, paradigm },
   run:   (input) => result,   // benchmark implementation
@@ -288,11 +377,20 @@ Every algorithm is described by a single canonical **descriptor** registered cen
 
 Adding an algorithm means creating its module + descriptor and registering it — no edits scattered across tabs. The benchmark engine, visualizer, debugger, complexity reference, and pseudocode panel all derive from the same descriptors.
 
-**Event → Projector → Snapshot pattern:** Modern sorts (Heap, Counting, Radix) and graph algorithms produce a deterministic, JSON-serializable event stream via `createEventCollector()`. A projector maps each event to exactly one debugger/visualizer snapshot. This keeps algorithm code UI-free and fully deterministic.
+**Event → Projector → Snapshot pattern:** Modern sorts (Heap, Counting, Radix), graph algorithms, and all algorithms in the Divide & Conquer, Dynamic Programming, Backtracking, and Greedy domains produce a deterministic, JSON-serializable event stream via `createEventCollector()`. A projector maps each event to exactly one debugger/visualizer snapshot. This keeps algorithm code UI-free and fully deterministic.
+
+**Domain-specific debuggers:** Each algorithm domain has its own debugger tab optimized for that paradigm:
+- **Debugger Tab** — Sorting & Searching (array-based visualization)
+- **DNCDebugger Tab** — Divide & Conquer (recursion tree visualization)
+- **DPDebugger Tab** — Dynamic Programming (DP table visualization)
+- **BacktrackDebugger Tab** — Backtracking (tree exploration visualization)
+- **GreedyDebugger Tab** — Greedy (choice-by-choice visualization)
 
 ---
 
 ## Export Options
+
+### Export Options
 
 Results can be exported from the sidebar:
 
@@ -317,6 +415,8 @@ Results can be exported from the sidebar:
 - AI Assistant has French/German language strings coded but not exposed in the UI (only Arabic/English are available).
 - Merge Sort and Quick Sort don't expose `steps` for the visualizer (only the debugger).
 - Graph algorithms don't have `run` implementations for the Benchmark tab (debugger-only).
+- D&C, DP, Backtracking, and Greedy domains are debugger-only (no benchmark tab support yet).
+- Greedy domain visualizer support is limited to debugger steps.
 
 ---
 
@@ -324,12 +424,13 @@ Results can be exported from the sidebar:
 
 - [React 18](https://react.dev/) — UI framework
 - [Vite 5](https://vitejs.dev/) — build tool and dev server
-- [Vitest](https://vitest.dev/) + [Cypress](https://www.cypress.io/) — testing
+- [Vitest 4](https://vitest.dev/) + [Cypress 13](https://www.cypress.io/) — testing
 - JavaScript (ES6+) — no external algorithm libraries; all implementations are original
 - Vanilla SVG — charts are hand-written, no charting library
 - [SheetJS](https://docs.sheetjs.com/) — Excel export
 - [Groq](https://groq.com/) — AI completions (server-side only)
 - [Upstash](https://upstash.com/) — shared rate limiting (optional)
+- [GitHub Actions](https://github.com/features/actions) — CI/CD (Vitest + Cypress on push/PR)
 
 ---
 

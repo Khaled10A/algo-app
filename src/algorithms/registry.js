@@ -3,6 +3,14 @@ import { searchingDescriptors } from "./searching/descriptors";
 import { graphDescriptors } from "./graphs/descriptors";
 import { dpDescriptors } from "./dynamicProgramming/descriptors";
 import { backtrackingDescriptors } from "./backtracking/descriptors";
+import { dncDescriptors } from "./divideAndConquer/descriptors";
+import { closestPairOfPointsDebug, closestPairOfPointsSteps, closestPairOfPointsRun } from "./divideAndConquer/closestPair";
+import { karatsubaDebug, karatsubaSteps, karatsubaRun } from "./divideAndConquer/karatsuba";
+import { strassenDebug, strassenSteps, strassenRun } from "./divideAndConquer/strassen";
+import { greedyDescriptors } from "./greedy/descriptors";
+import { huffmanDebug, huffmanSteps, huffmanRun } from "./greedy/huffman";
+import { activityDebug, activitySteps, activityRun } from "./greedy/activity";
+import { fractionalKnapsackDebug, fractionalKnapsackSteps, fractionalKnapsackRun } from "./greedy/fractionalKnapsack";
 
 export const ALL_DESCRIPTORS = [
   ...sortingDescriptors,
@@ -10,6 +18,55 @@ export const ALL_DESCRIPTORS = [
   ...graphDescriptors,
   ...dpDescriptors,
   ...backtrackingDescriptors,
+  ...dncDescriptors.map((d) =>
+    d.id === 'closest-pair-of-points'
+      ? {
+          ...d,
+          run: closestPairOfPointsRun,
+          steps: closestPairOfPointsSteps,
+          debug: closestPairOfPointsDebug,
+        }
+      : d.id === 'karatsuba'
+        ? {
+            ...d,
+            run: karatsubaRun,
+            steps: karatsubaSteps,
+            debug: karatsubaDebug,
+          }
+        : d.id === 'strassen'
+          ? {
+              ...d,
+              run: strassenRun,
+              steps: strassenSteps,
+              debug: strassenDebug,
+            }
+          : d,
+  ),
+  // Greedy algorithms
+  ...greedyDescriptors.map((d) =>
+    d.id === 'huffman-coding'
+      ? {
+          ...d,
+          run: huffmanRun,
+          steps: huffmanSteps,
+          debug: huffmanDebug,
+        }
+      : d.id === 'activity-selection'
+        ? {
+            ...d,
+            run: activityRun,
+            steps: activitySteps,
+            debug: activityDebug,
+          }
+        : d.id === 'fractional-knapsack'
+          ? {
+              ...d,
+              run: fractionalKnapsackRun,
+              steps: fractionalKnapsackSteps,
+              debug: fractionalKnapsackDebug,
+            }
+          : d,
+  ),
 ];
 
 const BY_ID = new Map(ALL_DESCRIPTORS.map((d) => [d.id, d]));
@@ -55,6 +112,16 @@ export const DOMAINS = [
   {
     id: "backtracking",
     label: "Backtracking",
+    subTabs: ["debugger", "complexity", "pseudocode", "ai"],
+  },
+  {
+    id: "divideAndConquer",
+    label: "Divide & Conquer",
+    subTabs: ["debugger", "complexity", "pseudocode", "ai"],
+  },
+  {
+    id: "greedy",
+    label: "Greedy Algorithms",
     subTabs: ["debugger", "complexity", "pseudocode", "ai"],
   },
 ];

@@ -56,3 +56,32 @@ export function generateText(size, pattern, scenario) {
   }
   return text;
 }
+
+/**
+ * Generate a set of 2-D points for the closest-pair algorithm.
+ * Outputs plain {x, y} objects.
+ */
+export function generatePoints(count, type = "random", seedMax = 100) {
+  if (count < 0) count = 0;
+  const pts = [];
+  for (let i = 0; i < count; i++) {
+    let x, y;
+    if (type === "grid") {
+      // Deterministic grid layout
+      const span = Math.max(1, Math.ceil(Math.sqrt(count)));
+      const row = Math.floor(i / span);
+      const col = i % span;
+      x = row * (seedMax / span);
+      y = col * (seedMax / span);
+    } else if (type === "random") {
+      x = Math.floor(Math.random() * seedMax);
+      y = Math.floor(Math.random() * seedMax);
+    } else {
+      // Default: random
+      x = Math.floor(Math.random() * seedMax);
+      y = Math.floor(Math.random() * seedMax);
+    }
+    pts.push({ x, y });
+  }
+  return pts;
+}

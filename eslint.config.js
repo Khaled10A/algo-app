@@ -110,4 +110,14 @@ export default [
       globals: cypressGlobals,
     },
   },
+
+  // Vitest unit tests run with `globals: true` in vitest.config.js, so they
+  // have access to the vitest globals (describe/it/test/expect). Register them
+  // here for lint so test files don't need manual imports.
+  {
+    files: ["src/**/*.test.{js,jsx,ts,tsx}"],
+    languageOptions: {
+      globals: globals.vitest,
+    },
+  },
 ];

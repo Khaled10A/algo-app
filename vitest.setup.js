@@ -16,3 +16,6 @@ if (globalThis.jsdom && globalThis.jsdom.window) {
     }
   }
 }
+
+// Import jest-dom matchers for React component testing
+import '@testing-library/jest-dom';

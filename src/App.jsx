@@ -17,6 +17,8 @@ import { DebuggerTab } from "./tabs/DebuggerTab";
 import { AIAssistantTab } from "./tabs/AIAssistantTab";
 import { DPDebuggerTab } from "./tabs/DPDebuggerTab";
 import { BacktrackDebuggerTab } from "./tabs/BacktrackDebuggerTab";
+import { DNCDebuggerTab } from "./tabs/DNCDebuggerTab";
+import { GreedyDebuggerTab } from "./tabs/GreedyDebuggerTab";
 
 import { generateArray } from "./utils/generators";
 import { exportCSV, exportXLSX, exportAllChartsPNG } from "./utils/exportUtils";
@@ -528,11 +530,19 @@ export default function App() {
               {subTab === "debugger" && domain.id === "backtracking" && (
                 <BacktrackDebuggerTab isDark={isDark} />
               )}
+              {subTab === "debugger" && domain.id === "divideAndConquer" && (
+                <DNCDebuggerTab isDark={isDark} />
+              )}
               {subTab === "debugger" &&
                 domain.id !== "graphs" &&
                 domain.id !== "dynamicProgramming" &&
-                domain.id !== "backtracking" && (
+                domain.id !== "backtracking" &&
+                domain.id !== "divideAndConquer" &&
+                domain.id !== "greedy" && (
                 <DebuggerTab isDark={isDark} />
+              )}
+              {subTab === "debugger" && domain.id === "greedy" && (
+                <GreedyDebuggerTab isDark={isDark} />
               )}
               {subTab === "ai" && (
                 <AIAssistantTab
